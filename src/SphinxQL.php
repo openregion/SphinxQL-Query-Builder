@@ -596,7 +596,7 @@ class SphinxQL
             } elseif ($this->from instanceof SphinxQL) {
                 $query .= 'FROM ('.$this->from->compile()->getCompiled().') ';
             } else {
-                $query .= 'FROM '.implode(', ', $this->from).' ';
+                $query .= 'FROM ' . implode(', ', $this->getConnection()->quoteIdentifierArray($this->from)) . ' ';
             }
         }
 
@@ -726,7 +726,7 @@ class SphinxQL
         }
 
         if ($this->into !== null) {
-            $query .= 'INTO '.$this->into.' ';
+            $query .= 'INTO ' . $this->getConnection()->quoteIdentifier($this->into) . ' ';
         }
 
         if (!empty($this->columns)) {
@@ -762,7 +762,7 @@ class SphinxQL
         $query = 'UPDATE ';
 
         if ($this->into !== null) {
-            $query .= $this->into.' ';
+            $query .= $this->getConnection()->quoteIdentifier($this->into) . ' ';
         }
 
         if (!empty($this->set)) {
@@ -804,7 +804,7 @@ class SphinxQL
         $query = 'DELETE ';
 
         if (!empty($this->from)) {
-            $query .= 'FROM '.$this->from[0].' ';
+            $query .= 'FROM ' . $this->getConnection()->quoteIdentifier($this->from[0]) . ' ';
         }
 
         if (!empty($this->match)) {

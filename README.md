@@ -114,17 +114,17 @@ Often, you would need to call and run SQL functions that shouldn't be escaped in
 
 There are cases when an input __must__ be escaped in the SQL statement. The following functions are used to handle any escaping required for the query.
 
-* __$sq->escape($value)__
+* __$conn->escape($value)__
 
 	Returns the escaped value. This is processed with the `\MySQLi::real_escape_string()` function.
 
-* __$sq->quoteIdentifier($identifier)__
+* __$conn->quoteIdentifier($identifier)__
 
-	Adds backtick quotes to the identifier. For array elements, use `$sq->quoteIdentifierArray($arr)`.
+	Adds backtick quotes to the identifier. For array elements, use `$conn->quoteIdentifierArray($arr)`.
 
-* __$sq->quote($value)__
+* __$conn->quote($value)__
 
-	Adds quotes to the value and escapes it. For array elements, use `$sq->quoteArr($arr)`.
+	Adds quotes to the value and escapes it. For array elements, use `$conn->quoteArr($arr)`.
 
 * __$sq->escapeMatch($value)__
 

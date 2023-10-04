@@ -89,6 +89,35 @@ abstract class ConnectionBase implements ConnectionInterface
     }
 
     /**
+     * @inheritdoc
+     */
+    public function quoteIdentifier(string $identifier): string
+    {
+        $quote = '`';
+        $quotedIdentifier = $quote . str_replace($quote, '', $identifier) . $quote;
+
+        if (mb_strpos($quotedIdentifier, '.') !== false) {
+            $quotedIdentifier = str_replace('.', "{$quote}.{$quote}", $quotedIdentifier);
+        }
+
+        return $quotedIdentifier;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function quoteIdentifierArray(array $array = []): array
+    {
+        $result = [];
+
+        foreach ($array as $key => $item) {
+            $result[$key] = $this->quoteIdentifier($item);
+        }
+
+        return $result;
+    }
+
+    /**
      * Adds quotes around values when necessary.
      * Based on FuelPHP's quoting function.
      * @inheritdoc
