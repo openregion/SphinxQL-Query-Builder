@@ -1,4 +1,9 @@
 #### 4.0.0
+* Changed namespace from `Foolz\SphinxQL` to `OpenRegion\SphinxQL`
+* Added `quoteIdentifier` and `quoteIdentifierArray`
+* Fixed readme
+
+#### 4.0.0
 * Dropped support for PHP 8.1 and lower (minimum PHP is now 8.2)
 * Updated CI PHP matrix to 8.2 and 8.3
 * Normalized MySQLi driver exception handling for modern PHP `mysqli_sql_exception` behavior
