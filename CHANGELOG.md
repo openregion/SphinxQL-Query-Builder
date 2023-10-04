@@ -1,3 +1,8 @@
+#### 4.0.0
+* Changed namespace from `Foolz\SphinxQL` to `OpenRegion\SphinxQL`
+* Added `quoteIdentifier` and `quoteIdentifierArray`
+* Fixed readme
+
 #### 3.0.2
 * Dropped support for PHP 7.3 and lower
 
