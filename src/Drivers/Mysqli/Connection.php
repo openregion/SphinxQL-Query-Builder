@@ -1,13 +1,13 @@
 <?php
 
-namespace Foolz\SphinxQL\Drivers\Mysqli;
+namespace OpenRegion\SphinxQL\Drivers\Mysqli;
 
-use Foolz\SphinxQL\Drivers\ConnectionBase;
-use Foolz\SphinxQL\Drivers\MultiResultSet;
-use Foolz\SphinxQL\Drivers\ResultSet;
-use Foolz\SphinxQL\Exception\ConnectionException;
-use Foolz\SphinxQL\Exception\DatabaseException;
-use Foolz\SphinxQL\Exception\SphinxQLException;
+use OpenRegion\SphinxQL\Drivers\ConnectionBase;
+use OpenRegion\SphinxQL\Drivers\MultiResultSet;
+use OpenRegion\SphinxQL\Drivers\ResultSet;
+use OpenRegion\SphinxQL\Exception\ConnectionException;
+use OpenRegion\SphinxQL\Exception\DatabaseException;
+use OpenRegion\SphinxQL\Exception\SphinxQLException;
 
 /**
  * SphinxQL connection class utilizing the MySQLi extension.
@@ -104,7 +104,7 @@ class Connection extends ConnectionBase
             $resource = @$this->getConnection()->query($query);
         } finally {
             restore_error_handler();
-        }        
+        }
 
         if ($this->getConnection()->error) {
             throw new DatabaseException('['.$this->getConnection()->errno.'] '.

@@ -10,8 +10,8 @@ You can create an instance by using the following code and passing a configured 
 
     <?php
 
-    use Foolz\SphinxQL\Drivers\Mysqli\Connection;
-    use Foolz\SphinxQL\SphinxQL;
+    use OpenRegion\SphinxQL\Drivers\Mysqli\Connection;
+    use OpenRegion\SphinxQL\SphinxQL;
 
     $conn = new Connection();
     $queryBuilder = SphinxQL::create($conn);
@@ -19,7 +19,7 @@ You can create an instance by using the following code and passing a configured 
 Building a Query
 ----------------
 
-The `Foolz\\SphinxQL\\SphinxQL` class supports building the following queries: `SELECT`, `INSERT`, `UPDATE`, and `DELETE`. Which sort of query being generated depends on the methods called.
+The `OpenRegion\\SphinxQL\\SphinxQL` class supports building the following queries: `SELECT`, `INSERT`, `UPDATE`, and `DELETE`. Which sort of query being generated depends on the methods called.
 
 For `SELECT` queries, you would start by invoking the `select()` method:
 

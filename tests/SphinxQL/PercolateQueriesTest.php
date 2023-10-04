@@ -1,12 +1,12 @@
 <?php
 
-use Foolz\SphinxQL\Exception\SphinxQLException;
-use Foolz\SphinxQL\Percolate;
-use Foolz\SphinxQL\Tests\TestUtil;
-use Foolz\SphinxQL\SphinxQL;
+use OpenRegion\SphinxQL\Exception\SphinxQLException;
+use OpenRegion\SphinxQL\Percolate;
+use OpenRegion\SphinxQL\Tests\TestUtil;
+use OpenRegion\SphinxQL\SphinxQL;
 /**
  * @group Manticore
- * @package Foolz\SphinxQL
+ * @package OpenRegion\SphinxQL
  * @author Vicent Valls
  */
 class PercolateQueriesTest extends \PHPUnit\Framework\TestCase
@@ -27,7 +27,7 @@ class PercolateQueriesTest extends \PHPUnit\Framework\TestCase
 
     /**
      * @dataProvider insertProvider
-     * @throws \Foolz\SphinxQL\Exception\SphinxQLException
+     * @throws \OpenRegion\SphinxQL\Exception\SphinxQLException
      */
     public function testInsert($testNumber, $query, $index, $tags, $filter, $compiledQuery)
     {
@@ -171,7 +171,7 @@ class PercolateQueriesTest extends \PHPUnit\Framework\TestCase
 
     /**
      * @dataProvider callPqProvider
-     * @throws \Foolz\SphinxQL\Exception\SphinxQLException
+     * @throws \OpenRegion\SphinxQL\Exception\SphinxQLException
      */
 
     public function testPercolate($testNumber, $index, $documents, $options, $result)

@@ -1,8 +1,8 @@
 <?php
 
-namespace Foolz\SphinxQL\Drivers;
+namespace OpenRegion\SphinxQL\Drivers;
 
-use Foolz\SphinxQL\Exception\ResultSetException;
+use OpenRegion\SphinxQL\Exception\ResultSetException;
 
 interface ResultSetInterface extends \ArrayAccess, \Iterator, \Countable
 {

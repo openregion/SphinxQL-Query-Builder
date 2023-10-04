@@ -1,9 +1,9 @@
 <?php
 
-namespace Foolz\SphinxQL\Tests;
+namespace OpenRegion\SphinxQL\Tests;
 
-use Foolz\SphinxQL\Drivers\Mysqli\Connection as MysqliConnection;
-use Foolz\SphinxQL\Drivers\Pdo\Connection as PdoConnection;
+use OpenRegion\SphinxQL\Drivers\Mysqli\Connection as MysqliConnection;
+use OpenRegion\SphinxQL\Drivers\Pdo\Connection as PdoConnection;
 
 class TestUtil
 {
@@ -12,7 +12,7 @@ class TestUtil
      */
     public static function getConnectionDriver()
     {
-        $connection = '\\Foolz\\SphinxQL\\Drivers\\'.$GLOBALS['driver'].'\\Connection';
+        $connection = '\\OpenRegion\\SphinxQL\\Drivers\\'.$GLOBALS['driver'].'\\Connection';
 
         return new $connection();
     }

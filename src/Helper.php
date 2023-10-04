@@ -1,8 +1,8 @@
 <?php
 
-namespace Foolz\SphinxQL;
+namespace OpenRegion\SphinxQL;
 
-use Foolz\SphinxQL\Drivers\ConnectionInterface;
+use OpenRegion\SphinxQL\Drivers\ConnectionInterface;
 
 /**
  * SQL queries that don't require "query building"

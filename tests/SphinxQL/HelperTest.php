@@ -1,9 +1,9 @@
 <?php
 
-use Foolz\SphinxQL\Drivers\ConnectionInterface;
-use Foolz\SphinxQL\Helper;
-use Foolz\SphinxQL\SphinxQL;
-use Foolz\SphinxQL\Tests\TestUtil;
+use OpenRegion\SphinxQL\Drivers\ConnectionInterface;
+use OpenRegion\SphinxQL\Helper;
+use OpenRegion\SphinxQL\SphinxQL;
+use OpenRegion\SphinxQL\Tests\TestUtil;
 
 class HelperTest extends \PHPUnit\Framework\TestCase
 {
@@ -165,7 +165,7 @@ class HelperTest extends \PHPUnit\Framework\TestCase
 
     public function testUdfNotInstalled()
     {
-        $this->expectException(Foolz\SphinxQL\Exception\DatabaseException::class);
+        $this->expectException(OpenRegion\SphinxQL\Exception\DatabaseException::class);
         $this->expectExceptionMessage('Sphinx expr: syntax error');
         $this->conn->query('SELECT MY_UDF()');
     }
@@ -181,7 +181,7 @@ class HelperTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * @covers \Foolz\SphinxQL\Helper::truncateRtIndex
+     * @covers \OpenRegion\SphinxQL\Helper::truncateRtIndex
      */
     public function testTruncateRtIndex()
     {

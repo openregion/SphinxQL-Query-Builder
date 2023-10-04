@@ -1,16 +1,16 @@
 Query Builder for SphinxQL
 ==========================
 
-[![Build Status](https://travis-ci.org/FoolCode/SphinxQL-Query-Builder.png)](https://travis-ci.org/FoolCode/SphinxQL-Query-Builder)
-[![Latest Stable Version](https://poser.pugx.org/foolz/sphinxql-query-builder/v/stable)](https://packagist.org/packages/foolz/sphinxql-query-builder)
-[![Latest Unstable Version](https://poser.pugx.org/foolz/sphinxql-query-builder/v/unstable)](https://packagist.org/packages/foolz/sphinxql-query-builder)
-[![Total Downloads](https://poser.pugx.org/foolz/sphinxql-query-builder/downloads)](https://packagist.org/packages/foolz/sphinxql-query-builder)
+[![Latest Stable Version](https://poser.pugx.org/openregion/sphinxql-query-builder/v/stable)](https://packagist.org/packages/openregion/sphinxql-query-builder)
+[![Total Downloads](https://poser.pugx.org/openregion/sphinxql-query-builder/downloads)](https://packagist.org/packages/openregion/sphinxql-query-builder)
 
 ## About
 
+This a fork of [FoolCode's SphinxQL Query Builder](https://github.com/FoolCode/SphinxQL-Query-Builder). It seems like original one is no longer maintained.
+
 This is a SphinxQL Query Builder used to work with SphinxQL, a SQL dialect used with the Sphinx search engine and it's fork Manticore. It maps most of the functions listed in the [SphinxQL reference](http://sphinxsearch.com/docs/current.html#SphinxQL-reference) and is generally [faster](http://sphinxsearch.com/blog/2010/04/25/sphinxapi-vs-SphinxQL-benchmark/) than the available Sphinx API.
 
-This Query Builder has no dependencies except PHP 7.1 or later, `\MySQLi` extension, `PDO`, and [Sphinx](http://sphinxsearch.com)/[Manticore](https://manticoresearch.com).
+This Query Builder has no dependencies except PHP 7.4 or later, `\MySQLi` extension, `PDO`, and [Sphinx](http://sphinxsearch.com)/[Manticore](https://manticoresearch.com).
 
 ### Missing methods?
 
@@ -50,7 +50,7 @@ All pull requests must be accompanied by passing unit tests and complete code co
 
 ## Installation
 
-This is a Composer package. You can install this package with the following command: `composer require foolz/sphinxql-query-builder`
+This is a Composer package. You can install this package with the following command: `composer require openregion/sphinxql-query-builder`
 
 ## Usage
 
@@ -58,8 +58,8 @@ The following examples will omit the namespace.
 
 ```php
 <?php
-use Foolz\SphinxQL\SphinxQL;
-use Foolz\SphinxQL\Drivers\Mysqli\Connection;
+use OpenRegion\SphinxQL\SphinxQL;
+use OpenRegion\SphinxQL\Drivers\Mysqli\Connection;
 
 // create a SphinxQL Connection object to use with SphinxQL
 $conn = new Connection();
@@ -77,8 +77,8 @@ $result = $query->execute();
 
 We support the following database connection drivers:
 
-* Foolz\SphinxQL\Drivers\Mysqli\Connection
-* Foolz\SphinxQL\Drivers\Pdo\Connection
+* OpenRegion\SphinxQL\Drivers\Mysqli\Connection
+* OpenRegion\SphinxQL\Drivers\Pdo\Connection
 
 ### Connection
 
@@ -241,7 +241,7 @@ Will return an array with an `INT` as first member, the number of rows deleted.
 
     ```php
     <?php
-    use Foolz\SphinxQL\SphinxQL;
+    use OpenRegion\SphinxQL\SphinxQL;
 
     try
     {
@@ -253,7 +253,7 @@ Will return an array with an `INT` as first member, the number of rows deleted.
             ->match('loves', SphinxQL::expr(custom_escaping_fn('(you | me)')));
             ->execute();
     }
-    catch (\Foolz\SphinxQL\DatabaseException $e)
+    catch (\OpenRegion\SphinxQL\DatabaseException $e)
     {
         // an error is thrown because two `|` one after the other aren't allowed
     }
@@ -345,7 +345,7 @@ Will return an array with an `INT` as first member, the number of rows deleted.
 
 ```php
 <?php
-use Foolz\SphinxQL\SphinxQL;
+use OpenRegion\SphinxQL\SphinxQL;
 
 $result = (new SphinxQL($this->conn))
     ->select()
@@ -393,7 +393,7 @@ Contains the results of the query execution.
 Contains the results of the multi-query execution.
 
 * __$result->getNext()__
-	
+
 	Returns a [`ResultSet`](#resultset) object containing the results of the next query.
 
 
@@ -411,7 +411,7 @@ The following methods return a prepared `SphinxQL` object. You can also use `->e
 
 ```php
 <?php
-use Foolz\SphinxQL\SphinxQL;
+use OpenRegion\SphinxQL\SphinxQL;
 
 $result = (new SphinxQL($this->conn))
     ->select()
@@ -448,17 +448,17 @@ $result = (new SphinxQL($this->conn))
 
 #### INSERT
 
-The Percolate class provide a dedicated helper for inserting queries in a `percolate` index. 
+The Percolate class provide a dedicated helper for inserting queries in a `percolate` index.
 
 ```php
 <?php
-use Foolz\SphinxQL\Percolate;
+use OpenRegion\SphinxQL\Percolate;
 
 $query = (new Percolate($conn))
-     ->insert('full text query terms',false)      
-     ->into('pq')                                              
-     ->tags(['tag1','tag2'])                                  
-     ->filter('price>3')                                      
+     ->insert('full text query terms',false)
+     ->into('pq')
+     ->tags(['tag1','tag2'])
+     ->filter('price>3')
      ->execute();
  ```
 
@@ -484,15 +484,15 @@ $query = (new Percolate($conn))
 #### CALLPQ
 
   Searches for stored queries that provide matching for input documents.
-  
+
 ```php
 <?php
-use Foolz\SphinxQL\Percolate;
+use OpenRegion\SphinxQL\Percolate;
 $query = (new Percolate($conn))
      ->callPQ()
-     ->from('pq')                                              
-     ->documents(['multiple documents', 'go this way'])        
-     ->options([                                               
+     ->from('pq')
+     ->documents(['multiple documents', 'go this way'])
+     ->options([
            Percolate::OPTION_VERBOSE => 1,
            Percolate::OPTION_DOCS_JSON => 1
      ])
@@ -510,18 +510,18 @@ $query = (new Percolate($conn))
 * __`$pq->documents($docs)`__
 
    Set the incoming documents. $docs can be:
-   
+
   - a single plain string (requires `Percolate::OPTION_DOCS_JSON` set to 0)
   - array of plain strings (requires `Percolate::OPTION_DOCS_JSON` set to 0)
   - a single JSON document
   - an array of JSON documents
   - a JSON object containing an  array of JSON objects
-   
+
 
 * __`$pq->options($options)`__
 
     Set options of `CALL PQ`. Refer the Manticore docs for more information about the `CALL PQ` parameters.
-    
+
   - __Percolate::OPTION_DOCS_JSON__ (`as docs_json`) default to 1 (docs are json objects). Needs to be set to 0 for plain string documents.
         Documents added as associative arrays will be converted to JSON when sending the query to Manticore.
    - __Percolate::OPTION_VERBOSE__ (`as verbose`) more information is printed by following `SHOW META`, default is 0
@@ -538,8 +538,8 @@ Laravel's dependency injection and realtime facades brings more convenience to S
 
 ```php
 // Register connection:
-use Foolz\SphinxQL\Drivers\ConnectionInterface;
-use Foolz\SphinxQL\Drivers\Mysqli\Connection;
+use OpenRegion\SphinxQL\Drivers\ConnectionInterface;
+use OpenRegion\SphinxQL\Drivers\Mysqli\Connection;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -555,7 +555,7 @@ class AppServiceProvider extends ServiceProvider
 }
 
 // In another file:
-use Facades\Foolz\SphinxQL\SphinxQL;
+use Facades\OpenRegion\SphinxQL\SphinxQL;
 
 $result = SphinxQL::select('column_one', 'colume_two')
     ->from('index_ancient', 'index_main', 'index_delta')

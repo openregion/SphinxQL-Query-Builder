@@ -1,7 +1,7 @@
 <?php
 
-use Foolz\SphinxQL\Facet;
-use Foolz\SphinxQL\Tests\TestUtil;
+use OpenRegion\SphinxQL\Facet;
+use OpenRegion\SphinxQL\Tests\TestUtil;
 
 /**
  * @author Vicent Valls

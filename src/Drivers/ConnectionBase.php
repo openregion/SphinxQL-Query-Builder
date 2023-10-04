@@ -1,9 +1,9 @@
 <?php
 
-namespace Foolz\SphinxQL\Drivers;
+namespace OpenRegion\SphinxQL\Drivers;
 
-use Foolz\SphinxQL\Exception\ConnectionException;
-use Foolz\SphinxQL\Expression;
+use OpenRegion\SphinxQL\Exception\ConnectionException;
+use OpenRegion\SphinxQL\Expression;
 use mysqli;
 use PDO;
 
@@ -164,5 +164,4 @@ abstract class ConnectionBase implements ConnectionInterface
      * @throws ConnectionException If a connection error was encountered
      */
     abstract public function connect();
-
 }
