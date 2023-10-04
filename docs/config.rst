@@ -6,13 +6,13 @@ Configuration
 Obtaining a Connection
 ----------------------
 
-You can obtain a SphinxQL Connection with the `Foolz\\SphinxQL\\Drivers\\Mysqli\\Connection` class.
+You can obtain a SphinxQL Connection with the `OpenRegion\\SphinxQL\\Drivers\\Mysqli\\Connection` class.
 
 .. code-block:: php
 
     <?php
 
-    use Foolz\SphinxQL\Drivers\Mysqli\Connection;
+    use OpenRegion\SphinxQL\Drivers\Mysqli\Connection;
 
     $conn = new Connection();
     $conn->setparams(array('host' => '127.0.0.1', 'port' => 9306));

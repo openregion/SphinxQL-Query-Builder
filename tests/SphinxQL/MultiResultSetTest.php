@@ -1,12 +1,12 @@
 <?php
 
-use Foolz\SphinxQL\Drivers\MultiResultSetInterface;
-use Foolz\SphinxQL\Drivers\Mysqli\Connection as MysqliConnection;
-use Foolz\SphinxQL\Drivers\Pdo\Connection as PdoConnection;
-use Foolz\Sphinxql\Drivers\ResultSetInterface;
-use Foolz\SphinxQL\Exception\DatabaseException;
-use Foolz\SphinxQL\SphinxQL;
-use Foolz\SphinxQL\Tests\TestUtil;
+use OpenRegion\SphinxQL\Drivers\MultiResultSetInterface;
+use OpenRegion\SphinxQL\Drivers\Mysqli\Connection as MysqliConnection;
+use OpenRegion\SphinxQL\Drivers\Pdo\Connection as PdoConnection;
+use OpenRegion\Sphinxql\Drivers\ResultSetInterface;
+use OpenRegion\SphinxQL\Exception\DatabaseException;
+use OpenRegion\SphinxQL\SphinxQL;
+use OpenRegion\SphinxQL\Tests\TestUtil;
 
 class MultiResultSetTest extends \PHPUnit\Framework\TestCase
 {
@@ -121,7 +121,7 @@ class MultiResultSetTest extends \PHPUnit\Framework\TestCase
 
     public function testInvalidStore()
     {
-        $this->expectException(Foolz\SphinxQL\Exception\DatabaseException::class);
+        $this->expectException(OpenRegion\SphinxQL\Exception\DatabaseException::class);
         $this->refill();
 
         $res = self::$conn->multiQuery(array('SELECT COUNT(*) FROM rt', 'SHOW META'));

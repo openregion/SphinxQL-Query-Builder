@@ -1,6 +1,6 @@
 <?php
 
-use Foolz\SphinxQL\Expression as Expression;
+use OpenRegion\SphinxQL\Expression as Expression;
 
 class ExpressionTest extends \PHPUnit\Framework\TestCase
 {

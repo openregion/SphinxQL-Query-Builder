@@ -1,6 +1,6 @@
 <?php
 
-namespace Foolz\SphinxQL;
+namespace OpenRegion\SphinxQL;
 
 /**
  * Query Builder class for Match statements.

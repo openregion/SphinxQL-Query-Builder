@@ -1,9 +1,9 @@
 <?php
 
-use Foolz\SphinxQL\Drivers\Mysqli\Connection;
-use Foolz\Sphinxql\Drivers\ResultSetInterface;
-use Foolz\SphinxQL\SphinxQL;
-use Foolz\SphinxQL\Tests\TestUtil;
+use OpenRegion\SphinxQL\Drivers\Mysqli\Connection;
+use OpenRegion\Sphinxql\Drivers\ResultSetInterface;
+use OpenRegion\SphinxQL\SphinxQL;
+use OpenRegion\SphinxQL\Tests\TestUtil;
 
 class ResultSetTest extends \PHPUnit\Framework\TestCase
 {
@@ -104,7 +104,7 @@ class ResultSetTest extends \PHPUnit\Framework\TestCase
 
     public function testToRowThrows()
     {
-        $this->expectException(Foolz\SphinxQL\Exception\ResultSetException::class);
+        $this->expectException(OpenRegion\SphinxQL\Exception\ResultSetException::class);
         $this->expectExceptionMessage("The row does not exist.");
         $this->refill();
         $res = self::$conn->query('SELECT * FROM rt');
@@ -134,7 +134,7 @@ class ResultSetTest extends \PHPUnit\Framework\TestCase
 
     public function testToNextRowThrows()
     {
-        $this->expectException(Foolz\SphinxQL\Exception\ResultSetException::class);
+        $this->expectException(OpenRegion\SphinxQL\Exception\ResultSetException::class);
         $this->expectExceptionMessage("The row does not exist.");
         $this->refill();
         $res = self::$conn->query('SELECT * FROM rt WHERE id = 10');

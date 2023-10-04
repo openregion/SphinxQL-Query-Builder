@@ -1,6 +1,6 @@
 <?php
 
-namespace Foolz\SphinxQL\Exception;
+namespace OpenRegion\SphinxQL\Exception;
 
 class ConnectionException extends \Exception
 {

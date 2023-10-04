@@ -1,13 +1,13 @@
 <?php
 
-namespace Foolz\SphinxQL;
+namespace OpenRegion\SphinxQL;
 
-use Foolz\SphinxQL\Drivers\ConnectionInterface;
-use Foolz\SphinxQL\Drivers\MultiResultSetInterface;
-use Foolz\SphinxQL\Drivers\ResultSetInterface;
-use Foolz\SphinxQL\Exception\ConnectionException;
-use Foolz\SphinxQL\Exception\DatabaseException;
-use Foolz\SphinxQL\Exception\SphinxQLException;
+use OpenRegion\SphinxQL\Drivers\ConnectionInterface;
+use OpenRegion\SphinxQL\Drivers\MultiResultSetInterface;
+use OpenRegion\SphinxQL\Drivers\ResultSetInterface;
+use OpenRegion\SphinxQL\Exception\ConnectionException;
+use OpenRegion\SphinxQL\Exception\DatabaseException;
+use OpenRegion\SphinxQL\Exception\SphinxQLException;
 
 /**
  * Query Builder class for SphinxQL statements.
@@ -223,7 +223,7 @@ class SphinxQL
     {
         $this->connection = $connection;
     }
-    
+
     /**
      * Sets Query Type
      *
@@ -231,7 +231,7 @@ class SphinxQL
     public function setType(string $type)
     {
         return $this->type = $type;
-    }    
+    }
 
     /**
      * Returns the currently attached connection

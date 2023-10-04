@@ -1,9 +1,9 @@
 <?php
 
-namespace Foolz\SphinxQL\Drivers;
+namespace OpenRegion\SphinxQL\Drivers;
 
-use Foolz\SphinxQL\Drivers\Pdo\ResultSetAdapter as PdoResultSetAdapter;
-use Foolz\SphinxQL\Exception\ResultSetException;
+use OpenRegion\SphinxQL\Drivers\Pdo\ResultSetAdapter as PdoResultSetAdapter;
+use OpenRegion\SphinxQL\Exception\ResultSetException;
 
 class ResultSet implements ResultSetInterface
 {

@@ -1,6 +1,6 @@
 <?php
 
-namespace Foolz\SphinxQL\Drivers;
+namespace OpenRegion\SphinxQL\Drivers;
 
 interface MultiResultSetAdapterInterface
 {

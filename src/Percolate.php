@@ -1,9 +1,9 @@
 <?php
 
-namespace Foolz\SphinxQL;
+namespace OpenRegion\SphinxQL;
 
-use Foolz\SphinxQL\Drivers\ConnectionInterface;
-use Foolz\SphinxQL\Exception\SphinxQLException;
+use OpenRegion\SphinxQL\Drivers\ConnectionInterface;
+use OpenRegion\SphinxQL\Exception\SphinxQLException;
 
 /**
  * Query Builder class for Percolate Queries.

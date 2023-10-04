@@ -1,6 +1,6 @@
 <?php
 
-namespace Foolz\SphinxQL;
+namespace OpenRegion\SphinxQL;
 
 /**
  * Wraps expressions so they aren't quoted or modified

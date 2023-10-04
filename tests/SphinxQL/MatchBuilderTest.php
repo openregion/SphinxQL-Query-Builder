@@ -1,8 +1,8 @@
 <?php
 
-use Foolz\SphinxQL\MatchBuilder;
-use Foolz\SphinxQL\SphinxQL;
-use Foolz\SphinxQL\Tests\TestUtil;
+use OpenRegion\SphinxQL\MatchBuilder;
+use OpenRegion\SphinxQL\SphinxQL;
+use OpenRegion\SphinxQL\Tests\TestUtil;
 
 class MatchBuilderTest extends \PHPUnit\Framework\TestCase
 {
