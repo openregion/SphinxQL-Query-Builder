@@ -649,7 +649,7 @@ class SphinxQLTest extends \PHPUnit\Framework\TestCase
             ->compile()
             ->getCompiled();
 
-        $this->assertEquals('SELECT * FROM rt WHERE MATCH(\'\')', $result);
+        $this->assertEquals('SELECT * FROM `rt` WHERE MATCH(\'\')', $result);
     }
 
     public function testEscapeMatch()
@@ -719,7 +719,7 @@ class SphinxQLTest extends \PHPUnit\Framework\TestCase
             ->compile()
             ->getCompiled();
 
-        $this->assertEquals('SELECT * FROM rt OPTION comment = \'this should be quoted\'', $result);
+        $this->assertEquals('SELECT * FROM `rt` OPTION comment = \'this should be quoted\'', $result);
 
         $result = $this->createSphinxQL()
             ->select()
@@ -728,7 +728,7 @@ class SphinxQLTest extends \PHPUnit\Framework\TestCase
             ->compile()
             ->getCompiled();
 
-        $this->assertEquals('SELECT * FROM rt OPTION field_weights = (content=50)', $result);
+        $this->assertEquals('SELECT * FROM `rt` OPTION field_weights = (content=50)', $result);
 
         $result = $this->createSphinxQL()
             ->select()
@@ -741,7 +741,7 @@ class SphinxQLTest extends \PHPUnit\Framework\TestCase
             ->compile()
             ->getCompiled();
 
-        $this->assertEquals('SELECT * FROM rt OPTION field_weights = (title=80, content=35, tags=92)', $result);
+        $this->assertEquals('SELECT * FROM `rt` OPTION field_weights = (title=80, content=35, tags=92)', $result);
     }
 
     public function testGroupBy()
@@ -840,32 +840,32 @@ class SphinxQLTest extends \PHPUnit\Framework\TestCase
             ->from('rt')
             ->groupBy('gid');
         $this->assertEquals(
-            'SELECT * FROM rt GROUP BY gid',
+            'SELECT * FROM `rt` GROUP BY gid',
             $query->compile()->getCompiled()
         );
 
         $query->groupNBy(3);
         $this->assertEquals(
-            'SELECT * FROM rt GROUP 3 BY gid',
+            'SELECT * FROM `rt` GROUP 3 BY gid',
             $query->compile()->getCompiled()
         );
 
         $query->resetGroupBy();
         $this->assertEquals(
-            'SELECT * FROM rt',
+            'SELECT * FROM `rt`',
             $query->compile()->getCompiled()
         );
 
         $query->groupBy('gid');
         $this->assertEquals(
-            'SELECT * FROM rt GROUP BY gid',
+            'SELECT * FROM `rt` GROUP BY gid',
             $query->compile()->getCompiled()
         );
 
         $query->resetGroupBy()
             ->groupNBy(3);
         $this->assertEquals(
-            'SELECT * FROM rt',
+            'SELECT * FROM `rt`',
             $query->compile()->getCompiled()
         );
     }
@@ -1001,7 +1001,7 @@ class SphinxQLTest extends \PHPUnit\Framework\TestCase
             ->compile()
             ->getCompiled();
 
-        $this->assertEquals('SELECT * FROM rt', $result);
+        $this->assertEquals('SELECT * FROM `rt`', $result);
     }
 
     /**
@@ -1061,7 +1061,7 @@ class SphinxQLTest extends \PHPUnit\Framework\TestCase
             })
             ->orderBy('id', 'ASC');
         $this->assertEquals(
-            'SELECT * FROM (SELECT id FROM rt ORDER BY id DESC) ORDER BY id ASC',
+            'SELECT * FROM (SELECT id FROM `rt` ORDER BY id DESC) ORDER BY id ASC',
             $query->compile()->getCompiled()
         );
         $result = $query
@@ -1080,11 +1080,11 @@ class SphinxQLTest extends \PHPUnit\Framework\TestCase
             ->from($subquery)
             ->orderBy('id', 'ASC');
         $this->assertEquals(
-            'SELECT id FROM rt ORDER BY id DESC',
+            'SELECT id FROM `rt` ORDER BY id DESC',
             $subquery->compile()->getCompiled()
         );
         $this->assertEquals(
-            'SELECT * FROM (SELECT id FROM rt ORDER BY id DESC) ORDER BY id ASC',
+            'SELECT * FROM (SELECT id FROM `rt` ORDER BY id DESC) ORDER BY id ASC',
             $query->compile()->getCompiled()
         );
         $result = $subquery
@@ -1208,7 +1208,7 @@ class SphinxQLTest extends \PHPUnit\Framework\TestCase
             ->from('strlen')
             ->orderBy('id', 'ASC');
         $this->assertEquals(
-            'SELECT * FROM strlen ORDER BY id ASC',
+            'SELECT * FROM `strlen` ORDER BY id ASC',
             $query->compile()->getCompiled()
         );
 
@@ -1217,7 +1217,7 @@ class SphinxQLTest extends \PHPUnit\Framework\TestCase
             ->from('rt')
             ->match('strlen', 'value');
         $this->assertEquals(
-            "SELECT * FROM rt WHERE MATCH('(@strlen value)')",
+            "SELECT * FROM `rt` WHERE MATCH('(@strlen value)')",
             $query->compile()->getCompiled()
         );
     }
