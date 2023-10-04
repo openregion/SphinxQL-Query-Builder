@@ -44,6 +44,26 @@ interface ConnectionInterface
     public function escape($value);
 
     /**
+     * Adds backtick quotes to the identifier.
+     *
+     * @param string $identifier Identifier string
+     *
+     * @return string Quoted identifier string
+     */
+    public function quoteIdentifier(string $identifier): string;
+
+    /**
+     * Calls $this->quoteIdentifier() on every element of the array passed.
+     *
+     * @param array $array The array of elements to quote
+     *
+     * @return array The array of quotes elements
+     * @throws DatabaseException
+     * @throws ConnectionException
+     */
+    public function quoteIdentifierArray(array $array = array()): array;
+
+    /**
      * Adds quotes around values when necessary.
      *
      * @param Expression|string|null|bool|array|int|float $value The input string, eventually wrapped in an expression
