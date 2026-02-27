@@ -41,12 +41,10 @@ jobs:
       - name: Install system dependencies
         run: |
           sudo apt-get update
-          ODBC_PKG="libodbc1"
-          if ! apt-cache show libodbc1 >/dev/null 2>&1; then
-            ODBC_PKG="libodbc2"
+          if ! sudo apt-get install -y --no-install-recommends libodbc1; then
+            sudo apt-get install -y --no-install-recommends libodbc2
           fi
           sudo apt-get install -y --no-install-recommends \
-            "$ODBC_PKG" \
             gcc \
             g++ \
             make \
