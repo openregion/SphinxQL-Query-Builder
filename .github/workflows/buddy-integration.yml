@@ -1,0 +1,80 @@
+name: Buddy Integration
+
+on:
+  workflow_dispatch:
+
+jobs:
+  buddy-runtime:
+    name: Buddy runtime smoke (manual)
+    runs-on: ubuntu-22.04
+    timeout-minutes: 20
+    permissions:
+      contents: read
+      packages: read
+    env:
+      SEARCH_BUILD: MANTICORE
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: "8.3"
+          coverage: none
+          extensions: mysqli, pdo_mysql, mbstring
+          tools: composer:v2
+
+      - name: Start Manticore with Buddy extras
+        run: |
+          docker pull manticoresearch/manticore:latest
+          docker run -d --name searchd \
+            -e EXTRA=1 \
+            -p 9307:9306 \
+            -p 9312:9312 \
+            manticoresearch/manticore:latest
+
+      - name: Wait for searchd
+        run: |
+          n=0
+          while [ "$n" -lt 60 ]; do
+            if (echo > /dev/tcp/127.0.0.1/9307) >/dev/null 2>&1; then
+              exit 0
+            fi
+            n=$((n + 1))
+            sleep 1
+          done
+          echo "searchd did not become ready on 127.0.0.1:9307"
+          docker logs searchd || true
+          exit 1
+
+      - name: Seed runtime test table
+        run: |
+          cat > /tmp/seed-buddy-rt.php <<'PHP'
+          <?php
+          $pdo = new PDO('mysql:host=127.0.0.1;port=9307', '', '');
+          $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+          $pdo->exec('CREATE TABLE IF NOT EXISTS rt(title text, content text, gid uint)');
+          $pdo->exec('TRUNCATE TABLE rt');
+          $pdo->exec("REPLACE INTO rt(id, title, content, gid) VALUES (1, 'test', 'teh words', 1)");
+          PHP
+          php /tmp/seed-buddy-rt.php
+
+      - name: Install dependencies
+        run: composer install --prefer-dist --no-interaction --no-progress
+
+      - name: Run Buddy-specific runtime tests (must not skip)
+        run: |
+          ./vendor/bin/phpunit \
+            --configuration tests/travis/pdo.phpunit.xml \
+            --filter '/(testQSuggestExecutionWhenBuddySupported|testAutocompleteExecutionWhenBuddySupported)/' \
+            --fail-on-skipped
+
+      - name: Show searchd logs
+        if: always()
+        run: docker logs searchd || true
+
+      - name: Stop searchd container
+        if: always()
+        run: docker rm -f searchd || true
