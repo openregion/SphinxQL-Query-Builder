@@ -491,10 +491,10 @@ $result = (new SphinxQL($this->conn))
 * `(new Helper($conn))->showDatabases() => 'SHOW DATABASES'`
 * `(new Helper($conn))->showCharacterSet() => 'SHOW CHARACTER SET'`
 * `(new Helper($conn))->showCollation() => 'SHOW COLLATION'`
-* `(new Helper($conn))->showTables() => 'SHOW TABLES'`
+* `(new Helper($conn))->showTables($index) => 'SHOW TABLES LIKE <quoted index>'`
 * `(new Helper($conn))->showVariables() => 'SHOW VARIABLES'`
 * `(new Helper($conn))->showCreateTable($table)`
-* `(new Helper($conn))->showTableStatus($table = null)`
+* `(new Helper($conn))->showTableStatus($table = null) => 'SHOW TABLE STATUS' or 'SHOW TABLE <table> STATUS'`
 * `(new Helper($conn))->showTableSettings($table)`
 * `(new Helper($conn))->showTableIndexes($table)`
 * `(new Helper($conn))->showQueries()`
@@ -517,6 +517,15 @@ $result = (new SphinxQL($this->conn))
 * `(new Helper($conn))->flushLogs()`
 * `(new Helper($conn))->reloadPlugins()`
 * `(new Helper($conn))->kill($queryId)`
+
+Suggest-family option contract and capability behavior:
+
+* `callSuggest()`, `callQSuggest()`, and `callAutocomplete()` accept `$options` as an associative array.
+* Option keys must be non-empty strings. Each option is compiled as `<quoted_value> AS <key>`.
+* Option values are quoted by the active connection (`quote()`/`quoteArr()`), covering scalar values, `null`, `Expression`, and arrays.
+* Repository-tested option keys are `limit` (numeric) and `fuzzy` (numeric, `callAutocomplete()`).
+* `callQSuggest()` and `callAutocomplete()` are feature-gated and throw `UnsupportedFeatureException` when unavailable.
+* `callSuggest()` is runtime-conditional by backend support; use `$helper->supports('call_suggest')` for portable flows.
 
 ### Percolate
  The `Percolate` class provides methods for the "Percolate query" feature of Manticore Search.

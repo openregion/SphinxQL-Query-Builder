@@ -256,6 +256,9 @@ class HelperTest extends \PHPUnit\Framework\TestCase
         $query = $this->createHelper()->showIndexStatus('rt');
         $this->assertEquals('SHOW INDEX rt STATUS', $query->compile()->getCompiled());
 
+        $query = $this->createHelper()->showIndexStatusLike('rt', 'index_type');
+        $this->assertEquals("SHOW INDEX rt STATUS LIKE 'index_type'", $query->compile()->getCompiled());
+
         $query = $this->createHelper()->flushRamchunk('rt');
         $this->assertEquals('FLUSH RAMCHUNK rt', $query->compile()->getCompiled());
 
@@ -298,11 +301,20 @@ class HelperTest extends \PHPUnit\Framework\TestCase
         $query = $this->createHelper()->showTableStatus('rt');
         $this->assertEquals('SHOW TABLE rt STATUS', $query->compile()->getCompiled());
 
+        $query = $this->createHelper()->showTableStatusLike('rt', '%');
+        $this->assertEquals("SHOW TABLE rt STATUS LIKE '%'", $query->compile()->getCompiled());
+
         $query = $this->createHelper()->showTableSettings('rt');
         $this->assertEquals('SHOW TABLE rt SETTINGS', $query->compile()->getCompiled());
 
+        $query = $this->createHelper()->showTableSettingsLike('rt', '%');
+        $this->assertEquals("SHOW TABLE rt SETTINGS LIKE '%'", $query->compile()->getCompiled());
+
         $query = $this->createHelper()->showTableIndexes('rt');
         $this->assertEquals('SHOW TABLE rt INDEXES', $query->compile()->getCompiled());
+
+        $query = $this->createHelper()->showTableIndexesLike('rt', '%');
+        $this->assertEquals("SHOW TABLE rt INDEXES LIKE '%'", $query->compile()->getCompiled());
 
         $query = $this->createHelper()->showQueries();
         $this->assertEquals('SHOW QUERIES', $query->compile()->getCompiled());
@@ -322,17 +334,49 @@ class HelperTest extends \PHPUnit\Framework\TestCase
         $query = $this->createHelper()->kill(123);
         $this->assertEquals('KILL 123', $query->compile()->getCompiled());
 
-        $query = $this->createHelper()->callSuggest('teh', 'rt', array('limit' => 5));
-        $this->assertEquals("CALL SUGGEST('teh', 'rt', 5 AS limit)", $query->compile()->getCompiled());
+        $query = $this->createHelper()->callSuggest(
+            'teh',
+            'rt',
+            array(
+                'limit' => '5',
+                'result_stats' => true,
+                'search_mode' => 'WORDS',
+            )
+        );
+        $this->assertEquals(
+            "CALL SUGGEST('teh', 'rt', 5 AS limit, 1 AS result_stats, 'words' AS search_mode)",
+            $query->compile()->getCompiled()
+        );
 
         if ($this->createHelper()->supports('call_qsuggest')) {
-            $query = $this->createHelper()->callQSuggest('teh', 'rt', array('limit' => 3));
-            $this->assertEquals("CALL QSUGGEST('teh', 'rt', 3 AS limit)", $query->compile()->getCompiled());
+            $query = $this->createHelper()->callQSuggest(
+                'teh',
+                'rt',
+                array(
+                    'limit' => 3,
+                    'result_line' => false,
+                )
+            );
+            $this->assertEquals(
+                "CALL QSUGGEST('teh', 'rt', 3 AS limit, 0 AS result_line)",
+                $query->compile()->getCompiled()
+            );
         }
 
         if ($this->createHelper()->supports('call_autocomplete')) {
-            $query = $this->createHelper()->callAutocomplete('te', 'rt', array('fuzzy' => 1));
-            $this->assertEquals("CALL AUTOCOMPLETE('te', 'rt', 1 AS fuzzy)", $query->compile()->getCompiled());
+            $query = $this->createHelper()->callAutocomplete(
+                'te',
+                'rt',
+                array(
+                    'fuzzy' => 1,
+                    'append' => true,
+                    'preserve' => false,
+                )
+            );
+            $this->assertEquals(
+                "CALL AUTOCOMPLETE('te', 'rt', 1 AS fuzzy, 1 AS append, 0 AS preserve)",
+                $query->compile()->getCompiled()
+            );
         }
     }
 
@@ -365,6 +409,44 @@ class HelperTest extends \PHPUnit\Framework\TestCase
         }
 
         $this->assertTrue($found);
+    }
+
+    public function testShowIndexStatusLikeExecutionWhenSupported()
+    {
+        if (!TestUtil::supportsCommand($this->conn, "SHOW INDEX rt STATUS LIKE 'index_type'")) {
+            $this->markTestSkipped('SHOW INDEX ... STATUS LIKE is not supported by this engine.');
+        }
+
+        $statusRows = $this->createHelper()->showIndexStatusLike('rt', 'index_type')->execute()->getStored();
+        $this->assertNotEmpty($statusRows);
+        $this->assertSame('index_type', (string) ($statusRows[0]['Variable_name'] ?? ''));
+    }
+
+    public function testShowTableLikeVariantsExecutionWhenSupported()
+    {
+        $executed = 0;
+
+        if (TestUtil::supportsCommand($this->conn, "SHOW TABLE rt STATUS LIKE '%'")) {
+            $rows = $this->createHelper()->showTableStatusLike('rt', '%')->execute()->getStored();
+            $this->assertIsArray($rows);
+            $executed++;
+        }
+
+        if (TestUtil::supportsCommand($this->conn, "SHOW TABLE rt SETTINGS LIKE '%'")) {
+            $rows = $this->createHelper()->showTableSettingsLike('rt', '%')->execute()->getStored();
+            $this->assertIsArray($rows);
+            $executed++;
+        }
+
+        if (TestUtil::supportsCommand($this->conn, "SHOW TABLE rt INDEXES LIKE '%'")) {
+            $rows = $this->createHelper()->showTableIndexesLike('rt', '%')->execute()->getStored();
+            $this->assertIsArray($rows);
+            $executed++;
+        }
+
+        if ($executed === 0) {
+            $this->markTestSkipped('SHOW TABLE ... LIKE variants are not supported by this engine.');
+        }
     }
 
     public function testFlushAndOptimizeExecution()
@@ -430,6 +512,46 @@ class HelperTest extends \PHPUnit\Framework\TestCase
         $this->createHelper()->callSuggest('teh', 'rt', array('' => 1));
     }
 
+    public function testSuggestUnknownOptionValidation()
+    {
+        $this->expectException(Foolz\SphinxQL\Exception\SphinxQLException::class);
+        $this->expectExceptionMessage('unknown option "unknown_key"');
+        $this->createHelper()->callSuggest('teh', 'rt', array('unknown_key' => 1));
+    }
+
+    public function testSuggestOptionTypeValidation()
+    {
+        $this->expectException(Foolz\SphinxQL\Exception\SphinxQLException::class);
+        $this->expectExceptionMessage('option "result_stats" must be boolean');
+        $this->createHelper()->callSuggest('teh', 'rt', array('result_stats' => 2));
+    }
+
+    public function testSuggestOptionEnumValidation()
+    {
+        $this->expectException(Foolz\SphinxQL\Exception\SphinxQLException::class);
+        $this->expectExceptionMessage('option "search_mode" must be one of: phrase, words.');
+        $this->createHelper()->callSuggest('teh', 'rt', array('search_mode' => 'invalid'));
+    }
+
+    public function testSuggestOptionRangeValidation()
+    {
+        $this->expectException(Foolz\SphinxQL\Exception\SphinxQLException::class);
+        $this->expectExceptionMessage('option "limit" must be >= 0.');
+        $this->createHelper()->callSuggest('teh', 'rt', array('limit' => -1));
+    }
+
+    public function testAutocompleteOptionValidationWhenSupported()
+    {
+        $helper = $this->createHelper();
+        if (!$helper->supports('call_autocomplete')) {
+            $this->markTestSkipped('CALL AUTOCOMPLETE is not supported by this engine.');
+        }
+
+        $this->expectException(Foolz\SphinxQL\Exception\SphinxQLException::class);
+        $this->expectExceptionMessage('options "fuzzy" and "fuzziness" cannot be used together');
+        $helper->callAutocomplete('te', 'rt', array('fuzzy' => 1, 'fuzziness' => 2));
+    }
+
     public function testCapabilitiesAndSupports()
     {
         $caps = $this->createHelper()->getCapabilities();
@@ -461,6 +583,9 @@ class HelperTest extends \PHPUnit\Framework\TestCase
         }
 
         $this->expectException(Foolz\SphinxQL\Exception\UnsupportedFeatureException::class);
+        $this->expectExceptionMessageMatches(
+            '/^testRequireSupportValidation\(\) requires feature "call_qsuggest" \(engine=[A-Z0-9_]+, version=.*\)\.$/'
+        );
         $helper->requireSupport('call_qsuggest', 'testRequireSupportValidation()');
     }
 
@@ -518,6 +643,9 @@ class HelperTest extends \PHPUnit\Framework\TestCase
     {
         if (!$this->createHelper()->supports('call_qsuggest')) {
             $this->expectException(Foolz\SphinxQL\Exception\UnsupportedFeatureException::class);
+            $this->expectExceptionMessageMatches(
+                '/^callQSuggest\(\) requires feature "call_qsuggest" \(engine=[A-Z0-9_]+, version=.*\)\.$/'
+            );
             $this->createHelper()->callQSuggest('teh', 'rt');
 
             return;
@@ -535,6 +663,9 @@ class HelperTest extends \PHPUnit\Framework\TestCase
     {
         if (!$this->createHelper()->supports('call_autocomplete')) {
             $this->expectException(Foolz\SphinxQL\Exception\UnsupportedFeatureException::class);
+            $this->expectExceptionMessageMatches(
+                '/^callAutocomplete\(\) requires feature "call_autocomplete" \(engine=[A-Z0-9_]+, version=.*\)\.$/'
+            );
             $this->createHelper()->callAutocomplete('te', 'rt');
 
             return;

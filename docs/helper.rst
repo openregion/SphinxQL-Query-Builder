@@ -63,11 +63,35 @@ Available Methods
 - ``supports($feature)``
 - ``requireSupport($feature, $context = '')``
 
+Filtered SHOW Wrappers
+----------------------
+
+- ``showTables($index)`` compiles to ``SHOW TABLES LIKE <quoted index>``.
+- ``showTableStatus($table = null)`` compiles to:
+
+  - ``SHOW TABLE STATUS`` when ``$table`` is ``null``
+  - ``SHOW TABLE <table> STATUS`` when ``$table`` is a non-empty string
+
+Suggest-Family Option Contract
+------------------------------
+
+For ``callSuggest()``, ``callQSuggest()``, and ``callAutocomplete()``:
+
+- ``$options`` must be an associative array.
+- Option keys must be non-empty strings; each option is compiled as
+  ``<quoted_value> AS <key>``.
+- Option values are quoted via the active connection driver
+  (``quote()``/``quoteArr()``), which supports scalar values, ``null``,
+  ``Expression``, and arrays.
+- Repository-tested option keys are ``limit`` (numeric) and ``fuzzy``
+  (numeric, autocomplete).
+
 Validation Notes
 ----------------
 
 In 4.0, helper methods validate required identifiers and input shapes and throw
 ``SphinxQLException`` on invalid arguments.
 
-Feature-gated helper methods may throw ``UnsupportedFeatureException`` when the
-current engine/runtime does not support that command family.
+``callQSuggest()`` and ``callAutocomplete()`` are feature-gated and may throw
+``UnsupportedFeatureException`` when unsupported. ``callSuggest()`` is not
+pre-gated; use ``supports('call_suggest')`` when runtime portability is needed.

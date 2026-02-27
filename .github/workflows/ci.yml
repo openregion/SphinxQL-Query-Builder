@@ -27,16 +27,27 @@ jobs:
     env:
       DRIVER: ${{ matrix.driver }}
       SEARCH_BUILD: ${{ matrix.search_build }}
+      COVERAGE_LANE: ${{ matrix.php == '8.3' && matrix.driver == 'pdo' && matrix.search_build == 'MANTICORE' }}
 
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
       - name: Setup PHP
+        if: env.COVERAGE_LANE != 'true'
         uses: shivammathur/setup-php@v2
         with:
           php-version: ${{ matrix.php }}
           coverage: none
+          extensions: mysqli, pdo_mysql, mbstring
+          tools: composer:v2
+
+      - name: Setup PHP (coverage lane)
+        if: env.COVERAGE_LANE == 'true'
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php }}
+          coverage: xdebug
           extensions: mysqli, pdo_mysql, mbstring
           tools: composer:v2
 
@@ -111,7 +122,72 @@ jobs:
 
       - name: Run tests
         run: |
-          ./vendor/bin/phpunit --configuration "tests/travis/${DRIVER}.phpunit.xml" --coverage-text ${{ steps.vars.outputs.exclude_group }}
+          if [ "${COVERAGE_LANE}" = "true" ]; then
+            mkdir -p coverage
+            ./vendor/bin/phpunit --configuration "tests/travis/${DRIVER}.phpunit.xml" --coverage-text --coverage-clover coverage/clover.xml ${{ steps.vars.outputs.exclude_group }}
+          else
+            ./vendor/bin/phpunit --configuration "tests/travis/${DRIVER}.phpunit.xml" --coverage-text ${{ steps.vars.outputs.exclude_group }}
+          fi
+
+      - name: Build changed-line coverage artifact
+        if: always() && env.COVERAGE_LANE == 'true'
+        continue-on-error: true
+        run: |
+          mkdir -p coverage-artifact
+
+          BASE_SHA=""
+          BASE_LABEL=""
+
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            BASE_SHA="${{ github.event.pull_request.base.sha }}"
+            BASE_LABEL="PR base (${BASE_SHA})"
+            git fetch --no-tags --depth=1 origin "${BASE_SHA}" || true
+          else
+            BASE_SHA="${{ github.event.before }}"
+            if [ -z "${BASE_SHA}" ] || [ "${BASE_SHA}" = "0000000000000000000000000000000000000000" ]; then
+              git fetch --no-tags --depth=2 origin master || true
+              BASE_SHA="origin/master~1"
+              BASE_LABEL="fallback (${BASE_SHA})"
+            else
+              BASE_LABEL="push before (${BASE_SHA})"
+              git fetch --no-tags --depth=1 origin "${BASE_SHA}" || true
+            fi
+          fi
+
+          git diff --unified=0 "${BASE_SHA}"...HEAD > coverage-artifact/changed-lines.patch || true
+          git diff --name-only "${BASE_SHA}"...HEAD > coverage-artifact/changed-files.txt || true
+
+          ADDED_LINES="$(git diff --numstat "${BASE_SHA}"...HEAD | awk '{a+=$1} END {print a+0}')"
+          REMOVED_LINES="$(git diff --numstat "${BASE_SHA}"...HEAD | awk '{d+=$2} END {print d+0}')"
+          CHANGED_FILES="$(wc -l < coverage-artifact/changed-files.txt | tr -d ' ')"
+
+          {
+            echo "Changed-line coverage artifact summary"
+            echo "Event: ${{ github.event_name }}"
+            echo "Base: ${BASE_LABEL}"
+            echo "Head: $(git rev-parse HEAD)"
+            echo "Changed files: ${CHANGED_FILES}"
+            echo "Added lines: ${ADDED_LINES}"
+            echo "Removed lines: ${REMOVED_LINES}"
+            if [ -f coverage/clover.xml ]; then
+              echo "Clover XML: coverage/clover.xml"
+            else
+              echo "Clover XML: missing"
+            fi
+          } > coverage-artifact/summary.txt
+
+      - name: Upload changed-line coverage artifact
+        if: always() && env.COVERAGE_LANE == 'true'
+        continue-on-error: true
+        uses: actions/upload-artifact@v4
+        with:
+          name: changed-line-coverage-php${{ matrix.php }}-${{ matrix.driver }}-${{ matrix.search_build }}
+          if-no-files-found: warn
+          path: |
+            coverage/clover.xml
+            coverage-artifact/summary.txt
+            coverage-artifact/changed-lines.patch
+            coverage-artifact/changed-files.txt
 
       - name: Upload debug artifacts on failure
         if: failure()

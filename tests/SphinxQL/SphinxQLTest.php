@@ -1401,6 +1401,9 @@ class SphinxQLTest extends \PHPUnit\Framework\TestCase
         }
 
         $this->expectException(Foolz\SphinxQL\Exception\UnsupportedFeatureException::class);
+        $this->expectExceptionMessageMatches(
+            '/^requires feature "call_qsuggest" \(engine=[A-Z0-9_]+, version=.*\)\.$/'
+        );
         $query->requireSupport('call_qsuggest');
     }
 

@@ -397,6 +397,22 @@ class Helper
     }
 
     /**
+     * Runs query: SHOW TABLE STATUS LIKE
+     *
+     * @param string $table
+     * @param string $pattern
+     *
+     * @return SphinxQL
+     */
+    public function showTableStatusLike($table, $pattern)
+    {
+        $this->assertNonEmptyString($table, 'showTableStatusLike() table');
+        $this->assertNonEmptyString($pattern, 'showTableStatusLike() pattern');
+
+        return $this->query('SHOW TABLE '.$table.' STATUS LIKE '.$this->connection->quote($pattern));
+    }
+
+    /**
      * Runs query: SHOW TABLE SETTINGS
      *
      * @param string $table
@@ -411,6 +427,22 @@ class Helper
     }
 
     /**
+     * Runs query: SHOW TABLE SETTINGS LIKE
+     *
+     * @param string $table
+     * @param string $pattern
+     *
+     * @return SphinxQL
+     */
+    public function showTableSettingsLike($table, $pattern)
+    {
+        $this->assertNonEmptyString($table, 'showTableSettingsLike() table');
+        $this->assertNonEmptyString($pattern, 'showTableSettingsLike() pattern');
+
+        return $this->query('SHOW TABLE '.$table.' SETTINGS LIKE '.$this->connection->quote($pattern));
+    }
+
+    /**
      * Runs query: SHOW TABLE INDEXES
      *
      * @param string $table
@@ -422,6 +454,22 @@ class Helper
         $this->assertNonEmptyString($table, 'showTableIndexes() table');
 
         return $this->query('SHOW TABLE '.$table.' INDEXES');
+    }
+
+    /**
+     * Runs query: SHOW TABLE INDEXES LIKE
+     *
+     * @param string $table
+     * @param string $pattern
+     *
+     * @return SphinxQL
+     */
+    public function showTableIndexesLike($table, $pattern)
+    {
+        $this->assertNonEmptyString($table, 'showTableIndexesLike() table');
+        $this->assertNonEmptyString($pattern, 'showTableIndexesLike() pattern');
+
+        return $this->query('SHOW TABLE '.$table.' INDEXES LIKE '.$this->connection->quote($pattern));
     }
 
     /**
@@ -581,7 +629,11 @@ class Helper
         $this->assertNonEmptyString($text, 'callQSuggest() text');
         $this->assertNonEmptyString($index, 'callQSuggest() index');
 
-        return $this->query($this->buildCallWithOptions('QSUGGEST', array($text, $index), $options));
+        return $this->query($this->buildCallWithOptions(
+            'QSUGGEST',
+            array($text, $index),
+            $this->normalizeCallOptions('callQSuggest()', 'QSUGGEST', $options)
+        ));
     }
 
     /**
@@ -598,7 +650,11 @@ class Helper
         $this->assertNonEmptyString($text, 'callSuggest() text');
         $this->assertNonEmptyString($index, 'callSuggest() index');
 
-        return $this->query($this->buildCallWithOptions('SUGGEST', array($text, $index), $options));
+        return $this->query($this->buildCallWithOptions(
+            'SUGGEST',
+            array($text, $index),
+            $this->normalizeCallOptions('callSuggest()', 'SUGGEST', $options)
+        ));
     }
 
     /**
@@ -616,7 +672,11 @@ class Helper
         $this->assertNonEmptyString($text, 'callAutocomplete() text');
         $this->assertNonEmptyString($index, 'callAutocomplete() index');
 
-        return $this->query($this->buildCallWithOptions('AUTOCOMPLETE', array($text, $index), $options));
+        return $this->query($this->buildCallWithOptions(
+            'AUTOCOMPLETE',
+            array($text, $index),
+            $this->normalizeCallOptions('callAutocomplete()', 'AUTOCOMPLETE', $options)
+        ));
     }
 
     /**
@@ -746,6 +806,22 @@ class Helper
     }
 
     /**
+     * SHOW INDEX STATUS LIKE syntax
+     *
+     * @param string $index
+     * @param string $pattern
+     *
+     * @return SphinxQL
+     */
+    public function showIndexStatusLike($index, $pattern)
+    {
+        $this->assertNonEmptyString($index, 'showIndexStatusLike() index');
+        $this->assertNonEmptyString($pattern, 'showIndexStatusLike() pattern');
+
+        return $this->query('SHOW INDEX '.$index.' STATUS LIKE '.$this->connection->quote($pattern));
+    }
+
+    /**
      * FLUSH RAMCHUNK syntax
      *
      * @param $index
@@ -826,6 +902,210 @@ class Helper
         if (!is_string($value) || trim($value) === '') {
             throw new SphinxQLException($field.' must be a non-empty string.');
         }
+    }
+
+    /**
+     * @param string $methodName
+     * @param string $callName
+     * @param array  $options
+     *
+     * @return array
+     */
+    private function normalizeCallOptions($methodName, $callName, array $options)
+    {
+        $schema = $this->getCallOptionSchema($callName);
+
+        if ($callName === 'AUTOCOMPLETE'
+            && array_key_exists('fuzzy', $options)
+            && array_key_exists('fuzziness', $options)
+        ) {
+            throw new SphinxQLException($methodName.' options "fuzzy" and "fuzziness" cannot be used together.');
+        }
+
+        $normalized = array();
+        foreach ($options as $key => $value) {
+            if (!is_string($key) || trim($key) === '') {
+                throw new SphinxQLException($methodName.' options must have non-empty string keys.');
+            }
+
+            if (!array_key_exists($key, $schema)) {
+                throw new SphinxQLException(
+                    $methodName.' unknown option "'.$key.'". Allowed options: '.implode(', ', array_keys($schema)).'.'
+                );
+            }
+
+            $rule = $schema[$key];
+            if ($rule['type'] === 'bool') {
+                $normalized[$key] = $this->normalizeBooleanOption($methodName, $key, $value);
+                continue;
+            }
+
+            if ($rule['type'] === 'int') {
+                $normalized[$key] = $this->normalizeIntegerOption(
+                    $methodName,
+                    $key,
+                    $value,
+                    $rule['min'] ?? null,
+                    $rule['max'] ?? null
+                );
+                continue;
+            }
+
+            if ($rule['type'] === 'string') {
+                $normalized[$key] = $this->normalizeStringOption(
+                    $methodName,
+                    $key,
+                    $value,
+                    $rule['allow_empty'] ?? false
+                );
+                continue;
+            }
+
+            if ($rule['type'] === 'enum_string') {
+                $normalized[$key] = $this->normalizeEnumStringOption(
+                    $methodName,
+                    $key,
+                    $value,
+                    $rule['allowed']
+                );
+                continue;
+            }
+        }
+
+        return $normalized;
+    }
+
+    /**
+     * @param string $callName
+     *
+     * @return array<string,array<string,mixed>>
+     */
+    private function getCallOptionSchema($callName)
+    {
+        if ($callName === 'SUGGEST' || $callName === 'QSUGGEST') {
+            return array(
+                'limit' => array('type' => 'int', 'min' => 0),
+                'max_edits' => array('type' => 'int', 'min' => 0),
+                'result_stats' => array('type' => 'bool'),
+                'delta_len' => array('type' => 'int', 'min' => 0),
+                'max_matches' => array('type' => 'int', 'min' => 0),
+                'reject' => array('type' => 'bool'),
+                'result_line' => array('type' => 'bool'),
+                'non_char' => array('type' => 'bool'),
+                'sentence' => array('type' => 'bool'),
+                'force_bigrams' => array('type' => 'bool'),
+                'search_mode' => array('type' => 'enum_string', 'allowed' => array('phrase', 'words')),
+            );
+        }
+
+        if ($callName === 'AUTOCOMPLETE') {
+            return array(
+                'layouts' => array('type' => 'string', 'allow_empty' => true),
+                'fuzzy' => array('type' => 'int', 'min' => 0, 'max' => 2),
+                'fuzziness' => array('type' => 'int', 'min' => 0, 'max' => 2),
+                'prepend' => array('type' => 'bool'),
+                'append' => array('type' => 'bool'),
+                'preserve' => array('type' => 'bool'),
+                'expansion_len' => array('type' => 'int', 'min' => 0),
+                'force_bigrams' => array('type' => 'bool'),
+            );
+        }
+
+        throw new SphinxQLException('Unknown CALL option schema for "'.$callName.'".');
+    }
+
+    /**
+     * @param string $methodName
+     * @param string $option
+     * @param mixed  $value
+     *
+     * @return int
+     */
+    private function normalizeBooleanOption($methodName, $option, $value)
+    {
+        if (is_bool($value)) {
+            return $value ? 1 : 0;
+        }
+
+        if (in_array($value, array(0, 1, '0', '1'), true)) {
+            return (int) $value;
+        }
+
+        throw new SphinxQLException(
+            $methodName.' option "'.$option.'" must be boolean (true/false) or 0/1.'
+        );
+    }
+
+    /**
+     * @param string   $methodName
+     * @param string   $option
+     * @param mixed    $value
+     * @param int|null $min
+     * @param int|null $max
+     *
+     * @return int
+     */
+    private function normalizeIntegerOption($methodName, $option, $value, $min = null, $max = null)
+    {
+        $normalized = filter_var($value, FILTER_VALIDATE_INT);
+        if ($normalized === false) {
+            throw new SphinxQLException($methodName.' option "'.$option.'" must be an integer.');
+        }
+
+        $normalized = (int) $normalized;
+        if ($min !== null && $normalized < $min) {
+            throw new SphinxQLException($methodName.' option "'.$option.'" must be >= '.$min.'.');
+        }
+        if ($max !== null && $normalized > $max) {
+            throw new SphinxQLException($methodName.' option "'.$option.'" must be <= '.$max.'.');
+        }
+
+        return $normalized;
+    }
+
+    /**
+     * @param string $methodName
+     * @param string $option
+     * @param mixed  $value
+     * @param bool   $allowEmpty
+     *
+     * @return string
+     */
+    private function normalizeStringOption($methodName, $option, $value, $allowEmpty = false)
+    {
+        if (!is_string($value)) {
+            throw new SphinxQLException($methodName.' option "'.$option.'" must be a string.');
+        }
+
+        if (!$allowEmpty && trim($value) === '') {
+            throw new SphinxQLException($methodName.' option "'.$option.'" cannot be empty.');
+        }
+
+        return $value;
+    }
+
+    /**
+     * @param string $methodName
+     * @param string $option
+     * @param mixed  $value
+     * @param array  $allowed
+     *
+     * @return string
+     */
+    private function normalizeEnumStringOption($methodName, $option, $value, array $allowed)
+    {
+        if (!is_string($value) || trim($value) === '') {
+            throw new SphinxQLException($methodName.' option "'.$option.'" must be a non-empty string.');
+        }
+
+        $normalized = strtolower(trim($value));
+        if (!in_array($normalized, $allowed, true)) {
+            throw new SphinxQLException(
+                $methodName.' option "'.$option.'" must be one of: '.implode(', ', $allowed).'.'
+            );
+        }
+
+        return $normalized;
     }
 
     /**

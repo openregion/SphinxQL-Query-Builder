@@ -42,6 +42,8 @@ helper:
     sphinx2: supported
     sphinx3: supported
     manticore: supported
+    notes:
+      - "showTables($index) compiles to SHOW TABLES LIKE <quoted index>; index must be a non-empty string."
   diagnostic_show:
     api: ["showProfile", "showPlan", "showThreads", "showPlugins", "showQueries"]
     sphinx2: conditional
@@ -52,6 +54,8 @@ helper:
     sphinx2: conditional
     sphinx3: conditional
     manticore: conditional
+    notes:
+      - "showTableStatus() supports an optional filter: null => SHOW TABLE STATUS, non-empty table => SHOW TABLE <table> STATUS."
   maintenance:
     api:
       - "flushRtIndex"
@@ -74,6 +78,9 @@ helper:
     manticore: conditional
     notes:
       - "callQSuggest/callAutocomplete are feature-gated and throw UnsupportedFeatureException when unavailable."
+      - "callSuggest options, callQSuggest options, and callAutocomplete options require non-empty string keys (compiled as '<value> AS <key>')."
+      - "Option values are quoted through the active connection driver; value types follow connection quote()/quoteArr() behavior."
+      - "Repository-tested option keys: limit (numeric) for suggest/qsuggest, fuzzy (numeric) for autocomplete."
 
 capabilities:
   api: ["Helper.getCapabilities", "Helper.supports", "Helper.requireSupport", "SphinxQL.getCapabilities", "SphinxQL.supports"]
