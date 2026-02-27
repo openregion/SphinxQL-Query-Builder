@@ -4,3 +4,4 @@ tests/searchd.pid
 tests/data/rt.*
 tests/data/test_udf.so
 vendor/
+.phpstan/
