@@ -8,6 +8,7 @@
 * Expanded helper runtime API coverage (`SHOW WARNINGS`, `SHOW STATUS`, `SHOW INDEX STATUS`, `FLUSH RAMCHUNK`, `FLUSH RTINDEX`, `OPTIMIZE INDEX`, UDF lifecycle checks)
 * Added fluent boolean grouping APIs (`orWhere`, `whereOpen/whereClose`, `orHaving`, `havingOpen/havingClose`) and JOIN builders (`join`, `innerJoin`, `leftJoin`, `rightJoin`, `crossJoin`)
 * Added `orderByKnn()` and broader helper wrappers for operational and Manticore-oriented commands (`SHOW PROFILE/PLAN/THREADS/VERSION/PLUGINS`, table status/settings/indexes, flush/reload/kill, suggest family)
+* Added capability discovery and feature-gating APIs (`Capabilities`, `getCapabilities()`, `supports()`, `requireSupport()`) with `UnsupportedFeatureException` for unsupported command families
 * Added capability-aware runtime tests for optional engine features (`supportsCommand`, Buddy-gated checks)
 * Added and stabilized Sphinx 3 compatibility coverage while preserving Sphinx 2 and Manticore test behavior
 * Migrated CI to GitHub Actions-only validation with strict composer metadata checks

@@ -57,9 +57,15 @@ Available Methods
 - ``flushLogs()``
 - ``reloadPlugins()``
 - ``kill($queryId)``
+- ``getCapabilities()``
+- ``supports($feature)``
+- ``requireSupport($feature, $context = '')``
 
 Validation Notes
 ----------------
 
 In 4.0, helper methods validate required identifiers and input shapes and throw
 ``SphinxQLException`` on invalid arguments.
+
+Feature-gated helper methods may throw ``UnsupportedFeatureException`` when the
+current engine/runtime does not support that command family.

@@ -39,6 +39,17 @@ class SphinxQLTest extends \PHPUnit\Framework\TestCase
         (new SphinxQL(self::$conn))->getConnection()->query('TRUNCATE RTINDEX rt');
     }
 
+    public static function tearDownAfterClass(): void
+    {
+        if (self::$conn) {
+            try {
+                self::$conn->close();
+            } catch (\Exception $exception) {
+                // no-op in test teardown
+            }
+        }
+    }
+
     /**
      * @return SphinxQL
      */
@@ -1368,5 +1379,21 @@ class SphinxQLTest extends \PHPUnit\Framework\TestCase
             ->getCompiled();
 
         $this->assertSame('SELECT * FROM rt a', $compiled);
+    }
+
+    public function testSphinxQLCapabilitiesAccess()
+    {
+        $query = $this->createSphinxQL();
+        $capabilities = $query->getCapabilities();
+
+        $this->assertInstanceOf(Foolz\SphinxQL\Capabilities::class, $capabilities);
+        $this->assertNotEmpty($capabilities->getEngine());
+        $this->assertTrue($query->supports('grouped_where'));
+    }
+
+    public function testSphinxQLSupportsUnknownFeatureValidation()
+    {
+        $this->expectException(Foolz\SphinxQL\Exception\SphinxQLException::class);
+        $this->createSphinxQL()->supports('totally_unknown_feature');
     }
 }

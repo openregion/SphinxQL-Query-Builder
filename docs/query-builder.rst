@@ -83,3 +83,11 @@ JOIN and KNN Ordering
 Vector-oriented ordering is available through:
 
 - ``orderByKnn($field, $k, array $vector, $direction = 'ASC')``
+
+Capability Introspection
+------------------------
+
+``SphinxQL`` exposes runtime capability helpers for connection-aware behavior:
+
+- ``getCapabilities()``
+- ``supports($feature)``

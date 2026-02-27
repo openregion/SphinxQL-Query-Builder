@@ -4,6 +4,7 @@ namespace Foolz\SphinxQL;
 
 use Foolz\SphinxQL\Drivers\ConnectionInterface;
 use Foolz\SphinxQL\Exception\SphinxQLException;
+use Foolz\SphinxQL\Exception\UnsupportedFeatureException;
 
 /**
  * SQL queries that don't require "query building"
@@ -15,6 +16,16 @@ class Helper
      * @var ConnectionInterface
      */
     protected $connection;
+
+    /**
+     * @var Capabilities|null
+     */
+    protected $capabilities;
+
+    /**
+     * @var array<string,bool>
+     */
+    protected $feature_support_cache = array();
 
     /**
      * @param ConnectionInterface $connection
@@ -197,6 +208,136 @@ class Helper
     public function showVariables()
     {
         return $this->query('SHOW VARIABLES');
+    }
+
+    /**
+     * Returns detected runtime capabilities.
+     *
+     * @return Capabilities
+     */
+    public function getCapabilities()
+    {
+        if ($this->capabilities !== null) {
+            return $this->capabilities;
+        }
+
+        $version = $this->detectVersionString();
+        $engine = $this->detectEngine($version);
+
+        $features = array(
+            // Builder-level features are available in this library regardless of backend.
+            'grouped_where' => true,
+            'grouped_having' => true,
+            'joins' => true,
+            'order_by_knn_builder' => true,
+
+            // Engine/runtime-facing features.
+            'manticore' => ($engine === 'MANTICORE'),
+            'sphinx2' => ($engine === 'SPHINX2'),
+            'sphinx3' => ($engine === 'SPHINX3'),
+            'buddy' => ($engine === 'MANTICORE' && $this->supportsCommand('SHOW VERSION')),
+            'call_qsuggest' => ($engine === 'MANTICORE'),
+            'call_autocomplete' => ($engine === 'MANTICORE'),
+        );
+
+        $this->feature_support_cache = $features;
+        $this->capabilities = new Capabilities($engine, $version, $features);
+
+        return $this->capabilities;
+    }
+
+    /**
+     * Checks whether a named feature is supported.
+     *
+     * @param string $feature
+     *
+     * @return bool
+     * @throws SphinxQLException
+     */
+    public function supports($feature)
+    {
+        if (!is_string($feature) || trim($feature) === '') {
+            throw new SphinxQLException('supports() feature must be a non-empty string.');
+        }
+
+        $normalized = $this->normalizeFeatureName($feature);
+        $known = array(
+            'grouped_where',
+            'grouped_having',
+            'joins',
+            'order_by_knn_builder',
+            'manticore',
+            'sphinx2',
+            'sphinx3',
+            'buddy',
+            'show_profile',
+            'show_plan',
+            'show_threads',
+            'show_plugins',
+            'show_queries',
+            'show_table_settings',
+            'show_table_indexes',
+            'call_suggest',
+            'call_qsuggest',
+            'call_autocomplete',
+        );
+
+        if (!in_array($normalized, $known, true)) {
+            throw new SphinxQLException('Unknown feature "'.$feature.'".');
+        }
+
+        if (!array_key_exists($normalized, $this->feature_support_cache)) {
+            $this->getCapabilities();
+        }
+
+        if (!array_key_exists($normalized, $this->feature_support_cache)) {
+            $probes = array(
+                'show_profile' => 'SHOW PROFILE',
+                'show_plan' => 'SHOW PLAN',
+                'show_threads' => 'SHOW THREADS',
+                'show_plugins' => 'SHOW PLUGINS',
+                'show_queries' => 'SHOW QUERIES',
+                'show_table_settings' => 'SHOW TABLE rt SETTINGS',
+                'show_table_indexes' => 'SHOW TABLE rt INDEXES',
+                'call_suggest' => "CALL SUGGEST('teh', 'rt')",
+            );
+
+            if (array_key_exists($normalized, $probes)) {
+                $this->feature_support_cache[$normalized] = $this->supportsCommand($probes[$normalized]);
+            } else {
+                $this->feature_support_cache[$normalized] = false;
+            }
+
+            $this->capabilities = new Capabilities(
+                $this->capabilities->getEngine(),
+                $this->capabilities->getVersion(),
+                $this->feature_support_cache
+            );
+        }
+
+        return !empty($this->feature_support_cache[$normalized]);
+    }
+
+    /**
+     * Throws when a named feature is not supported.
+     *
+     * @param string $feature
+     * @param string $context
+     *
+     * @return self
+     * @throws UnsupportedFeatureException
+     */
+    public function requireSupport($feature, $context = '')
+    {
+        if (!$this->supports($feature)) {
+            $caps = $this->getCapabilities();
+            $prefix = $context !== '' ? $context.' ' : '';
+            throw new UnsupportedFeatureException(
+                $prefix.'requires feature "'.$feature.'" (engine='.$caps->getEngine().', version='.$caps->getVersion().').'
+            );
+        }
+
+        return $this;
     }
 
     /**
@@ -412,6 +553,7 @@ class Helper
      */
     public function callQSuggest($text, $index, array $options = array())
     {
+        $this->requireSupport('call_qsuggest', 'callQSuggest()');
         $this->assertNonEmptyString($text, 'callQSuggest() text');
         $this->assertNonEmptyString($index, 'callQSuggest() index');
 
@@ -446,6 +588,7 @@ class Helper
      */
     public function callAutocomplete($text, $index, array $options = array())
     {
+        $this->requireSupport('call_autocomplete', 'callAutocomplete()');
         $this->assertNonEmptyString($text, 'callAutocomplete() text');
         $this->assertNonEmptyString($index, 'callAutocomplete() index');
 
@@ -687,5 +830,71 @@ class Helper
         $args = implode(', ', array_merge($quoted, $optionValues));
 
         return 'CALL '.$callName.'('.$args.')';
+    }
+
+    /**
+     * @return string
+     */
+    private function detectVersionString()
+    {
+        try {
+            $rows = $this->connection->query('SELECT VERSION()')->getStored();
+            $firstRow = isset($rows[0]) ? $rows[0] : array();
+
+            return (string) reset($firstRow);
+        } catch (\Exception $exception) {
+            return 'unknown';
+        }
+    }
+
+    /**
+     * @param string $version
+     *
+     * @return string
+     */
+    private function detectEngine($version)
+    {
+        $versionLower = strtolower((string) $version);
+
+        if (strpos($versionLower, 'manticore') !== false) {
+            return 'MANTICORE';
+        }
+        if (preg_match('/^3\./', (string) $version) || strpos($versionLower, 'sphinx 3') !== false) {
+            return 'SPHINX3';
+        }
+        if (preg_match('/^2\./', (string) $version) || strpos($versionLower, 'sphinx') !== false) {
+            return 'SPHINX2';
+        }
+
+        return 'UNKNOWN';
+    }
+
+    /**
+     * @param string $feature
+     *
+     * @return string
+     */
+    private function normalizeFeatureName($feature)
+    {
+        $normalized = strtolower(trim($feature));
+        $normalized = str_replace(array('-', ' '), '_', $normalized);
+
+        return $normalized;
+    }
+
+    /**
+     * @param string $sqlProbe
+     *
+     * @return bool
+     */
+    private function supportsCommand($sqlProbe)
+    {
+        try {
+            $this->connection->query($sqlProbe)->getStored();
+
+            return true;
+        } catch (\Exception $exception) {
+            return false;
+        }
     }
 }

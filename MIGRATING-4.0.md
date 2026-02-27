@@ -43,6 +43,8 @@ Helper methods now validate required identifiers and argument shapes:
 - `setVariable()` validates variable names and array values
 - `callSnippets()` and `callKeywords()` validate required arguments
 - `createFunction()` validates return type (`INT`, `UINT`, `BIGINT`, `FLOAT`, `STRING`)
+- capability-aware APIs are available via `getCapabilities()`/`supports()`
+- feature-gated methods may throw `UnsupportedFeatureException` when unsupported
 
 ### Percolate strict validation
 
@@ -67,3 +69,4 @@ message fragments or exception classes.
 2. Replace implicit coercions with explicit typing/casting in your app layer.
 3. Prefer exception-class checks over exact message equality.
 4. Run your integration tests against your target engine (`Sphinx2`, `Sphinx3`, `Manticore`).
+5. Prefer `supports($feature)` checks before engine-specific helper calls.

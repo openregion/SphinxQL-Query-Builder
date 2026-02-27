@@ -21,6 +21,17 @@ class HelperTest extends \PHPUnit\Framework\TestCase
         $this->createSphinxQL()->query('TRUNCATE RTINDEX rt')->execute();
     }
 
+    protected function tearDown(): void
+    {
+        if ($this->conn) {
+            try {
+                $this->conn->close();
+            } catch (\Exception $exception) {
+                // no-op in test teardown
+            }
+        }
+    }
+
     /**
      * @return SphinxQL
      */
@@ -308,11 +319,15 @@ class HelperTest extends \PHPUnit\Framework\TestCase
         $query = $this->createHelper()->callSuggest('teh', 'rt', array('limit' => 5));
         $this->assertEquals("CALL SUGGEST('teh', 'rt', 5 AS limit)", $query->compile()->getCompiled());
 
-        $query = $this->createHelper()->callQSuggest('teh', 'rt', array('limit' => 3));
-        $this->assertEquals("CALL QSUGGEST('teh', 'rt', 3 AS limit)", $query->compile()->getCompiled());
+        if ($this->createHelper()->supports('call_qsuggest')) {
+            $query = $this->createHelper()->callQSuggest('teh', 'rt', array('limit' => 3));
+            $this->assertEquals("CALL QSUGGEST('teh', 'rt', 3 AS limit)", $query->compile()->getCompiled());
+        }
 
-        $query = $this->createHelper()->callAutocomplete('te', 'rt', array('fuzzy' => 1));
-        $this->assertEquals("CALL AUTOCOMPLETE('te', 'rt', 1 AS fuzzy)", $query->compile()->getCompiled());
+        if ($this->createHelper()->supports('call_autocomplete')) {
+            $query = $this->createHelper()->callAutocomplete('te', 'rt', array('fuzzy' => 1));
+            $this->assertEquals("CALL AUTOCOMPLETE('te', 'rt', 1 AS fuzzy)", $query->compile()->getCompiled());
+        }
     }
 
     public function testShowWarningsAndStatusExecution()
@@ -409,6 +424,35 @@ class HelperTest extends \PHPUnit\Framework\TestCase
         $this->createHelper()->callSuggest('teh', 'rt', array('' => 1));
     }
 
+    public function testCapabilitiesAndSupports()
+    {
+        $caps = $this->createHelper()->getCapabilities();
+
+        $this->assertInstanceOf(Foolz\SphinxQL\Capabilities::class, $caps);
+        $this->assertNotEmpty($caps->getEngine());
+        $this->assertTrue($this->createHelper()->supports('grouped_where'));
+        $this->assertIsBool($this->createHelper()->supports('show_profile'));
+    }
+
+    public function testSupportsUnknownFeatureValidation()
+    {
+        $this->expectException(Foolz\SphinxQL\Exception\SphinxQLException::class);
+        $this->createHelper()->supports('definitely_not_a_real_feature');
+    }
+
+    public function testRequireSupportValidation()
+    {
+        $helper = $this->createHelper();
+        if ($helper->supports('call_qsuggest')) {
+            $this->assertSame($helper, $helper->requireSupport('call_qsuggest'));
+
+            return;
+        }
+
+        $this->expectException(Foolz\SphinxQL\Exception\UnsupportedFeatureException::class);
+        $helper->requireSupport('call_qsuggest', 'testRequireSupportValidation()');
+    }
+
     public function testShowVersionExecutionWhenSupported()
     {
         if (!TestUtil::supportsCommand($this->conn, 'SHOW VERSION')) {
@@ -441,8 +485,15 @@ class HelperTest extends \PHPUnit\Framework\TestCase
 
     public function testQSuggestExecutionWhenBuddySupported()
     {
+        if (!$this->createHelper()->supports('call_qsuggest')) {
+            $this->expectException(Foolz\SphinxQL\Exception\UnsupportedFeatureException::class);
+            $this->createHelper()->callQSuggest('teh', 'rt');
+
+            return;
+        }
+
         if (!TestUtil::supportsBuddy($this->conn) || !TestUtil::supportsCommand($this->conn, "CALL QSUGGEST('teh', 'rt')")) {
-            $this->markTestSkipped('CALL QSUGGEST requires Manticore Buddy support.');
+            $this->markTestSkipped('CALL QSUGGEST runtime requires Manticore Buddy support.');
         }
 
         $rows = $this->createHelper()->callQSuggest('teh', 'rt')->execute()->getStored();
@@ -451,8 +502,15 @@ class HelperTest extends \PHPUnit\Framework\TestCase
 
     public function testAutocompleteExecutionWhenBuddySupported()
     {
+        if (!$this->createHelper()->supports('call_autocomplete')) {
+            $this->expectException(Foolz\SphinxQL\Exception\UnsupportedFeatureException::class);
+            $this->createHelper()->callAutocomplete('te', 'rt');
+
+            return;
+        }
+
         if (!TestUtil::supportsBuddy($this->conn) || !TestUtil::supportsCommand($this->conn, "CALL AUTOCOMPLETE('te', 'rt')")) {
-            $this->markTestSkipped('CALL AUTOCOMPLETE requires Manticore Buddy support.');
+            $this->markTestSkipped('CALL AUTOCOMPLETE runtime requires Manticore Buddy support.');
         }
 
         $rows = $this->createHelper()->callAutocomplete('te', 'rt')->execute()->getStored();

@@ -440,6 +440,18 @@ Remember to `->execute()` to get a result.
 
 	Takes the pairs from a SHOW command and returns an associative array key=>value
 
+* __$helper->getCapabilities()__
+
+	Returns a `Capabilities` object with detected engine/version and feature flags.
+
+* __$helper->supports($feature)__
+
+	Checks whether a named feature is supported by the current backend/runtime.
+
+* __$helper->requireSupport($feature, $context = '')__
+
+	Throws `UnsupportedFeatureException` when the requested feature is not available.
+
 The following methods return a prepared `SphinxQL` object. You can also use `->enqueue($next_object)`:
 
 ```php

@@ -263,6 +263,38 @@ class SphinxQL
     }
 
     /**
+     * Returns detected runtime capabilities for the current connection.
+     *
+     * @return Capabilities
+     * @throws SphinxQLException
+     */
+    public function getCapabilities()
+    {
+        if ($this->connection === null) {
+            throw new SphinxQLException('getCapabilities() requires an attached connection.');
+        }
+
+        return (new Helper($this->connection))->getCapabilities();
+    }
+
+    /**
+     * Checks whether a named feature is supported.
+     *
+     * @param string $feature
+     *
+     * @return bool
+     * @throws SphinxQLException
+     */
+    public function supports($feature)
+    {
+        if ($this->connection === null) {
+            throw new SphinxQLException('supports() requires an attached connection.');
+        }
+
+        return (new Helper($this->connection))->supports($feature);
+    }
+
+    /**
      * Avoids having the expressions escaped
      *
      * Examples:
