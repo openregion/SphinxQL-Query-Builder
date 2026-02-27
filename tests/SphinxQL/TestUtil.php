@@ -34,6 +34,47 @@ class TestUtil
     }
 
     /**
+     * @param ConnectionInterface|null $connection
+     *
+     * @return bool
+     */
+    public static function isManticore(ConnectionInterface $connection = null)
+    {
+        return self::getSearchBuild($connection) === 'MANTICORE';
+    }
+
+    /**
+     * @param ConnectionInterface $connection
+     * @param string              $sqlProbe
+     *
+     * @return bool
+     */
+    public static function supportsCommand(ConnectionInterface $connection, $sqlProbe)
+    {
+        try {
+            $connection->query($sqlProbe)->getStored();
+
+            return true;
+        } catch (\Exception $exception) {
+            return false;
+        }
+    }
+
+    /**
+     * @param ConnectionInterface $connection
+     *
+     * @return bool
+     */
+    public static function supportsBuddy(ConnectionInterface $connection)
+    {
+        if (!self::isManticore($connection)) {
+            return false;
+        }
+
+        return self::supportsCommand($connection, 'SHOW VERSION');
+    }
+
+    /**
      * @param array $rows
      * @param array $columns
      *

@@ -247,6 +247,72 @@ class HelperTest extends \PHPUnit\Framework\TestCase
 
         $query = $this->createHelper()->flushRamchunk('rt');
         $this->assertEquals('FLUSH RAMCHUNK rt', $query->compile()->getCompiled());
+
+        $query = $this->createHelper()->showProfile();
+        $this->assertEquals('SHOW PROFILE', $query->compile()->getCompiled());
+
+        $query = $this->createHelper()->showPlan();
+        $this->assertEquals('SHOW PLAN', $query->compile()->getCompiled());
+
+        $query = $this->createHelper()->showThreads();
+        $this->assertEquals('SHOW THREADS', $query->compile()->getCompiled());
+
+        $query = $this->createHelper()->showVersion();
+        $this->assertEquals('SHOW VERSION', $query->compile()->getCompiled());
+
+        $query = $this->createHelper()->showPlugins();
+        $this->assertEquals('SHOW PLUGINS', $query->compile()->getCompiled());
+
+        $query = $this->createHelper()->showAgentStatus();
+        $this->assertEquals('SHOW AGENT STATUS', $query->compile()->getCompiled());
+
+        $query = $this->createHelper()->showScroll();
+        $this->assertEquals('SHOW SCROLL', $query->compile()->getCompiled());
+
+        $query = $this->createHelper()->showDatabases();
+        $this->assertEquals('SHOW DATABASES', $query->compile()->getCompiled());
+
+        $query = $this->createHelper()->showCreateTable('rt');
+        $this->assertEquals('SHOW CREATE TABLE rt', $query->compile()->getCompiled());
+
+        $query = $this->createHelper()->showTableStatus();
+        $this->assertEquals('SHOW TABLE STATUS', $query->compile()->getCompiled());
+
+        $query = $this->createHelper()->showTableStatus('rt');
+        $this->assertEquals('SHOW TABLE rt STATUS', $query->compile()->getCompiled());
+
+        $query = $this->createHelper()->showTableSettings('rt');
+        $this->assertEquals('SHOW TABLE rt SETTINGS', $query->compile()->getCompiled());
+
+        $query = $this->createHelper()->showTableIndexes('rt');
+        $this->assertEquals('SHOW TABLE rt INDEXES', $query->compile()->getCompiled());
+
+        $query = $this->createHelper()->showQueries();
+        $this->assertEquals('SHOW QUERIES', $query->compile()->getCompiled());
+
+        $query = $this->createHelper()->flushAttributes();
+        $this->assertEquals('FLUSH ATTRIBUTES', $query->compile()->getCompiled());
+
+        $query = $this->createHelper()->flushHostnames();
+        $this->assertEquals('FLUSH HOSTNAMES', $query->compile()->getCompiled());
+
+        $query = $this->createHelper()->flushLogs();
+        $this->assertEquals('FLUSH LOGS', $query->compile()->getCompiled());
+
+        $query = $this->createHelper()->reloadPlugins();
+        $this->assertEquals('RELOAD PLUGINS', $query->compile()->getCompiled());
+
+        $query = $this->createHelper()->kill(123);
+        $this->assertEquals('KILL 123', $query->compile()->getCompiled());
+
+        $query = $this->createHelper()->callSuggest('teh', 'rt', array('limit' => 5));
+        $this->assertEquals("CALL SUGGEST('teh', 'rt', 5 AS limit)", $query->compile()->getCompiled());
+
+        $query = $this->createHelper()->callQSuggest('teh', 'rt', array('limit' => 3));
+        $this->assertEquals("CALL QSUGGEST('teh', 'rt', 3 AS limit)", $query->compile()->getCompiled());
+
+        $query = $this->createHelper()->callAutocomplete('te', 'rt', array('fuzzy' => 1));
+        $this->assertEquals("CALL AUTOCOMPLETE('te', 'rt', 1 AS fuzzy)", $query->compile()->getCompiled());
     }
 
     public function testShowWarningsAndStatusExecution()
@@ -323,5 +389,73 @@ class HelperTest extends \PHPUnit\Framework\TestCase
     {
         $this->expectException(Foolz\SphinxQL\Exception\SphinxQLException::class);
         $this->createHelper()->createFunction('my_udf', 'INVALID', 'test_udf.so');
+    }
+
+    public function testNewHelperValidation()
+    {
+        $this->expectException(Foolz\SphinxQL\Exception\SphinxQLException::class);
+        $this->createHelper()->showCreateTable('');
+    }
+
+    public function testKillValidation()
+    {
+        $this->expectException(Foolz\SphinxQL\Exception\SphinxQLException::class);
+        $this->createHelper()->kill(0);
+    }
+
+    public function testSuggestOptionValidation()
+    {
+        $this->expectException(Foolz\SphinxQL\Exception\SphinxQLException::class);
+        $this->createHelper()->callSuggest('teh', 'rt', array('' => 1));
+    }
+
+    public function testShowVersionExecutionWhenSupported()
+    {
+        if (!TestUtil::supportsCommand($this->conn, 'SHOW VERSION')) {
+            $this->markTestSkipped('SHOW VERSION is not supported by this engine.');
+        }
+
+        $rows = $this->createHelper()->showVersion()->execute()->getStored();
+        $this->assertNotEmpty($rows);
+    }
+
+    public function testShowPluginsExecutionWhenSupported()
+    {
+        if (!TestUtil::supportsCommand($this->conn, 'SHOW PLUGINS')) {
+            $this->markTestSkipped('SHOW PLUGINS is not supported by this engine.');
+        }
+
+        $rows = $this->createHelper()->showPlugins()->execute()->getStored();
+        $this->assertIsArray($rows);
+    }
+
+    public function testSuggestExecutionWhenSupported()
+    {
+        if (!TestUtil::supportsCommand($this->conn, "CALL SUGGEST('teh', 'rt')")) {
+            $this->markTestSkipped('CALL SUGGEST is not supported by this engine.');
+        }
+
+        $rows = $this->createHelper()->callSuggest('teh', 'rt')->execute()->getStored();
+        $this->assertIsArray($rows);
+    }
+
+    public function testQSuggestExecutionWhenBuddySupported()
+    {
+        if (!TestUtil::supportsBuddy($this->conn) || !TestUtil::supportsCommand($this->conn, "CALL QSUGGEST('teh', 'rt')")) {
+            $this->markTestSkipped('CALL QSUGGEST requires Manticore Buddy support.');
+        }
+
+        $rows = $this->createHelper()->callQSuggest('teh', 'rt')->execute()->getStored();
+        $this->assertIsArray($rows);
+    }
+
+    public function testAutocompleteExecutionWhenBuddySupported()
+    {
+        if (!TestUtil::supportsBuddy($this->conn) || !TestUtil::supportsCommand($this->conn, "CALL AUTOCOMPLETE('te', 'rt')")) {
+            $this->markTestSkipped('CALL AUTOCOMPLETE requires Manticore Buddy support.');
+        }
+
+        $rows = $this->createHelper()->callAutocomplete('te', 'rt')->execute()->getStored();
+        $this->assertIsArray($rows);
     }
 }

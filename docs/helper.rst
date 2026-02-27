@@ -22,11 +22,27 @@ Available Methods
 - ``showMeta()``
 - ``showWarnings()``
 - ``showStatus()``
+- ``showProfile()``
+- ``showPlan()``
+- ``showThreads()``
+- ``showVersion()``
+- ``showPlugins()``
+- ``showAgentStatus()``
+- ``showScroll()``
+- ``showDatabases()``
 - ``showTables($index)``
 - ``showVariables()``
+- ``showCreateTable($table)``
+- ``showTableStatus($table = null)``
+- ``showTableSettings($table)``
+- ``showTableIndexes($table)``
+- ``showQueries()``
 - ``setVariable($name, $value, $global = false)``
 - ``callSnippets($data, $index, $query, array $options = array())``
 - ``callKeywords($text, $index, $hits = null)``
+- ``callSuggest($text, $index, array $options = array())``
+- ``callQSuggest($text, $index, array $options = array())``
+- ``callAutocomplete($text, $index, array $options = array())``
 - ``describe($index)``
 - ``createFunction($udfName, $returns, $soName)``
 - ``dropFunction($udfName)``
@@ -36,6 +52,11 @@ Available Methods
 - ``optimizeIndex($index)``
 - ``showIndexStatus($index)``
 - ``flushRamchunk($index)``
+- ``flushAttributes()``
+- ``flushHostnames()``
+- ``flushLogs()``
+- ``reloadPlugins()``
+- ``kill($queryId)``
 
 Validation Notes
 ----------------

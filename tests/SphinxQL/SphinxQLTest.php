@@ -1243,4 +1243,130 @@ class SphinxQLTest extends \PHPUnit\Framework\TestCase
         $this->expectException(\InvalidArgumentException::class);
         $this->createSphinxQL()->setQueuePrev('not-a-query');
     }
+
+    public function testOrWhereAndGroupingCompilation()
+    {
+        $compiled = $this->createSphinxQL()
+            ->select()
+            ->from('rt')
+            ->where('gid', 200)
+            ->orWhereOpen()
+            ->where('gid', 304)
+            ->where('id', '>', 12)
+            ->whereClose()
+            ->compile()
+            ->getCompiled();
+
+        $this->assertSame(
+            'SELECT * FROM rt WHERE gid = 200 OR ( gid = 304 AND id > 12 )',
+            $compiled
+        );
+    }
+
+    public function testOrHavingAndGroupingCompilation()
+    {
+        $compiled = $this->createSphinxQL()
+            ->select('gid')
+            ->from('rt')
+            ->groupBy('gid')
+            ->having('gid', '>', 100)
+            ->orHavingOpen()
+            ->having('gid', '<', 10)
+            ->having('gid', '>', 9000)
+            ->havingClose()
+            ->compile()
+            ->getCompiled();
+
+        $this->assertSame(
+            'SELECT gid FROM rt GROUP BY gid HAVING gid > 100 OR ( gid < 10 AND gid > 9000 )',
+            $compiled
+        );
+    }
+
+    public function testWhereGroupingValidation()
+    {
+        $this->expectException(Foolz\SphinxQL\Exception\SphinxQLException::class);
+        $this->createSphinxQL()
+            ->select()
+            ->from('rt')
+            ->whereClose()
+            ->compile();
+    }
+
+    public function testJoinCompilation()
+    {
+        $compiled = $this->createSphinxQL()
+            ->select('a.id')
+            ->from('rt a')
+            ->leftJoin('rt b', 'a.id', '=', 'b.id')
+            ->where('a.id', '>', 1)
+            ->compile()
+            ->getCompiled();
+
+        $this->assertSame(
+            'SELECT a.id FROM rt a LEFT JOIN rt b ON a.id = b.id WHERE a.id > 1',
+            $compiled
+        );
+    }
+
+    public function testCrossJoinCompilation()
+    {
+        $compiled = $this->createSphinxQL()
+            ->select('a.id')
+            ->from('rt a')
+            ->crossJoin('rt b')
+            ->compile()
+            ->getCompiled();
+
+        $this->assertSame(
+            'SELECT a.id FROM rt a CROSS JOIN rt b',
+            $compiled
+        );
+    }
+
+    public function testJoinValidation()
+    {
+        $this->expectException(Foolz\SphinxQL\Exception\SphinxQLException::class);
+        $this->createSphinxQL()
+            ->select()
+            ->from('rt')
+            ->join('rt2', 'rt.id', '=', 'rt2.id', 'diagonal');
+    }
+
+    public function testOrderByKnnCompilation()
+    {
+        $compiled = $this->createSphinxQL()
+            ->select('id')
+            ->from('rt')
+            ->orderByKnn('embeddings', 5, array(0.1, 0.2, 0.3))
+            ->compile()
+            ->getCompiled();
+
+        $this->assertSame(
+            'SELECT id FROM rt ORDER BY KNN(embeddings, 5, [0.1,0.2,0.3]) ASC',
+            $compiled
+        );
+    }
+
+    public function testOrderByKnnValidation()
+    {
+        $this->expectException(Foolz\SphinxQL\Exception\SphinxQLException::class);
+        $this->createSphinxQL()
+            ->select()
+            ->from('rt')
+            ->orderByKnn('embeddings', 0, array(0.1));
+    }
+
+    public function testResetJoins()
+    {
+        $compiled = $this->createSphinxQL()
+            ->select()
+            ->from('rt a')
+            ->join('rt b', 'a.id', '=', 'b.id')
+            ->resetJoins()
+            ->compile()
+            ->getCompiled();
+
+        $this->assertSame('SELECT * FROM rt a', $compiled);
+    }
 }

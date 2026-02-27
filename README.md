@@ -16,11 +16,11 @@ This Query Builder has no dependencies except PHP 8.2 or later, `\MySQLi` extens
 
 ### Missing methods?
 
-SphinxQL evolves very fast.
+SphinxQL and ManticoreQL evolve fast. This library provides fluent builders for
+core query composition and helper wrappers for common operational commands.
 
-Most of the new functions are static one liners like `SHOW PLUGINS`. We'll avoid trying to keep up with these methods, as they are easy to just call directly (`(new SphinxQL($conn))->query($sql)->execute()`). You're free to submit pull requests to support these methods.
-
-If any feature is unreachable through this library, open a new issue or send a pull request.
+If any feature is still unreachable through this library, open an issue or send
+a pull request.
 
 ## Code Quality
 
@@ -240,7 +240,8 @@ Will return an array with an `INT` as first member, the number of rows deleted.
     $sq->where('column', 'BETWEEN', array('value1', 'value2'));
 	```
 
-	_It should be noted that `OR` and parenthesis are not supported and implemented in the SphinxQL dialect yet._
+	You can compose grouped boolean filters with:
+	`orWhere()`, `whereOpen()`, `orWhereOpen()`, and `whereClose()`.
 
 #### MATCH
 
@@ -296,6 +297,18 @@ Will return an array with an `INT` as first member, the number of rows deleted.
 	`ORDER BY $column [$direction]`
 
 	Direction can be omitted with `null`, or be `ASC` or `DESC` case insensitive.
+
+* __$sq->orderByKnn($field, $k, array $vector, $direction = 'ASC')__
+
+	`ORDER BY KNN($field, $k, $vector) [$direction]`
+
+#### JOIN
+
+* __$sq->join($table, $left, $operator, $right, $type = 'INNER')__
+* __$sq->innerJoin($table, $left, $operator, $right)__
+* __$sq->leftJoin($table, $left, $operator, $right)__
+* __$sq->rightJoin($table, $left, $operator, $right)__
+* __$sq->crossJoin($table)__
 
 * __$sq->offset($offset)__
 
@@ -448,11 +461,27 @@ $result = (new SphinxQL($this->conn))
 * `(new Helper($conn))->showMeta() => 'SHOW META'`
 * `(new Helper($conn))->showWarnings() => 'SHOW WARNINGS'`
 * `(new Helper($conn))->showStatus() => 'SHOW STATUS'`
+* `(new Helper($conn))->showProfile() => 'SHOW PROFILE'`
+* `(new Helper($conn))->showPlan() => 'SHOW PLAN'`
+* `(new Helper($conn))->showThreads() => 'SHOW THREADS'`
+* `(new Helper($conn))->showVersion() => 'SHOW VERSION'`
+* `(new Helper($conn))->showPlugins() => 'SHOW PLUGINS'`
+* `(new Helper($conn))->showAgentStatus() => 'SHOW AGENT STATUS'`
+* `(new Helper($conn))->showScroll() => 'SHOW SCROLL'`
+* `(new Helper($conn))->showDatabases() => 'SHOW DATABASES'`
 * `(new Helper($conn))->showTables() => 'SHOW TABLES'`
 * `(new Helper($conn))->showVariables() => 'SHOW VARIABLES'`
+* `(new Helper($conn))->showCreateTable($table)`
+* `(new Helper($conn))->showTableStatus($table = null)`
+* `(new Helper($conn))->showTableSettings($table)`
+* `(new Helper($conn))->showTableIndexes($table)`
+* `(new Helper($conn))->showQueries()`
 * `(new Helper($conn))->setVariable($name, $value, $global = false)`
 * `(new Helper($conn))->callSnippets($data, $index, $query, $options = array())`
 * `(new Helper($conn))->callKeywords($text, $index, $hits = null)`
+* `(new Helper($conn))->callSuggest($text, $index, $options = array())`
+* `(new Helper($conn))->callQSuggest($text, $index, $options = array())`
+* `(new Helper($conn))->callAutocomplete($text, $index, $options = array())`
 * `(new Helper($conn))->describe($index)`
 * `(new Helper($conn))->createFunction($udf_name, $returns, $soname)`
 * `(new Helper($conn))->dropFunction($udf_name)`
@@ -461,6 +490,11 @@ $result = (new SphinxQL($this->conn))
 * `(new Helper($conn))->optimizeIndex($index)`
 * `(new Helper($conn))->showIndexStatus($index)`
 * `(new Helper($conn))->flushRamchunk($index)`
+* `(new Helper($conn))->flushAttributes()`
+* `(new Helper($conn))->flushHostnames()`
+* `(new Helper($conn))->flushLogs()`
+* `(new Helper($conn))->reloadPlugins()`
+* `(new Helper($conn))->kill($queryId)`
 
 ### Percolate
  The `Percolate` class provides methods for the "Percolate query" feature of Manticore Search.

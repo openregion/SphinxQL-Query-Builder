@@ -62,3 +62,24 @@ The builder now validates critical query-shape input and throws
 - negative ``limit()`` / ``offset()``
 - invalid shapes for ``IN`` and ``BETWEEN`` filters
 - invalid ``facet()`` object type
+
+Boolean Grouping and OR Filters
+-------------------------------
+
+The builder supports grouped boolean filters for ``WHERE`` and ``HAVING``:
+
+- ``orWhere()``
+- ``whereOpen()`` / ``orWhereOpen()`` / ``whereClose()``
+- ``orHaving()``
+- ``havingOpen()`` / ``orHavingOpen()`` / ``havingClose()``
+
+JOIN and KNN Ordering
+---------------------
+
+``SELECT`` queries support fluent joins:
+
+- ``join()``, ``innerJoin()``, ``leftJoin()``, ``rightJoin()``, ``crossJoin()``
+
+Vector-oriented ordering is available through:
+
+- ``orderByKnn($field, $k, array $vector, $direction = 'ASC')``

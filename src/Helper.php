@@ -96,6 +96,86 @@ class Helper
     }
 
     /**
+     * Runs query: SHOW PROFILE
+     *
+     * @return SphinxQL
+     */
+    public function showProfile()
+    {
+        return $this->query('SHOW PROFILE');
+    }
+
+    /**
+     * Runs query: SHOW PLAN
+     *
+     * @return SphinxQL
+     */
+    public function showPlan()
+    {
+        return $this->query('SHOW PLAN');
+    }
+
+    /**
+     * Runs query: SHOW THREADS
+     *
+     * @return SphinxQL
+     */
+    public function showThreads()
+    {
+        return $this->query('SHOW THREADS');
+    }
+
+    /**
+     * Runs query: SHOW VERSION
+     *
+     * @return SphinxQL
+     */
+    public function showVersion()
+    {
+        return $this->query('SHOW VERSION');
+    }
+
+    /**
+     * Runs query: SHOW PLUGINS
+     *
+     * @return SphinxQL
+     */
+    public function showPlugins()
+    {
+        return $this->query('SHOW PLUGINS');
+    }
+
+    /**
+     * Runs query: SHOW AGENT STATUS
+     *
+     * @return SphinxQL
+     */
+    public function showAgentStatus()
+    {
+        return $this->query('SHOW AGENT STATUS');
+    }
+
+    /**
+     * Runs query: SHOW SCROLL
+     *
+     * @return SphinxQL
+     */
+    public function showScroll()
+    {
+        return $this->query('SHOW SCROLL');
+    }
+
+    /**
+     * Runs query: SHOW DATABASES
+     *
+     * @return SphinxQL
+     */
+    public function showDatabases()
+    {
+        return $this->query('SHOW DATABASES');
+    }
+
+    /**
      * Runs query: SHOW TABLES
      *
      * @return SphinxQL A SphinxQL object ready to be ->execute();
@@ -117,6 +197,76 @@ class Helper
     public function showVariables()
     {
         return $this->query('SHOW VARIABLES');
+    }
+
+    /**
+     * Runs query: SHOW CREATE TABLE
+     *
+     * @param string $table
+     *
+     * @return SphinxQL
+     */
+    public function showCreateTable($table)
+    {
+        $this->assertNonEmptyString($table, 'showCreateTable() table');
+
+        return $this->query('SHOW CREATE TABLE '.$table);
+    }
+
+    /**
+     * Runs query: SHOW TABLE STATUS
+     *
+     * @param string|null $table
+     *
+     * @return SphinxQL
+     */
+    public function showTableStatus($table = null)
+    {
+        if ($table === null) {
+            return $this->query('SHOW TABLE STATUS');
+        }
+
+        $this->assertNonEmptyString($table, 'showTableStatus() table');
+
+        return $this->query('SHOW TABLE '.$table.' STATUS');
+    }
+
+    /**
+     * Runs query: SHOW TABLE SETTINGS
+     *
+     * @param string $table
+     *
+     * @return SphinxQL
+     */
+    public function showTableSettings($table)
+    {
+        $this->assertNonEmptyString($table, 'showTableSettings() table');
+
+        return $this->query('SHOW TABLE '.$table.' SETTINGS');
+    }
+
+    /**
+     * Runs query: SHOW TABLE INDEXES
+     *
+     * @param string $table
+     *
+     * @return SphinxQL
+     */
+    public function showTableIndexes($table)
+    {
+        $this->assertNonEmptyString($table, 'showTableIndexes() table');
+
+        return $this->query('SHOW TABLE '.$table.' INDEXES');
+    }
+
+    /**
+     * Runs query: SHOW QUERIES
+     *
+     * @return SphinxQL
+     */
+    public function showQueries()
+    {
+        return $this->query('SHOW QUERIES');
     }
 
     /**
@@ -249,6 +399,57 @@ class Helper
         }
 
         return $this->query('CALL KEYWORDS('.implode(', ', $this->connection->quoteArr($arr)).')');
+    }
+
+    /**
+     * CALL QSUGGEST syntax (Manticore Buddy)
+     *
+     * @param string $text
+     * @param string $index
+     * @param array  $options
+     *
+     * @return SphinxQL
+     */
+    public function callQSuggest($text, $index, array $options = array())
+    {
+        $this->assertNonEmptyString($text, 'callQSuggest() text');
+        $this->assertNonEmptyString($index, 'callQSuggest() index');
+
+        return $this->query($this->buildCallWithOptions('QSUGGEST', array($text, $index), $options));
+    }
+
+    /**
+     * CALL SUGGEST syntax
+     *
+     * @param string $text
+     * @param string $index
+     * @param array  $options
+     *
+     * @return SphinxQL
+     */
+    public function callSuggest($text, $index, array $options = array())
+    {
+        $this->assertNonEmptyString($text, 'callSuggest() text');
+        $this->assertNonEmptyString($index, 'callSuggest() index');
+
+        return $this->query($this->buildCallWithOptions('SUGGEST', array($text, $index), $options));
+    }
+
+    /**
+     * CALL AUTOCOMPLETE syntax (Manticore Buddy)
+     *
+     * @param string $text
+     * @param string $index
+     * @param array  $options
+     *
+     * @return SphinxQL
+     */
+    public function callAutocomplete($text, $index, array $options = array())
+    {
+        $this->assertNonEmptyString($text, 'callAutocomplete() text');
+        $this->assertNonEmptyString($index, 'callAutocomplete() index');
+
+        return $this->query($this->buildCallWithOptions('AUTOCOMPLETE', array($text, $index), $options));
     }
 
     /**
@@ -392,6 +593,62 @@ class Helper
     }
 
     /**
+     * FLUSH ATTRIBUTES syntax.
+     *
+     * @return SphinxQL
+     */
+    public function flushAttributes()
+    {
+        return $this->query('FLUSH ATTRIBUTES');
+    }
+
+    /**
+     * FLUSH HOSTNAMES syntax.
+     *
+     * @return SphinxQL
+     */
+    public function flushHostnames()
+    {
+        return $this->query('FLUSH HOSTNAMES');
+    }
+
+    /**
+     * FLUSH LOGS syntax.
+     *
+     * @return SphinxQL
+     */
+    public function flushLogs()
+    {
+        return $this->query('FLUSH LOGS');
+    }
+
+    /**
+     * RELOAD PLUGINS syntax.
+     *
+     * @return SphinxQL
+     */
+    public function reloadPlugins()
+    {
+        return $this->query('RELOAD PLUGINS');
+    }
+
+    /**
+     * KILL syntax.
+     *
+     * @param int|string $queryId
+     *
+     * @return SphinxQL
+     */
+    public function kill($queryId)
+    {
+        if (filter_var($queryId, FILTER_VALIDATE_INT) === false || (int) $queryId <= 0) {
+            throw new SphinxQLException('kill() queryId must be a positive integer.');
+        }
+
+        return $this->query('KILL '.((int) $queryId));
+    }
+
+    /**
      * @param mixed  $value
      * @param string $field
      *
@@ -402,5 +659,33 @@ class Helper
         if (!is_string($value) || trim($value) === '') {
             throw new SphinxQLException($field.' must be a non-empty string.');
         }
+    }
+
+    /**
+     * @param string $callName
+     * @param array  $requiredArgs
+     * @param array  $options
+     *
+     * @return string
+     * @throws SphinxQLException
+     */
+    private function buildCallWithOptions($callName, array $requiredArgs, array $options = array())
+    {
+        if (!is_array($options)) {
+            throw new SphinxQLException($callName.' options must be an associative array.');
+        }
+
+        $quoted = $this->connection->quoteArr(array_values($requiredArgs));
+        $optionValues = $this->connection->quoteArr($options);
+        foreach ($optionValues as $key => &$value) {
+            if (!is_string($key) || trim($key) === '') {
+                throw new SphinxQLException($callName.' options must have non-empty string keys.');
+            }
+            $value .= ' AS '.$key;
+        }
+
+        $args = implode(', ', array_merge($quoted, $optionValues));
+
+        return 'CALL '.$callName.'('.$args.')';
     }
 }

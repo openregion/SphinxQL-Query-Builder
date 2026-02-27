@@ -64,7 +64,14 @@ class SphinxQL
     protected $from = array();
 
     /**
-     * The list of where and parenthesis, must be inserted in order
+     * JOIN clauses for SELECT queries
+     *
+     * @var array
+     */
+    protected $joins = array();
+
+    /**
+     * WHERE clause token list (conditions and grouping parenthesis)
      *
      * @var array
      */
@@ -99,7 +106,7 @@ class SphinxQL
     protected $within_group_order_by = array();
 
     /**
-     * The list of where and parenthesis, must be inserted in order
+     * HAVING clause token list (conditions and grouping parenthesis)
      *
      * @var array
      */
@@ -534,22 +541,16 @@ class SphinxQL
      */
     public function compileWhere()
     {
-        $query = '';
-
-        if (empty($this->match) && !empty($this->where)) {
-            $query .= 'WHERE ';
+        $compiled = $this->compileBooleanClause($this->where, 'where');
+        if ($compiled === '') {
+            return '';
         }
 
-        if (!empty($this->where)) {
-            foreach ($this->where as $key => $where) {
-                if ($key > 0 || !empty($this->match)) {
-                    $query .= 'AND ';
-                }
-                $query .= $this->compileFilterCondition($where);
-            }
+        if (empty($this->match)) {
+            return 'WHERE '.$compiled.' ';
         }
 
-        return $query;
+        return 'AND '.$compiled.' ';
     }
 
     /**
@@ -622,6 +623,10 @@ class SphinxQL
             }
         }
 
+        if (!empty($this->joins)) {
+            $query .= $this->compileJoins();
+        }
+
         $query .= $this->compileMatch().$this->compileWhere();
 
         if (!empty($this->group_by)) {
@@ -651,7 +656,7 @@ class SphinxQL
         }
 
         if (!empty($this->having)) {
-            $query .= 'HAVING '.$this->compileFilterCondition($this->having);
+            $query .= 'HAVING '.$this->compileBooleanClause($this->having, 'having').' ';
         }
 
         if (!empty($this->order_by)) {
@@ -1031,6 +1036,114 @@ class SphinxQL
     }
 
     /**
+     * Adds a JOIN clause to the current SELECT query.
+     *
+     * @param string $table
+     * @param string $left
+     * @param string $operator
+     * @param string $right
+     * @param string $type
+     *
+     * @return self
+     */
+    public function join($table, $left, $operator, $right, $type = 'INNER')
+    {
+        if (!is_string($table) || trim($table) === '') {
+            throw new SphinxQLException('join() table must be a non-empty string.');
+        }
+        if (!is_string($left) || trim($left) === '') {
+            throw new SphinxQLException('join() left operand must be a non-empty string.');
+        }
+        if (!is_string($operator) || trim($operator) === '') {
+            throw new SphinxQLException('join() operator must be a non-empty string.');
+        }
+        if (!is_string($right) || trim($right) === '') {
+            throw new SphinxQLException('join() right operand must be a non-empty string.');
+        }
+
+        $joinType = strtoupper(trim((string) $type));
+        if (!in_array($joinType, array('INNER', 'LEFT', 'RIGHT'), true)) {
+            throw new SphinxQLException('join() type must be one of: INNER, LEFT, RIGHT.');
+        }
+
+        $this->joins[] = array(
+            'type' => $joinType,
+            'table' => $table,
+            'left' => $left,
+            'operator' => strtoupper(trim($operator)),
+            'right' => $right,
+        );
+
+        return $this;
+    }
+
+    /**
+     * Adds an INNER JOIN clause.
+     *
+     * @param string $table
+     * @param string $left
+     * @param string $operator
+     * @param string $right
+     *
+     * @return self
+     */
+    public function innerJoin($table, $left, $operator, $right)
+    {
+        return $this->join($table, $left, $operator, $right, 'INNER');
+    }
+
+    /**
+     * Adds a LEFT JOIN clause.
+     *
+     * @param string $table
+     * @param string $left
+     * @param string $operator
+     * @param string $right
+     *
+     * @return self
+     */
+    public function leftJoin($table, $left, $operator, $right)
+    {
+        return $this->join($table, $left, $operator, $right, 'LEFT');
+    }
+
+    /**
+     * Adds a RIGHT JOIN clause.
+     *
+     * @param string $table
+     * @param string $left
+     * @param string $operator
+     * @param string $right
+     *
+     * @return self
+     */
+    public function rightJoin($table, $left, $operator, $right)
+    {
+        return $this->join($table, $left, $operator, $right, 'RIGHT');
+    }
+
+    /**
+     * Adds a CROSS JOIN clause.
+     *
+     * @param string $table
+     *
+     * @return self
+     */
+    public function crossJoin($table)
+    {
+        if (!is_string($table) || trim($table) === '') {
+            throw new SphinxQLException('crossJoin() table must be a non-empty string.');
+        }
+
+        $this->joins[] = array(
+            'type' => 'CROSS',
+            'table' => $table,
+        );
+
+        return $this;
+    }
+
+    /**
      * MATCH clause (Sphinx-specific)
      *
      * @param mixed  $column The column name (can be array, string, Closure, or MatchBuilder)
@@ -1079,37 +1192,70 @@ class SphinxQL
      */
     public function where($column, $operator, $value = null)
     {
-        if ($value === null) {
-            $value = $operator;
-            $operator = '=';
-        }
-
-        if (!is_string($column) || trim($column) === '') {
-            throw new SphinxQLException('where() column must be a non-empty string.');
-        }
-
-        if (!is_string($operator) || trim($operator) === '') {
-            throw new SphinxQLException('where() operator must be a non-empty string.');
-        }
-
-        $normalizedOperator = strtoupper(trim($operator));
-        if (in_array($normalizedOperator, array('IN', 'NOT IN'), true)) {
-            if (!is_array($value) || count($value) === 0) {
-                throw new SphinxQLException('where() operator '.$normalizedOperator.' requires a non-empty array value.');
-            }
-        }
-
-        if ($normalizedOperator === 'BETWEEN') {
-            if (!is_array($value) || count($value) !== 2) {
-                throw new SphinxQLException('where() operator BETWEEN requires an array with exactly 2 values.');
-            }
-        }
-
         $this->where[] = array(
-            'column'   => $column,
-            'operator' => $normalizedOperator,
-            'value'    => $value,
+            'type' => 'condition',
+            'boolean' => 'AND',
+            'condition' => $this->createFilterCondition('where', $column, $operator, $value),
         );
+
+        return $this;
+    }
+
+    /**
+     * Adds an OR WHERE condition.
+     *
+     * @param string                                      $column
+     * @param Expression|string|null|bool|array|int|float $operator
+     * @param Expression|string|null|bool|array|int|float $value
+     *
+     * @return self
+     */
+    public function orWhere($column, $operator, $value = null)
+    {
+        $this->where[] = array(
+            'type' => 'condition',
+            'boolean' => 'OR',
+            'condition' => $this->createFilterCondition('orWhere', $column, $operator, $value),
+        );
+
+        return $this;
+    }
+
+    /**
+     * Opens a grouped WHERE clause.
+     *
+     * @param string $boolean
+     *
+     * @return self
+     */
+    public function whereOpen($boolean = 'AND')
+    {
+        $this->where[] = array(
+            'type' => 'open',
+            'boolean' => $this->normalizeBooleanOperator($boolean, 'whereOpen'),
+        );
+
+        return $this;
+    }
+
+    /**
+     * Opens a grouped WHERE clause joined with OR.
+     *
+     * @return self
+     */
+    public function orWhereOpen()
+    {
+        return $this->whereOpen('OR');
+    }
+
+    /**
+     * Closes a grouped WHERE clause.
+     *
+     * @return self
+     */
+    public function whereClose()
+    {
+        $this->where[] = array('type' => 'close');
 
         return $this;
     }
@@ -1200,37 +1346,70 @@ class SphinxQL
      */
     public function having($column, $operator, $value = null)
     {
-        if ($value === null) {
-            $value = $operator;
-            $operator = '=';
-        }
-
-        if (!is_string($column) || trim($column) === '') {
-            throw new SphinxQLException('having() column must be a non-empty string.');
-        }
-
-        if (!is_string($operator) || trim($operator) === '') {
-            throw new SphinxQLException('having() operator must be a non-empty string.');
-        }
-
-        $normalizedOperator = strtoupper(trim($operator));
-        if (in_array($normalizedOperator, array('IN', 'NOT IN'), true)) {
-            if (!is_array($value) || count($value) === 0) {
-                throw new SphinxQLException('having() operator '.$normalizedOperator.' requires a non-empty array value.');
-            }
-        }
-
-        if ($normalizedOperator === 'BETWEEN') {
-            if (!is_array($value) || count($value) !== 2) {
-                throw new SphinxQLException('having() operator BETWEEN requires an array with exactly 2 values.');
-            }
-        }
-
-        $this->having = array(
-            'column'   => $column,
-            'operator' => $normalizedOperator,
-            'value'    => $value,
+        $this->having[] = array(
+            'type' => 'condition',
+            'boolean' => 'AND',
+            'condition' => $this->createFilterCondition('having', $column, $operator, $value),
         );
+
+        return $this;
+    }
+
+    /**
+     * Adds an OR HAVING condition.
+     *
+     * @param string                                      $column
+     * @param Expression|string|null|bool|array|int|float $operator
+     * @param Expression|string|null|bool|array|int|float $value
+     *
+     * @return self
+     */
+    public function orHaving($column, $operator, $value = null)
+    {
+        $this->having[] = array(
+            'type' => 'condition',
+            'boolean' => 'OR',
+            'condition' => $this->createFilterCondition('orHaving', $column, $operator, $value),
+        );
+
+        return $this;
+    }
+
+    /**
+     * Opens a grouped HAVING clause.
+     *
+     * @param string $boolean
+     *
+     * @return self
+     */
+    public function havingOpen($boolean = 'AND')
+    {
+        $this->having[] = array(
+            'type' => 'open',
+            'boolean' => $this->normalizeBooleanOperator($boolean, 'havingOpen'),
+        );
+
+        return $this;
+    }
+
+    /**
+     * Opens a grouped HAVING clause joined with OR.
+     *
+     * @return self
+     */
+    public function orHavingOpen()
+    {
+        return $this->havingOpen('OR');
+    }
+
+    /**
+     * Closes a grouped HAVING clause.
+     *
+     * @return self
+     */
+    public function havingClose()
+    {
+        $this->having[] = array('type' => 'close');
 
         return $this;
     }
@@ -1253,6 +1432,41 @@ class SphinxQL
         $this->order_by[] = array(
             'column' => $column,
             'direction' => $this->normalizeDirection($direction, 'orderBy')
+        );
+
+        return $this;
+    }
+
+    /**
+     * Adds ORDER BY KNN(...) clause expression.
+     *
+     * @param string      $field
+     * @param int|string  $k
+     * @param array       $vector
+     * @param string|null $direction
+     *
+     * @return self
+     */
+    public function orderByKnn($field, $k, array $vector, $direction = 'ASC')
+    {
+        if (!is_string($field) || trim($field) === '') {
+            throw new SphinxQLException('orderByKnn() field must be a non-empty string.');
+        }
+        if (filter_var($k, FILTER_VALIDATE_INT) === false || (int) $k <= 0) {
+            throw new SphinxQLException('orderByKnn() k must be a positive integer.');
+        }
+        if (empty($vector)) {
+            throw new SphinxQLException('orderByKnn() vector must be a non-empty array.');
+        }
+
+        $encodedVector = json_encode(array_values($vector));
+        if ($encodedVector === false) {
+            throw new SphinxQLException('orderByKnn() vector could not be JSON encoded.');
+        }
+
+        $this->order_by[] = array(
+            'column' => 'KNN('.$field.', '.((int) $k).', '.$encodedVector.')',
+            'direction' => $this->normalizeDirection($direction, 'orderByKnn')
         );
 
         return $this;
@@ -1588,6 +1802,179 @@ class SphinxQL
     }
 
     /**
+     * @param string                                      $method
+     * @param string                                      $column
+     * @param Expression|string|null|bool|array|int|float $operator
+     * @param Expression|string|null|bool|array|int|float $value
+     *
+     * @return array
+     * @throws SphinxQLException
+     */
+    private function createFilterCondition($method, $column, $operator, $value = null)
+    {
+        if ($value === null) {
+            $value = $operator;
+            $operator = '=';
+        }
+
+        if (!is_string($column) || trim($column) === '') {
+            throw new SphinxQLException($method.'() column must be a non-empty string.');
+        }
+
+        if (!is_string($operator) || trim($operator) === '') {
+            throw new SphinxQLException($method.'() operator must be a non-empty string.');
+        }
+
+        $normalizedOperator = strtoupper(trim($operator));
+        if (in_array($normalizedOperator, array('IN', 'NOT IN'), true)) {
+            if (!is_array($value) || count($value) === 0) {
+                throw new SphinxQLException($method.'() operator '.$normalizedOperator.' requires a non-empty array value.');
+            }
+        }
+
+        if ($normalizedOperator === 'BETWEEN') {
+            if (!is_array($value) || count($value) !== 2) {
+                throw new SphinxQLException($method.'() operator BETWEEN requires an array with exactly 2 values.');
+            }
+        }
+
+        return array(
+            'column' => $column,
+            'operator' => $normalizedOperator,
+            'value' => $value,
+        );
+    }
+
+    /**
+     * @param string|null $boolean
+     * @param string      $method
+     *
+     * @return string
+     * @throws SphinxQLException
+     */
+    private function normalizeBooleanOperator($boolean, $method)
+    {
+        if ($boolean === null) {
+            return 'AND';
+        }
+
+        if (!is_string($boolean) || trim($boolean) === '') {
+            throw new SphinxQLException($method.'() boolean must be one of: AND, OR.');
+        }
+
+        $normalized = strtoupper(trim($boolean));
+        if (!in_array($normalized, array('AND', 'OR'), true)) {
+            throw new SphinxQLException($method.'() boolean must be one of: AND, OR.');
+        }
+
+        return $normalized;
+    }
+
+    /**
+     * @param array  $tokens
+     * @param string $context
+     *
+     * @return string
+     * @throws ConnectionException
+     * @throws DatabaseException
+     * @throws SphinxQLException
+     */
+    private function compileBooleanClause(array $tokens, $context)
+    {
+        if (empty($tokens)) {
+            return '';
+        }
+
+        $query = '';
+        $openGroups = 0;
+        $prevType = null;
+        $hasCondition = false;
+
+        foreach ($tokens as $token) {
+            if (!isset($token['type'])) {
+                // Legacy compatibility with pre-tokenized conditions.
+                $token = array(
+                    'type' => 'condition',
+                    'boolean' => 'AND',
+                    'condition' => $token,
+                );
+            }
+
+            if ($token['type'] === 'open') {
+                $boolean = isset($token['boolean']) ? $this->normalizeBooleanOperator($token['boolean'], $context.'Open') : 'AND';
+                if ($prevType === 'condition' || $prevType === 'close') {
+                    $query .= $boolean.' ';
+                } elseif ($prevType === null && $boolean === 'OR') {
+                    throw new SphinxQLException('Cannot start '.$context.' clause with OR group.');
+                }
+
+                $query .= '( ';
+                $openGroups++;
+                $prevType = 'open';
+                continue;
+            }
+
+            if ($token['type'] === 'close') {
+                if ($openGroups <= 0) {
+                    throw new SphinxQLException('Unbalanced '.$context.' clause: unexpected closing parenthesis.');
+                }
+                if ($prevType === 'open') {
+                    throw new SphinxQLException('Empty parenthesis group is not allowed in '.$context.' clause.');
+                }
+
+                $query .= ') ';
+                $openGroups--;
+                $prevType = 'close';
+                continue;
+            }
+
+            if ($token['type'] !== 'condition' || !isset($token['condition'])) {
+                throw new SphinxQLException('Invalid '.$context.' token.');
+            }
+
+            $boolean = isset($token['boolean']) ? $this->normalizeBooleanOperator($token['boolean'], $context) : 'AND';
+            if ($prevType === 'condition' || $prevType === 'close') {
+                $query .= $boolean.' ';
+            } elseif ($prevType === null && $boolean === 'OR') {
+                throw new SphinxQLException('Cannot start '.$context.' clause with OR.');
+            }
+
+            $query .= trim($this->compileFilterCondition($token['condition'])).' ';
+            $hasCondition = true;
+            $prevType = 'condition';
+        }
+
+        if ($openGroups !== 0) {
+            throw new SphinxQLException('Unbalanced '.$context.' clause: missing closing parenthesis.');
+        }
+
+        if (!$hasCondition) {
+            throw new SphinxQLException('Empty '.$context.' clause is not allowed.');
+        }
+
+        return trim($query);
+    }
+
+    /**
+     * @return string
+     */
+    private function compileJoins()
+    {
+        $compiled = '';
+
+        foreach ($this->joins as $join) {
+            if ($join['type'] === 'CROSS') {
+                $compiled .= 'CROSS JOIN '.$join['table'].' ';
+                continue;
+            }
+
+            $compiled .= $join['type'].' JOIN '.$join['table'].' ON '.$join['left'].' '.$join['operator'].' '.$join['right'].' ';
+        }
+
+        return $compiled;
+    }
+
+    /**
      * @param string|null $direction
      * @param string      $method
      *
@@ -1622,6 +2009,7 @@ class SphinxQL
         $this->query = null;
         $this->select = array();
         $this->from = array();
+        $this->joins = array();
         $this->where = array();
         $this->match = array();
         $this->group_by = array();
@@ -1646,6 +2034,16 @@ class SphinxQL
     public function resetWhere()
     {
         $this->where = array();
+
+        return $this;
+    }
+
+    /**
+     * @return self
+     */
+    public function resetJoins()
+    {
+        $this->joins = array();
 
         return $this;
     }

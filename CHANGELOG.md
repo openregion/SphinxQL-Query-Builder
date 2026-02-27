@@ -6,6 +6,9 @@
 * Hardened runtime validation for `SphinxQL`, `Facet`, `Helper`, and `Percolate` input contracts (fail-fast exceptions for invalid query-shape input)
 * Standardized driver exception message prefixes for better diagnostics (`[mysqli][...]`, `[pdo][...]`)
 * Expanded helper runtime API coverage (`SHOW WARNINGS`, `SHOW STATUS`, `SHOW INDEX STATUS`, `FLUSH RAMCHUNK`, `FLUSH RTINDEX`, `OPTIMIZE INDEX`, UDF lifecycle checks)
+* Added fluent boolean grouping APIs (`orWhere`, `whereOpen/whereClose`, `orHaving`, `havingOpen/havingClose`) and JOIN builders (`join`, `innerJoin`, `leftJoin`, `rightJoin`, `crossJoin`)
+* Added `orderByKnn()` and broader helper wrappers for operational and Manticore-oriented commands (`SHOW PROFILE/PLAN/THREADS/VERSION/PLUGINS`, table status/settings/indexes, flush/reload/kill, suggest family)
+* Added capability-aware runtime tests for optional engine features (`supportsCommand`, Buddy-gated checks)
 * Added and stabilized Sphinx 3 compatibility coverage while preserving Sphinx 2 and Manticore test behavior
 * Migrated CI to GitHub Actions-only validation with strict composer metadata checks
 * Updated documentation and added a dedicated `MIGRATING-4.0.md` guide
