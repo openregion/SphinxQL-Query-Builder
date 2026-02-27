@@ -114,8 +114,16 @@ class Facet
      */
     public function facet($columns = null)
     {
+        if ($columns === null) {
+            throw new SphinxQLException('facet() requires at least one column or function.');
+        }
+
         if (!is_array($columns)) {
             $columns = \func_get_args();
+        }
+
+        if (empty($columns)) {
+            throw new SphinxQLException('facet() requires at least one column or function.');
         }
 
         foreach ($columns as $key => $column) {
@@ -123,9 +131,15 @@ class Facet
                 if (is_array($column)) {
                     $this->facet($column);
                 } else {
+                    if (!is_string($column) || trim($column) === '') {
+                        throw new SphinxQLException('facet() columns must be non-empty strings.');
+                    }
                     $this->facet[] = array($column, null);
                 }
             } else {
+                if (!is_string($key) || trim($key) === '' || !is_string($column) || trim($column) === '') {
+                    throw new SphinxQLException('facet() aliases and columns must be non-empty strings.');
+                }
                 $this->facet[] = array($column, $key);
             }
         }
@@ -148,6 +162,13 @@ class Facet
      */
     public function facetFunction($function, $params = null)
     {
+        if (!is_string($function) || trim($function) === '') {
+            throw new SphinxQLException('facetFunction() function name must be a non-empty string.');
+        }
+        if ($params === null || (is_array($params) && count($params) === 0)) {
+            throw new SphinxQLException('facetFunction() requires one or more parameters.');
+        }
+
         if (is_array($params)) {
             $params = implode(',', $params);
         }
@@ -167,6 +188,10 @@ class Facet
      */
     public function by($column)
     {
+        if (!is_string($column) || trim($column) === '') {
+            throw new SphinxQLException('by() column must be a non-empty string.');
+        }
+
         $this->by = $column;
 
         return $this;
@@ -183,7 +208,14 @@ class Facet
      */
     public function orderBy($column, $direction = null)
     {
-        $this->order_by[] = array('column' => $column, 'direction' => $direction);
+        if (!is_string($column) || trim($column) === '') {
+            throw new SphinxQLException('orderBy() column must be a non-empty string.');
+        }
+
+        $this->order_by[] = array(
+            'column' => $column,
+            'direction' => $this->normalizeDirection($direction, 'orderBy')
+        );
 
         return $this;
     }
@@ -204,11 +236,21 @@ class Facet
      */
     public function orderByFunction($function, $params = null, $direction = null)
     {
+        if (!is_string($function) || trim($function) === '') {
+            throw new SphinxQLException('orderByFunction() function name must be a non-empty string.');
+        }
+        if ($params === null || (is_array($params) && count($params) === 0)) {
+            throw new SphinxQLException('orderByFunction() requires one or more parameters.');
+        }
+
         if (is_array($params)) {
             $params = implode(',', $params);
         }
 
-        $this->order_by[] = array('column' => new Expression($function.'('.$params.')'), 'direction' => $direction);
+        $this->order_by[] = array(
+            'column' => new Expression($function.'('.$params.')'),
+            'direction' => $this->normalizeDirection($direction, 'orderByFunction')
+        );
 
         return $this;
     }
@@ -225,9 +267,20 @@ class Facet
     public function limit($offset, $limit = null)
     {
         if ($limit === null) {
+            if (filter_var($offset, FILTER_VALIDATE_INT) === false || (int) $offset < 0) {
+                throw new SphinxQLException('limit() requires a non-negative integer.');
+            }
+
             $this->limit = (int) $offset;
 
             return $this;
+        }
+
+        if (filter_var($offset, FILTER_VALIDATE_INT) === false || (int) $offset < 0) {
+            throw new SphinxQLException('limit() offset must be a non-negative integer.');
+        }
+        if (filter_var($limit, FILTER_VALIDATE_INT) === false || (int) $limit < 0) {
+            throw new SphinxQLException('limit() limit must be a non-negative integer.');
         }
 
         $this->offset($offset);
@@ -245,6 +298,10 @@ class Facet
      */
     public function offset($offset)
     {
+        if (filter_var($offset, FILTER_VALIDATE_INT) === false || (int) $offset < 0) {
+            throw new SphinxQLException('offset() requires a non-negative integer.');
+        }
+
         $this->offset = (int) $offset;
 
         return $this;
@@ -287,7 +344,11 @@ class Facet
 
             foreach ($this->order_by as $order) {
                 $order_sub = $order['column'].' ';
-                $order_sub .= ((strtolower($order['direction']) === 'desc') ? 'DESC' : 'ASC');
+                if ($order['direction'] !== null) {
+                    $order_sub .= ((strtolower($order['direction']) === 'desc') ? 'DESC' : 'ASC');
+                } else {
+                    $order_sub .= 'ASC';
+                }
 
                 $order_arr[] = $order_sub;
             }
@@ -321,5 +382,30 @@ class Facet
     public function getFacet()
     {
         return $this->compileFacet()->query;
+    }
+
+    /**
+     * @param string|null $direction
+     * @param string      $method
+     *
+     * @return string|null
+     * @throws SphinxQLException
+     */
+    private function normalizeDirection($direction, $method)
+    {
+        if ($direction === null) {
+            return null;
+        }
+
+        if (!is_string($direction) || trim($direction) === '') {
+            throw new SphinxQLException($method.'() direction must be one of: ASC, DESC, or null.');
+        }
+
+        $normalized = strtoupper(trim($direction));
+        if (!in_array($normalized, array('ASC', 'DESC'), true)) {
+            throw new SphinxQLException($method.'() direction must be one of: ASC, DESC, or null.');
+        }
+
+        return $normalized;
     }
 }

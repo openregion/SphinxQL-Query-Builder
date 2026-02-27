@@ -294,4 +294,34 @@ class HelperTest extends \PHPUnit\Framework\TestCase
         $this->assertIsInt($result);
         $this->assertGreaterThanOrEqual(0, $result);
     }
+
+    public function testHelperRequiresNonEmptyIdentifiers()
+    {
+        $this->expectException(Foolz\SphinxQL\Exception\SphinxQLException::class);
+        $this->createHelper()->showTables('');
+    }
+
+    public function testSetVariableValidation()
+    {
+        $this->expectException(Foolz\SphinxQL\Exception\SphinxQLException::class);
+        $this->createHelper()->setVariable('invalid-name', 1)->compile();
+    }
+
+    public function testCallSnippetsValidation()
+    {
+        $this->expectException(Foolz\SphinxQL\Exception\SphinxQLException::class);
+        $this->createHelper()->callSnippets('', 'rt', 'is');
+    }
+
+    public function testCallKeywordsValidation()
+    {
+        $this->expectException(Foolz\SphinxQL\Exception\SphinxQLException::class);
+        $this->createHelper()->callKeywords('test case', 'rt', 2);
+    }
+
+    public function testCreateFunctionValidation()
+    {
+        $this->expectException(Foolz\SphinxQL\Exception\SphinxQLException::class);
+        $this->createHelper()->createFunction('my_udf', 'INVALID', 'test_udf.so');
+    }
 }

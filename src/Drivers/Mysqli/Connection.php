@@ -50,11 +50,15 @@ class Connection extends ConnectionBase
         set_error_handler(function () {});
         try {
             if (!$conn->real_connect($data['host'], null, null, null, (int) $data['port'], $data['socket'])) {
-                throw new ConnectionException('Connection Error: ['.$conn->connect_errno.']'.$conn->connect_error);
+                throw new ConnectionException(
+                    '[mysqli][connect]['.$conn->connect_errno.'] '.$conn->connect_error
+                    .' [host='.(string) $data['host'].', port='.(int) $data['port'].']'
+                );
             }
         } catch (mysqli_sql_exception $exception) {
             throw new ConnectionException(
-                'Connection Error: ['.$exception->getCode().']'.$exception->getMessage(),
+                '[mysqli][connect]['.$exception->getCode().'] '.$exception->getMessage()
+                .' [host='.(string) $data['host'].', port='.(int) $data['port'].']',
                 (int) $exception->getCode(),
                 $exception
             );
@@ -111,7 +115,7 @@ class Connection extends ConnectionBase
             $resource = @$this->getConnection()->query($query);
         } catch (mysqli_sql_exception $exception) {
             throw new DatabaseException(
-                '['.$exception->getCode().'] '.$exception->getMessage().' [ '.$query.']',
+                '[mysqli][query]['.$exception->getCode().'] '.$exception->getMessage().' [ '.$query.' ]',
                 (int) $exception->getCode(),
                 $exception
             );
@@ -120,8 +124,8 @@ class Connection extends ConnectionBase
         }
 
         if ($this->getConnection()->error) {
-            throw new DatabaseException('['.$this->getConnection()->errno.'] '.
-                $this->getConnection()->error.' [ '.$query.']');
+            throw new DatabaseException('[mysqli][query]['.$this->getConnection()->errno.'] '.
+                $this->getConnection()->error.' [ '.$query.' ]');
         }
 
         return new ResultSet(new ResultSetAdapter($this, $resource));
@@ -144,15 +148,15 @@ class Connection extends ConnectionBase
             $this->getConnection()->multi_query(implode(';', $queue));
         } catch (mysqli_sql_exception $exception) {
             throw new DatabaseException(
-                '['.$exception->getCode().'] '.$exception->getMessage().' [ '.implode(';', $queue).']',
+                '[mysqli][multi_query]['.$exception->getCode().'] '.$exception->getMessage().' [ '.implode(';', $queue).' ]',
                 (int) $exception->getCode(),
                 $exception
             );
         }
 
         if ($this->getConnection()->error) {
-            throw new DatabaseException('['.$this->getConnection()->errno.'] '.
-                $this->getConnection()->error.' [ '.implode(';', $queue).']');
+            throw new DatabaseException('[mysqli][multi_query]['.$this->getConnection()->errno.'] '.
+                $this->getConnection()->error.' [ '.implode(';', $queue).' ]');
         }
 
         return new MultiResultSet(new MultiResultSetAdapter($this));
@@ -170,12 +174,19 @@ class Connection extends ConnectionBase
         try {
             $value = $this->getConnection()->real_escape_string((string) $value);
         } catch (mysqli_sql_exception $exception) {
-            throw new DatabaseException($exception->getMessage(), (int) $exception->getCode(), $exception);
+            throw new DatabaseException(
+                '[mysqli][escape]['.$exception->getCode().'] '.$exception->getMessage(),
+                (int) $exception->getCode(),
+                $exception
+            );
         }
 
         if ($value === false) {
             // @codeCoverageIgnoreStart
-            throw new DatabaseException($this->getConnection()->error, $this->getConnection()->errno);
+            throw new DatabaseException(
+                '[mysqli][escape]['.$this->getConnection()->errno.'] '.$this->getConnection()->error,
+                $this->getConnection()->errno
+            );
             // @codeCoverageIgnoreEnd
         }
 

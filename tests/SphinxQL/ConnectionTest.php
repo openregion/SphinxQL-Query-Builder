@@ -24,7 +24,7 @@ class ConnectionTest extends \PHPUnit\Framework\TestCase
 
     public function test()
     {
-        TestUtil::getConnectionDriver();
+        $this->assertInstanceOf(ConnectionInterface::class, TestUtil::getConnectionDriver());
     }
 
     public function testGetParams()
@@ -89,9 +89,11 @@ class ConnectionTest extends \PHPUnit\Framework\TestCase
     public function testConnect()
     {
         $this->connection->connect();
+        $this->assertNotNull($this->connection->getConnection());
 
         $this->connection->setParam('options', array(MYSQLI_OPT_CONNECT_TIMEOUT => 1));
         $this->connection->connect();
+        $this->assertNotNull($this->connection->getConnection());
     }
 
     public function testConnectThrowsException()
@@ -155,12 +157,14 @@ class ConnectionTest extends \PHPUnit\Framework\TestCase
     public function testMultiQueryThrowsException()
     {
         $this->expectException(Foolz\SphinxQL\Exception\DatabaseException::class);
+        $this->expectExceptionMessage($GLOBALS['driver'] === 'Pdo' ? '[pdo][multi_query]' : '[mysqli][multi_query]');
         $this->connection->multiQuery(array('SHOW METAL'));
     }
 
     public function testQueryThrowsException()
     {
         $this->expectException(Foolz\SphinxQL\Exception\DatabaseException::class);
+        $this->expectExceptionMessage($GLOBALS['driver'] === 'Pdo' ? '[pdo][query]' : '[mysqli][query]');
         $this->connection->query('SHOW METAL');
     }
 

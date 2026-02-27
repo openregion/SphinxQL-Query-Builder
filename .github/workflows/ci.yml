@@ -15,7 +15,6 @@ jobs:
     name: PHP ${{ matrix.php }} / ${{ matrix.driver }} / ${{ matrix.search_build }}
     runs-on: ubuntu-22.04
     timeout-minutes: 30
-    continue-on-error: ${{ matrix.search_build == 'SPHINX3' }}
     permissions:
       contents: read
       packages: read
@@ -101,8 +100,11 @@ jobs:
           docker logs searchd || true
           exit 1
 
+      - name: Validate composer metadata
+        run: composer validate --strict --no-check-publish
+
       - name: Install dependencies
-        run: composer update --prefer-dist --no-interaction
+        run: composer install --prefer-dist --no-interaction --no-progress
 
       - name: Prepare autoload
         run: composer dump-autoload

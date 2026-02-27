@@ -87,6 +87,8 @@ class SphinxQLTest extends \PHPUnit\Framework\TestCase
         $this->createSphinxQL()->transactionRollback();
         $this->createSphinxQL()->transactionBegin();
         $this->createSphinxQL()->transactionCommit();
+
+        $this->assertTrue(true);
     }
 
     public function testQuery()
@@ -1166,5 +1168,79 @@ class SphinxQLTest extends \PHPUnit\Framework\TestCase
             "SELECT * FROM rt WHERE MATCH('(@strlen value)')",
             $query->compile()->getCompiled()
         );
+    }
+
+    public function testCompileWithoutTypeThrowsException()
+    {
+        $this->expectException(Foolz\SphinxQL\Exception\SphinxQLException::class);
+        (new SphinxQL(self::$conn))->compile();
+    }
+
+    public function testSetTypeValidation()
+    {
+        $query = new SphinxQL(self::$conn);
+        $result = $query->setType('select');
+        $this->assertSame($query, $result);
+
+        $this->expectException(Foolz\SphinxQL\Exception\SphinxQLException::class);
+        $query->setType('invalid_type');
+    }
+
+    public function testFromValidation()
+    {
+        $this->expectException(Foolz\SphinxQL\Exception\SphinxQLException::class);
+        $this->createSphinxQL()->select()->from();
+    }
+
+    public function testWhereValidation()
+    {
+        $this->expectException(Foolz\SphinxQL\Exception\SphinxQLException::class);
+        $this->createSphinxQL()->select()->from('rt')->where('gid', 'IN', array());
+    }
+
+    public function testHavingValidation()
+    {
+        $this->expectException(Foolz\SphinxQL\Exception\SphinxQLException::class);
+        $this->createSphinxQL()
+            ->select()
+            ->from('rt')
+            ->groupBy('gid')
+            ->having('gid', 'BETWEEN', array(1));
+    }
+
+    public function testOrderDirectionValidation()
+    {
+        $this->expectException(Foolz\SphinxQL\Exception\SphinxQLException::class);
+        $this->createSphinxQL()->select()->from('rt')->orderBy('id', 'sideways');
+    }
+
+    public function testWithinGroupOrderDirectionValidation()
+    {
+        $this->expectException(Foolz\SphinxQL\Exception\SphinxQLException::class);
+        $this->createSphinxQL()->select()->from('rt')->withinGroupOrderBy('id', 'sideways');
+    }
+
+    public function testLimitOffsetValidation()
+    {
+        $this->expectException(Foolz\SphinxQL\Exception\SphinxQLException::class);
+        $this->createSphinxQL()->select()->from('rt')->limit(-1);
+    }
+
+    public function testGroupNByValidation()
+    {
+        $this->expectException(Foolz\SphinxQL\Exception\SphinxQLException::class);
+        $this->createSphinxQL()->select()->from('rt')->groupNBy(0);
+    }
+
+    public function testFacetTypeValidation()
+    {
+        $this->expectException(Foolz\SphinxQL\Exception\SphinxQLException::class);
+        $this->createSphinxQL()->select()->from('rt')->facet('gid');
+    }
+
+    public function testSetQueuePrevValidation()
+    {
+        $this->expectException(\InvalidArgumentException::class);
+        $this->createSphinxQL()->setQueuePrev('not-a-query');
     }
 }

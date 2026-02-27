@@ -153,7 +153,7 @@ class Percolate
      */
     public function from($index)
     {
-        if (empty($index)) {
+        if (!is_string($index) || trim($index) === '') {
             throw new SphinxQLException('Index can\'t be empty');
         }
 
@@ -172,7 +172,7 @@ class Percolate
      */
     public function into($index)
     {
-        if (empty($index)) {
+        if (!is_string($index) || trim($index) === '') {
             throw new SphinxQLException('Index can\'t be empty');
         }
         $this->index = trim($index);
@@ -188,6 +188,10 @@ class Percolate
      */
     protected function escapeString($query)
     {
+        if (!is_string($query)) {
+            throw new SphinxQLException('Expected string value.');
+        }
+
         return str_replace(
             array_keys($this->escapeChars),
             array_values($this->escapeChars),
@@ -201,9 +205,15 @@ class Percolate
      */
     protected function clearString($query)
     {
+        if (!is_string($query)) {
+            throw new SphinxQLException('Expected string value.');
+        }
+
+        $replaceMap = array_merge($this->escapeChars, ['@' => '']);
+
         return str_replace(
-            array_keys(array_merge($this->escapeChars, ['@' => ''])),
-            ['', '', '', '', '', '', '', '', '', ''],
+            array_keys($replaceMap),
+            array_fill(0, count($replaceMap), ''),
             $query);
     }
 
@@ -217,9 +227,20 @@ class Percolate
     public function tags($tags)
     {
         if (is_array($tags)) {
+            if (count($tags) === 0) {
+                throw new SphinxQLException('Tags can\'t be empty');
+            }
+            foreach ($tags as $tag) {
+                if (!is_string($tag)) {
+                    throw new SphinxQLException('Tags array must contain strings only');
+                }
+            }
             $tags = array_map([$this, 'escapeString'], $tags);
             $tags = implode(',', $tags);
         } else {
+            if (!is_string($tags) || trim($tags) === '') {
+                throw new SphinxQLException('Tags can\'t be empty');
+            }
             $tags = $this->escapeString($tags);
         }
         $this->tags = $tags;
@@ -236,6 +257,9 @@ class Percolate
      */
     public function filter($filter)
     {
+        if (!is_string($filter) || trim($filter) === '') {
+            throw new SphinxQLException('Filter can\'t be empty');
+        }
         $this->filters = $this->clearString($filter);
         return $this;
     }
@@ -253,7 +277,7 @@ class Percolate
     {
         $this->clear();
 
-        if (empty($query)) {
+        if (!is_string($query) || trim($query) === '') {
             throw new SphinxQLException('Query can\'t be empty');
         }
         if (!$noEscape) {
@@ -355,6 +379,15 @@ class Percolate
         if (empty($documents)) {
             throw new SphinxQLException('Document can\'t be empty');
         }
+        if (!is_string($documents) && !is_array($documents)) {
+            throw new SphinxQLException('Documents must be string or array');
+        }
+        if (is_string($documents) && trim($documents) === '') {
+            throw new SphinxQLException('Document can\'t be empty');
+        }
+        if (is_array($documents) && count($documents) === 0) {
+            throw new SphinxQLException('Document can\'t be empty');
+        }
         $this->documents = $documents;
 
         return $this;
@@ -453,6 +486,13 @@ class Percolate
             }
 
             if (is_array($this->documents)) {
+                if (!array_key_exists(0, $this->documents)) {
+                    if ($this->isAssocArray($this->documents)) {
+                        $this->options[self::OPTION_DOCS_JSON] = 1;
+                        return $this->quoteString(json_encode($this->documents));
+                    }
+                    throw new SphinxQLException('Documents array must be associate');
+                }
 
                 // If input is phpArray with json like
                 // ->documents(['{"body": "body of doc 1", "title": "title of doc 1"}',

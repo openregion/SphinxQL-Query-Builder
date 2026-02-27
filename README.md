@@ -8,7 +8,9 @@ Query Builder for SphinxQL
 
 ## About
 
-This is a SphinxQL Query Builder used to work with SphinxQL, a SQL dialect used with the Sphinx search engine and it's fork Manticore. It maps most of the functions listed in the [SphinxQL reference](http://sphinxsearch.com/docs/current.html#SphinxQL-reference) and is generally [faster](http://sphinxsearch.com/blog/2010/04/25/sphinxapi-vs-SphinxQL-benchmark/) than the available Sphinx API.
+This is a query builder for SphinxQL/ManticoreQL, the SQL dialect used by
+Sphinx Search and Manticore Search. It maps most common query-builder use cases
+and supports both `mysqli` and `PDO` drivers.
 
 This Query Builder has no dependencies except PHP 8.2 or later, `\MySQLi` extension, `PDO`, and [Sphinx](http://sphinxsearch.com)/[Manticore](https://manticoresearch.com).
 
@@ -24,7 +26,7 @@ If any feature is unreachable through this library, open a new issue or send a p
 
 The majority of the methods in the package have been unit tested.
 
-The only methods that have not been fully tested are the Helpers, which are mostly simple shorthands for SQL strings.
+Helper methods and engine compatibility scenarios are covered by the test suite.
 
 ## How to Contribute
 
@@ -32,14 +34,14 @@ The only methods that have not been fully tested are the Helpers, which are most
 
 1. Fork the SphinxQL Query Builder repository
 2. Create a new branch for each feature or improvement
-3. Submit a pull request from each branch to the **master** branch
+3. Submit a pull request from each branch to the repository default branch
 
 It is very important to separate new features or improvements into separate feature branches, and to send a pull
 request for each branch. This allows me to review and pull in new features or improvements individually.
 
 ### Style Guide
 
-All pull requests must adhere to the [PSR-2](https://github.com/php-fig/fig-standards/blob/master/accepted/PSR-2-coding-style-guide.md) standard.
+All pull requests should follow PSR-12-compatible formatting.
 
 ### Unit Testing
 
@@ -80,6 +82,19 @@ We support the following database connection drivers:
 * Foolz\SphinxQL\Drivers\Mysqli\Connection
 * Foolz\SphinxQL\Drivers\Pdo\Connection
 
+### Engine Compatibility Matrix
+
+| Engine | Query Builder | Helper APIs | Notes |
+| --- | --- | --- | --- |
+| Sphinx 2.x | Supported | Supported | Full CI lane |
+| Sphinx 3.x | Supported | Supported with engine-specific assertions | Full CI lane |
+| Manticore | Supported | Supported + Percolate | Full CI lane |
+
+### Migration to 4.0
+
+See [`MIGRATING-4.0.md`](MIGRATING-4.0.md) for the complete migration checklist,
+including strict runtime validation behavior introduced in the 4.0 line.
+
 ### Connection
 
 * __$conn = new Connection()__
@@ -118,10 +133,6 @@ There are cases when an input __must__ be escaped in the SQL statement. The foll
 
 	Returns the escaped value. This is processed with the `\MySQLi::real_escape_string()` function.
 
-* __$sq->quoteIdentifier($identifier)__
-
-	Adds backtick quotes to the identifier. For array elements, use `$sq->quoteIdentifierArray($arr)`.
-
 * __$sq->quote($value)__
 
 	Adds quotes to the value and escapes it. For array elements, use `$sq->quoteArr($arr)`.
@@ -135,6 +146,15 @@ There are cases when an input __must__ be escaped in the SQL statement. The foll
 	Escapes the string to be used in `MATCH`. The following characters are allowed: `-`, `|`, and `"`.
 
 	_Refer to `$sq->match()` for more information._
+
+#### Strict Validation in 4.0
+
+4.0 performs fail-fast validation for invalid query-shape input. Examples:
+
+* invalid `setType()` values
+* invalid `ORDER BY` direction values
+* negative `limit()`/`offset()`
+* invalid value shapes for `IN`/`BETWEEN`
 
 #### SELECT
 

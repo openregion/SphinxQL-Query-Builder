@@ -227,11 +227,23 @@ class SphinxQL
     /**
      * Sets Query Type
      *
+     * @return $this
+     * @throws SphinxQLException
      */
     public function setType(string $type)
     {
-        return $this->type = $type;
-    }    
+        $normalizedType = strtolower(trim($type));
+        $allowedTypes = array('select', 'insert', 'replace', 'update', 'delete', 'query');
+        if (!in_array($normalizedType, $allowedTypes, true)) {
+            throw new SphinxQLException(
+                'Invalid query type "'.$type.'". Allowed types: '.implode(', ', $allowedTypes).'.'
+            );
+        }
+
+        $this->type = $normalizedType;
+
+        return $this;
+    }
 
     /**
      * Returns the currently attached connection
@@ -353,6 +365,10 @@ class SphinxQL
      */
     public function setQueuePrev($query)
     {
+        if (!$query instanceof self) {
+            throw new \InvalidArgumentException('setQueuePrev() expects an instance of '.self::class.'.');
+        }
+
         $this->queue_prev = $query;
 
         return $this;
@@ -418,6 +434,10 @@ class SphinxQL
      */
     public function compile()
     {
+        if ($this->type === null) {
+            throw new SphinxQLException('Unable to compile query: no query type selected.');
+        }
+
         switch ($this->type) {
             case 'select':
                 $this->compileSelect();
@@ -435,6 +455,8 @@ class SphinxQL
             case 'query':
                 $this->compileQuery();
                 break;
+            default:
+                throw new SphinxQLException('Unable to compile query: unsupported query type "'.$this->type.'".');
         }
 
         return $this;
@@ -966,15 +988,46 @@ class SphinxQL
      */
     public function from($array = null)
     {
+        if ($array === null) {
+            throw new SphinxQLException('from() requires one or more indexes, a subquery, or a closure.');
+        }
+
         if (is_string($array)) {
-            $this->from = \func_get_args();
+            $indexes = \func_get_args();
+            foreach ($indexes as $index) {
+                if (!is_string($index) || trim($index) === '') {
+                    throw new SphinxQLException('from() index names must be non-empty strings.');
+                }
+            }
+
+            $this->from = $indexes;
+
+            return $this;
         }
 
-        if (is_array($array) || $array instanceof \Closure || $array instanceof SphinxQL) {
+        if (is_array($array)) {
+            if (empty($array)) {
+                throw new SphinxQLException('from() index list cannot be empty.');
+            }
+
+            foreach ($array as $index) {
+                if (!is_string($index) || trim($index) === '') {
+                    throw new SphinxQLException('from() index names must be non-empty strings.');
+                }
+            }
+
             $this->from = $array;
+
+            return $this;
         }
 
-        return $this;
+        if ($array instanceof \Closure || $array instanceof SphinxQL) {
+            $this->from = $array;
+
+            return $this;
+        }
+
+        throw new SphinxQLException('from() expects string indexes, an array of indexes, a subquery, or a closure.');
     }
 
     /**
@@ -1031,9 +1084,30 @@ class SphinxQL
             $operator = '=';
         }
 
+        if (!is_string($column) || trim($column) === '') {
+            throw new SphinxQLException('where() column must be a non-empty string.');
+        }
+
+        if (!is_string($operator) || trim($operator) === '') {
+            throw new SphinxQLException('where() operator must be a non-empty string.');
+        }
+
+        $normalizedOperator = strtoupper(trim($operator));
+        if (in_array($normalizedOperator, array('IN', 'NOT IN'), true)) {
+            if (!is_array($value) || count($value) === 0) {
+                throw new SphinxQLException('where() operator '.$normalizedOperator.' requires a non-empty array value.');
+            }
+        }
+
+        if ($normalizedOperator === 'BETWEEN') {
+            if (!is_array($value) || count($value) !== 2) {
+                throw new SphinxQLException('where() operator BETWEEN requires an array with exactly 2 values.');
+            }
+        }
+
         $this->where[] = array(
             'column'   => $column,
-            'operator' => $operator,
+            'operator' => $normalizedOperator,
             'value'    => $value,
         );
 
@@ -1065,6 +1139,10 @@ class SphinxQL
      */
     public function groupNBy($n)
     {
+        if (filter_var($n, FILTER_VALIDATE_INT) === false || (int) $n <= 0) {
+            throw new SphinxQLException('groupNBy() requires a positive integer.');
+        }
+
         $this->group_n_by = (int) $n;
 
         return $this;
@@ -1082,7 +1160,14 @@ class SphinxQL
      */
     public function withinGroupOrderBy($column, $direction = null)
     {
-        $this->within_group_order_by[] = array('column' => $column, 'direction' => $direction);
+        if (!is_string($column) || trim($column) === '') {
+            throw new SphinxQLException('withinGroupOrderBy() column must be a non-empty string.');
+        }
+
+        $this->within_group_order_by[] = array(
+            'column' => $column,
+            'direction' => $this->normalizeDirection($direction, 'withinGroupOrderBy')
+        );
 
         return $this;
     }
@@ -1120,9 +1205,30 @@ class SphinxQL
             $operator = '=';
         }
 
+        if (!is_string($column) || trim($column) === '') {
+            throw new SphinxQLException('having() column must be a non-empty string.');
+        }
+
+        if (!is_string($operator) || trim($operator) === '') {
+            throw new SphinxQLException('having() operator must be a non-empty string.');
+        }
+
+        $normalizedOperator = strtoupper(trim($operator));
+        if (in_array($normalizedOperator, array('IN', 'NOT IN'), true)) {
+            if (!is_array($value) || count($value) === 0) {
+                throw new SphinxQLException('having() operator '.$normalizedOperator.' requires a non-empty array value.');
+            }
+        }
+
+        if ($normalizedOperator === 'BETWEEN') {
+            if (!is_array($value) || count($value) !== 2) {
+                throw new SphinxQLException('having() operator BETWEEN requires an array with exactly 2 values.');
+            }
+        }
+
         $this->having = array(
             'column'   => $column,
-            'operator' => $operator,
+            'operator' => $normalizedOperator,
             'value'    => $value,
         );
 
@@ -1140,7 +1246,14 @@ class SphinxQL
      */
     public function orderBy($column, $direction = null)
     {
-        $this->order_by[] = array('column' => $column, 'direction' => $direction);
+        if (!is_string($column) || trim($column) === '') {
+            throw new SphinxQLException('orderBy() column must be a non-empty string.');
+        }
+
+        $this->order_by[] = array(
+            'column' => $column,
+            'direction' => $this->normalizeDirection($direction, 'orderBy')
+        );
 
         return $this;
     }
@@ -1157,9 +1270,20 @@ class SphinxQL
     public function limit($offset, $limit = null)
     {
         if ($limit === null) {
+            if (filter_var($offset, FILTER_VALIDATE_INT) === false || (int) $offset < 0) {
+                throw new SphinxQLException('limit() requires a non-negative integer.');
+            }
+
             $this->limit = (int) $offset;
 
             return $this;
+        }
+
+        if (filter_var($offset, FILTER_VALIDATE_INT) === false || (int) $offset < 0) {
+            throw new SphinxQLException('limit() offset must be a non-negative integer.');
+        }
+        if (filter_var($limit, FILTER_VALIDATE_INT) === false || (int) $limit < 0) {
+            throw new SphinxQLException('limit() limit must be a non-negative integer.');
         }
 
         $this->offset($offset);
@@ -1177,6 +1301,10 @@ class SphinxQL
      */
     public function offset($offset)
     {
+        if (filter_var($offset, FILTER_VALIDATE_INT) === false || (int) $offset < 0) {
+            throw new SphinxQLException('offset() requires a non-negative integer.');
+        }
+
         $this->offset = (int) $offset;
 
         return $this;
@@ -1193,6 +1321,10 @@ class SphinxQL
      */
     public function option($name, $value)
     {
+        if (!is_string($name) || trim($name) === '') {
+            throw new SphinxQLException('option() name must be a non-empty string.');
+        }
+
         $this->options[] = array('name' => $name, 'value' => $value);
 
         return $this;
@@ -1208,6 +1340,10 @@ class SphinxQL
      */
     public function into($index)
     {
+        if (!is_string($index) || trim($index) === '') {
+            throw new SphinxQLException('into() index must be a non-empty string.');
+        }
+
         $this->into = $index;
 
         return $this;
@@ -1225,9 +1361,26 @@ class SphinxQL
     public function columns($array = array())
     {
         if (is_array($array)) {
+            if (empty($array)) {
+                throw new SphinxQLException('columns() requires at least one column.');
+            }
+
+            foreach ($array as $column) {
+                if (!is_string($column) || trim($column) === '') {
+                    throw new SphinxQLException('columns() values must be non-empty strings.');
+                }
+            }
+
             $this->columns = $array;
         } else {
-            $this->columns = \func_get_args();
+            $columns = \func_get_args();
+            foreach ($columns as $column) {
+                if (!is_string($column) || trim($column) === '') {
+                    throw new SphinxQLException('columns() values must be non-empty strings.');
+                }
+            }
+
+            $this->columns = $columns;
         }
 
         return $this;
@@ -1245,9 +1398,16 @@ class SphinxQL
     public function values($array)
     {
         if (is_array($array)) {
+            if (empty($array)) {
+                throw new SphinxQLException('values() requires at least one value.');
+            }
             $this->values[] = $array;
         } else {
-            $this->values[] = \func_get_args();
+            $values = \func_get_args();
+            if (empty($values)) {
+                throw new SphinxQLException('values() requires at least one value.');
+            }
+            $this->values[] = $values;
         }
 
         return $this;
@@ -1264,6 +1424,10 @@ class SphinxQL
      */
     public function value($column, $value)
     {
+        if (!is_string($column) || trim($column) === '') {
+            throw new SphinxQLException('value() column must be a non-empty string.');
+        }
+
         if ($this->type === 'insert' || $this->type === 'replace') {
             $this->columns[] = $column;
             $this->values[0][] = $value;
@@ -1284,6 +1448,10 @@ class SphinxQL
      */
     public function set($array)
     {
+        if (!is_array($array) || empty($array)) {
+            throw new SphinxQLException('set() requires a non-empty associative array.');
+        }
+
         if ($this->columns === array_keys($array)) {
             $this->values($array);
         } else {
@@ -1305,6 +1473,10 @@ class SphinxQL
      */
     public function facet($facet)
     {
+        if (!$facet instanceof Facet) {
+            throw new SphinxQLException('facet() expects an instance of '.Facet::class.'.');
+        }
+
         $this->facets[] = $facet;
 
         return $this;
@@ -1413,6 +1585,31 @@ class SphinxQL
         $string = mb_strtolower(preg_replace(array_keys($from_to_preg), array_values($from_to_preg), $string), 'utf8');
 
         return $string;
+    }
+
+    /**
+     * @param string|null $direction
+     * @param string      $method
+     *
+     * @return string|null
+     * @throws SphinxQLException
+     */
+    private function normalizeDirection($direction, $method)
+    {
+        if ($direction === null) {
+            return null;
+        }
+
+        if (!is_string($direction) || trim($direction) === '') {
+            throw new SphinxQLException($method.'() direction must be one of: ASC, DESC, or null.');
+        }
+
+        $normalized = strtoupper(trim($direction));
+        if (!in_array($normalized, array('ASC', 'DESC'), true)) {
+            throw new SphinxQLException($method.'() direction must be one of: ASC, DESC, or null.');
+        }
+
+        return $normalized;
     }
 
     /**

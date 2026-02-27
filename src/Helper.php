@@ -3,6 +3,7 @@
 namespace Foolz\SphinxQL;
 
 use Foolz\SphinxQL\Drivers\ConnectionInterface;
+use Foolz\SphinxQL\Exception\SphinxQLException;
 
 /**
  * SQL queries that don't require "query building"
@@ -103,11 +104,9 @@ class Helper
      */
     public function showTables( $index )
     {
-        $queryAppend = '';
-        if ( ! empty( $index ) ) {
-            $queryAppend = ' LIKE ' . $this->connection->quote($index);
-        }
-        return $this->query( 'SHOW TABLES' . $queryAppend );
+        $this->assertNonEmptyString($index, 'showTables() index');
+
+        return $this->query('SHOW TABLES LIKE '.$this->connection->quote($index));
     }
 
     /**
@@ -133,6 +132,11 @@ class Helper
      */
     public function setVariable($name, $value, $global = false)
     {
+        if (!is_bool($global)) {
+            throw new SphinxQLException('setVariable() global flag must be boolean.');
+        }
+        $this->assertNonEmptyString($name, 'setVariable() name');
+
         $query = 'SET ';
 
         if ($global) {
@@ -140,6 +144,13 @@ class Helper
         }
 
         $user_var = strpos($name, '@') === 0;
+        if ($user_var) {
+            if (!preg_match('/^@[A-Za-z_][A-Za-z0-9_]*$/', $name)) {
+                throw new SphinxQLException('setVariable() user variable name is invalid.');
+            }
+        } elseif (!preg_match('/^[A-Za-z_][A-Za-z0-9_]*$/', $name)) {
+            throw new SphinxQLException('setVariable() variable name is invalid.');
+        }
 
         $query .= $name.' ';
 
@@ -147,6 +158,9 @@ class Helper
         if ($user_var && !is_array($value)) {
             $query .= '= ('.$this->connection->quote($value).')';
         } elseif (is_array($value)) {
+            if (count($value) === 0) {
+                throw new SphinxQLException('setVariable() array value cannot be empty.');
+            }
             $query .= '= ('.implode(', ', $this->connection->quoteArr($value)).')';
         } else {
             $query .= '= '.$this->connection->quote($value);
@@ -169,6 +183,28 @@ class Helper
      */
     public function callSnippets($data, $index, $query, $options = array())
     {
+        if (!is_array($data) && !is_string($data)) {
+            throw new SphinxQLException('callSnippets() data must be a string or array of strings.');
+        }
+        if (is_string($data) && trim($data) === '') {
+            throw new SphinxQLException('callSnippets() data string cannot be empty.');
+        }
+        if (is_array($data)) {
+            if (count($data) === 0) {
+                throw new SphinxQLException('callSnippets() data array cannot be empty.');
+            }
+            foreach ($data as $item) {
+                if (!is_string($item)) {
+                    throw new SphinxQLException('callSnippets() data array must contain strings only.');
+                }
+            }
+        }
+        $this->assertNonEmptyString($index, 'callSnippets() index');
+        $this->assertNonEmptyString($query, 'callSnippets() query');
+        if (!is_array($options)) {
+            throw new SphinxQLException('callSnippets() options must be an associative array.');
+        }
+
         $documents = array();
         if (is_array($data)) {
             $documents[] = '('.implode(', ', $this->connection->quoteArr($data)).')';
@@ -201,6 +237,12 @@ class Helper
      */
     public function callKeywords($text, $index, $hits = null)
     {
+        $this->assertNonEmptyString($text, 'callKeywords() text');
+        $this->assertNonEmptyString($index, 'callKeywords() index');
+        if ($hits !== null && !in_array($hits, array(0, 1, '0', '1'), true)) {
+            throw new SphinxQLException('callKeywords() hits must be 0, 1, or null.');
+        }
+
         $arr = array($text, $index);
         if ($hits !== null) {
             $arr[] = $hits;
@@ -218,6 +260,8 @@ class Helper
      */
     public function describe($index)
     {
+        $this->assertNonEmptyString($index, 'describe() index');
+
         return $this->query('DESCRIBE '.$index);
     }
 
@@ -234,8 +278,17 @@ class Helper
      */
     public function createFunction($udf_name, $returns, $so_name)
     {
+        $this->assertNonEmptyString($udf_name, 'createFunction() udf_name');
+        $this->assertNonEmptyString($returns, 'createFunction() returns');
+        $this->assertNonEmptyString($so_name, 'createFunction() so_name');
+
+        $normalizedReturn = strtoupper(trim($returns));
+        if (!in_array($normalizedReturn, array('INT', 'UINT', 'BIGINT', 'FLOAT', 'STRING'), true)) {
+            throw new SphinxQLException('createFunction() returns must be one of: INT, UINT, BIGINT, FLOAT, STRING.');
+        }
+
         return $this->query('CREATE FUNCTION '.$udf_name.
-            ' RETURNS '.$returns.' SONAME '.$this->connection->quote($so_name));
+            ' RETURNS '.$normalizedReturn.' SONAME '.$this->connection->quote($so_name));
     }
 
     /**
@@ -247,6 +300,8 @@ class Helper
      */
     public function dropFunction($udf_name)
     {
+        $this->assertNonEmptyString($udf_name, 'dropFunction() udf_name');
+
         return $this->query('DROP FUNCTION '.$udf_name);
     }
 
@@ -260,6 +315,9 @@ class Helper
      */
     public function attachIndex($disk_index, $rt_index)
     {
+        $this->assertNonEmptyString($disk_index, 'attachIndex() disk_index');
+        $this->assertNonEmptyString($rt_index, 'attachIndex() rt_index');
+
         return $this->query('ATTACH INDEX '.$disk_index.' TO RTINDEX '.$rt_index);
     }
 
@@ -272,6 +330,8 @@ class Helper
      */
     public function flushRtIndex($index)
     {
+        $this->assertNonEmptyString($index, 'flushRtIndex() index');
+
         return $this->query('FLUSH RTINDEX '.$index);
     }
 
@@ -284,6 +344,8 @@ class Helper
      */
     public function truncateRtIndex($index)
     {
+        $this->assertNonEmptyString($index, 'truncateRtIndex() index');
+
         return $this->query('TRUNCATE RTINDEX '.$index);
     }
 
@@ -296,6 +358,8 @@ class Helper
      */
     public function optimizeIndex($index)
     {
+        $this->assertNonEmptyString($index, 'optimizeIndex() index');
+
         return $this->query('OPTIMIZE INDEX '.$index);
     }
 
@@ -308,6 +372,8 @@ class Helper
      */
     public function showIndexStatus($index)
     {
+        $this->assertNonEmptyString($index, 'showIndexStatus() index');
+
         return $this->query('SHOW INDEX '.$index.' STATUS');
     }
 
@@ -320,6 +386,21 @@ class Helper
      */
     public function flushRamchunk($index)
     {
+        $this->assertNonEmptyString($index, 'flushRamchunk() index');
+
         return $this->query('FLUSH RAMCHUNK '.$index);
+    }
+
+    /**
+     * @param mixed  $value
+     * @param string $field
+     *
+     * @throws SphinxQLException
+     */
+    private function assertNonEmptyString($value, $field)
+    {
+        if (!is_string($value) || trim($value) === '') {
+            throw new SphinxQLException($field.' must be a non-empty string.');
+        }
     }
 }

@@ -3,6 +3,12 @@
 * Updated CI PHP matrix to 8.2 and 8.3
 * Restored runtime-level driver normalization for PDO/MySQLi scalar fetch values
 * Normalized MySQLi driver exception handling for modern PHP `mysqli_sql_exception` behavior
+* Hardened runtime validation for `SphinxQL`, `Facet`, `Helper`, and `Percolate` input contracts (fail-fast exceptions for invalid query-shape input)
+* Standardized driver exception message prefixes for better diagnostics (`[mysqli][...]`, `[pdo][...]`)
+* Expanded helper runtime API coverage (`SHOW WARNINGS`, `SHOW STATUS`, `SHOW INDEX STATUS`, `FLUSH RAMCHUNK`, `FLUSH RTINDEX`, `OPTIMIZE INDEX`, UDF lifecycle checks)
+* Added and stabilized Sphinx 3 compatibility coverage while preserving Sphinx 2 and Manticore test behavior
+* Migrated CI to GitHub Actions-only validation with strict composer metadata checks
+* Updated documentation and added a dedicated `MIGRATING-4.0.md` guide
 
 #### 3.0.2
 * Dropped support for PHP 7.3 and lower

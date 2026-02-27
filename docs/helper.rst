@@ -1,77 +1,44 @@
-SphinxQL Query Builder Helper
-=============================
+Helper API
+==========
+
+The ``Helper`` class exposes convenience wrappers for SphinxQL statements that
+do not need fluent query composition.
+
+Usage
+-----
 
 .. code-block:: php
 
-    Helper::create($conn)
-      ->showMeta();
+    <?php
 
-.. code-block:: php
+    use Foolz\SphinxQL\Helper;
 
-    Helper::create($conn)
-      ->showWarnings();
+    $helper = new Helper($conn);
+    $rows = $helper->showVariables()->execute()->getStored();
 
-.. code-block:: php
+Available Methods
+-----------------
 
-    Helper::create($conn)
-      ->showStatus();
+- ``showMeta()``
+- ``showWarnings()``
+- ``showStatus()``
+- ``showTables($index)``
+- ``showVariables()``
+- ``setVariable($name, $value, $global = false)``
+- ``callSnippets($data, $index, $query, array $options = array())``
+- ``callKeywords($text, $index, $hits = null)``
+- ``describe($index)``
+- ``createFunction($udfName, $returns, $soName)``
+- ``dropFunction($udfName)``
+- ``attachIndex($diskIndex, $rtIndex)``
+- ``flushRtIndex($index)``
+- ``truncateRtIndex($index)``
+- ``optimizeIndex($index)``
+- ``showIndexStatus($index)``
+- ``flushRamchunk($index)``
 
-.. code-block:: php
+Validation Notes
+----------------
 
-    Helper::create($conn)
-      ->showTables();
-
-.. code-block:: php
-
-    Helper::create($conn)
-      ->showVariables();
-
-.. code-block:: php
-
-    Helper::create($conn)
-      ->showSessionVariables();
-
-.. code-block:: php
-
-    Helper::create($conn)
-      ->showGlobalVariables();
-
-.. code-block:: php
-
-    Helper::create($conn)
-      ->setVariable($variable, $value, $global = false);
-
-.. code-block:: php
-
-    Helper::create($conn)
-      ->callSnippets($data, $index, $extra = array());
-
-.. code-block:: php
-
-    Helper::create($conn)
-      ->callKeywords($text, $index, $hits = null);
-
-.. code-block:: php
-
-    Helper::create($conn)
-      ->describe($index);
-
-.. code-block:: php
-
-    Helper::create($conn)
-      ->createFunction($name, $returns, $soname);
-
-.. code-block:: php
-
-    Helper::create($conn)
-      ->dropFunction($name);
-
-.. code-block:: php
-
-    Helper::create($conn)
-      ->attachIndex($diskIndex, $rtIndex);
-
-.. code-block:: php
-
-    Helper::create($conn)
-      ->flushRtIndex($index);
+In 4.0, helper methods validate required identifiers and input shapes and throw
+``SphinxQLException`` on invalid arguments.
