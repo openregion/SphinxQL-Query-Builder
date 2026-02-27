@@ -74,6 +74,23 @@ class ConnectionTest extends \PHPUnit\Framework\TestCase
         $this->assertSame(array('host' => '127.0.0.1', 'port' => 9308, 'socket' => null), $this->connection->getParams());
     }
 
+    public function testCredentialsParams()
+    {
+        $this->connection->setParam('username', 'tester');
+        $this->connection->setParam('password', 'secret');
+
+        $this->assertSame(
+            array(
+                'host' => '127.0.0.1',
+                'port' => 9307,
+                'socket' => null,
+                'username' => 'tester',
+                'password' => 'secret',
+            ),
+            $this->connection->getParams()
+        );
+    }
+
     public function testGetConnection()
     {
         $this->connection->connect();
@@ -93,6 +110,15 @@ class ConnectionTest extends \PHPUnit\Framework\TestCase
 
         $this->connection->setParam('options', array(MYSQLI_OPT_CONNECT_TIMEOUT => 1));
         $this->connection->connect();
+        $this->assertNotNull($this->connection->getConnection());
+    }
+
+    public function testConnectWithCredentialsParams()
+    {
+        $this->connection->setParam('username', null);
+        $this->connection->setParam('password', null);
+        $this->connection->connect();
+
         $this->assertNotNull($this->connection->getConnection());
     }
 

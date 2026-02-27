@@ -42,6 +42,8 @@ Connection Parameters
 - ``host`` (string, default ``127.0.0.1``)
 - ``port`` (int, default ``9306``)
 - ``socket`` (string|null, default ``null``)
+- ``username`` (string|null, optional)
+- ``password`` (string|null, optional)
 - ``options`` (array, driver-specific client options)
 
 Strict Validation Notes

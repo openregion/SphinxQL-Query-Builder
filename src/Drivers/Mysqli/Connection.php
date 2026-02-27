@@ -40,6 +40,8 @@ class Connection extends ConnectionBase
     {
         $data = $this->getParams();
         $conn = mysqli_init();
+        $username = array_key_exists('username', $data) ? $data['username'] : null;
+        $password = array_key_exists('password', $data) ? $data['password'] : null;
 
         if (!empty($data['options'])) {
             foreach ($data['options'] as $option => $value) {
@@ -49,7 +51,7 @@ class Connection extends ConnectionBase
 
         set_error_handler(function () {});
         try {
-            if (!$conn->real_connect($data['host'], null, null, null, (int) $data['port'], $data['socket'])) {
+            if (!$conn->real_connect($data['host'], $username, $password, null, (int) $data['port'], $data['socket'])) {
                 throw new ConnectionException(
                     '[mysqli][connect]['.$conn->connect_errno.'] '.$conn->connect_error
                     .' [host='.(string) $data['host'].', port='.(int) $data['port'].']'

@@ -41,6 +41,8 @@ class Connection extends ConnectionBase
     public function connect()
     {
         $params = $this->getParams();
+        $username = array_key_exists('username', $params) ? $params['username'] : null;
+        $password = array_key_exists('password', $params) ? $params['password'] : null;
 
         $dsn = 'mysql:';
         if (isset($params['host']) && $params['host'] != '') {
@@ -58,7 +60,7 @@ class Connection extends ConnectionBase
         }
 
         try {
-            $con = new PDO($dsn);
+            $con = new PDO($dsn, $username, $password);
         } catch (PDOException $exception) {
             throw new ConnectionException(
                 '[pdo][connect]['.$exception->getCode().'] '.$exception->getMessage().' [dsn='.$dsn.']',

@@ -345,6 +345,7 @@ class SphinxQLTest extends \PHPUnit\Framework\TestCase
      * @covers \Foolz\SphinxQL\SphinxQL::compile
      * @covers \Foolz\SphinxQL\SphinxQL::compileUpdate
      * @covers \Foolz\SphinxQL\SphinxQL::compileSelect
+     * @covers \Foolz\SphinxQL\SphinxQL::into
      * @covers \Foolz\SphinxQL\SphinxQL::update
      * @covers \Foolz\SphinxQL\SphinxQL::value
      */
@@ -427,6 +428,25 @@ class SphinxQLTest extends \PHPUnit\Framework\TestCase
             $result
         );
         self::$conn->query('ALTER TABLE rt DROP COLUMN tags');
+    }
+
+    /**
+     * @covers \Foolz\SphinxQL\SphinxQL::compile
+     * @covers \Foolz\SphinxQL\SphinxQL::compileUpdate
+     * @covers \Foolz\SphinxQL\SphinxQL::update
+     * @covers \Foolz\SphinxQL\SphinxQL::into
+     */
+    public function testUpdateWithLateInto()
+    {
+        $query = $this->createSphinxQL()
+            ->update()
+            ->into('rt')
+            ->set(array('gid' => 777))
+            ->where('id', '=', 11)
+            ->compile()
+            ->getCompiled();
+
+        $this->assertSame('UPDATE rt SET gid = 777 WHERE id = 11', $query);
     }
 
     /**

@@ -1009,15 +1009,18 @@ class SphinxQL
     /**
      * Activates the UPDATE mode
      *
-     * @param string $index The index to update into
+     * @param null|string $index The index to update into (optional, can be set later with into())
      *
      * @return self
      */
-    public function update($index)
+    public function update($index = null)
     {
         $this->reset();
         $this->type = 'update';
-        $this->into($index);
+
+        if ($index !== null) {
+            $this->into($index);
+        }
 
         return $this;
     }

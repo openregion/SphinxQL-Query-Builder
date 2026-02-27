@@ -105,7 +105,7 @@ including strict runtime validation behavior introduced in the 4.0 line.
 
 * __$conn->setParams($params = array('host' => '127.0.0.1', 'port' => 9306))__
 
-	Sets the connection parameters used to establish a connection to the server. Supported parameters: 'host', 'port', 'socket', 'options'.
+	Sets the connection parameters used to establish a connection to the server. Supported parameters: 'host', 'port', 'socket', 'username', 'password', 'options'.
 
 * __$conn->query($query)__
 
@@ -129,15 +129,17 @@ Often, you would need to call and run SQL functions that shouldn't be escaped in
 
 #### Query Escaping
 
-There are cases when an input __must__ be escaped in the SQL statement. The following functions are used to handle any escaping required for the query.
+There are cases when an input __must__ be escaped in the SQL statement. SQL value escaping is handled by the active connection object:
 
-* __$sq->escape($value)__
+* __$conn->escape($value)__
 
 	Returns the escaped value. This is processed with the `\MySQLi::real_escape_string()` function.
 
-* __$sq->quote($value)__
+* __$conn->quote($value)__
 
-	Adds quotes to the value and escapes it. For array elements, use `$sq->quoteArr($arr)`.
+	Adds quotes to the value and escapes it. For array elements, use `$conn->quoteArr($arr)`.
+
+`SphinxQL` itself exposes MATCH helpers:
 
 * __$sq->escapeMatch($value)__
 
@@ -148,6 +150,8 @@ There are cases when an input __must__ be escaped in the SQL statement. The foll
 	Escapes the string to be used in `MATCH`. The following characters are allowed: `-`, `|`, and `"`.
 
 	_Refer to `$sq->match()` for more information._
+
+There is no dedicated `quoteIdentifier()` helper; pass only trusted index/column identifiers.
 
 #### Strict Validation in 4.0
 
@@ -190,13 +194,29 @@ This will return an `INT` with the number of rows affected.
 
 	Both `$column1` and `$index1` can be arrays.
 
+MVA attributes are inserted/updated by passing arrays as values:
+
+```php
+<?php
+(new SphinxQL($conn))
+    ->replace()
+    ->into('rt')
+    ->set(array(
+        'id' => 123,
+        'title' => 'example',
+        'rubrics' => array(10, 20),
+        'districts' => array(1, 3, 5),
+    ))
+    ->execute();
+```
+
 #### UPDATE
 
 This will return an `INT` with the number of rows affected.
 
-* __$sq = (new SphinxQL($conn))->update($index)__
+* __$sq = (new SphinxQL($conn))->update($index = null)__
 
-	Begins an `UPDATE`.
+	Begins an `UPDATE`. You can pass the index immediately or set it later with `->into($index)`.
 
 * __$sq->value($column1, $value1)->value($column2, $value2)__
 

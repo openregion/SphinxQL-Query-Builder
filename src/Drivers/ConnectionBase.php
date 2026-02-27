@@ -39,6 +39,8 @@ abstract class ConnectionBase implements ConnectionInterface
      *
      * * string host - The hostname, IP address, or unix socket
      * * int port - The port to the host
+     * * null|string username - Optional username for MySQL protocol auth
+     * * null|string password - Optional password for MySQL protocol auth
      * * array options - MySQLi options/values, as an associative array. Example: array(MYSQLI_OPT_CONNECT_TIMEOUT => 2)
      *
      * @param string $param Name of the parameter to modify.
