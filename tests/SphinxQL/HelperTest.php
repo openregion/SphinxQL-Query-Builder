@@ -49,6 +49,7 @@ class HelperTest extends \PHPUnit\Framework\TestCase
     {
         $describe = $this->createHelper()->describe('rt')->execute()->getStored();
         array_shift($describe);
+        $describe = TestUtil::pickColumns($describe, array('Field', 'Type'));
         $this->assertSame(
             array(
                 array('Field' => 'title', 'Type' => 'field'),
@@ -90,7 +91,6 @@ class HelperTest extends \PHPUnit\Framework\TestCase
             'rt',
             'is',
             array(
-                'query_mode'   => 1,
                 'before_match' => '<em>',
                 'after_match'  => '</em>',
             )
@@ -121,6 +121,7 @@ class HelperTest extends \PHPUnit\Framework\TestCase
             'test case',
             'rt'
         )->execute()->getStored();
+        $keywords = TestUtil::pickColumns($keywords, array('qpos', 'tokenized', 'normalized'));
         $this->assertEquals(
             array(
                 array(
@@ -142,6 +143,7 @@ class HelperTest extends \PHPUnit\Framework\TestCase
             'rt',
             1
         )->execute()->getStored();
+        $keywords = TestUtil::pickColumns($keywords, array('qpos', 'tokenized', 'normalized', 'docs', 'hits'));
         $this->assertEquals(
             array(
                 array(
@@ -172,7 +174,8 @@ class HelperTest extends \PHPUnit\Framework\TestCase
 
     public function testCreateFunction()
     {
-        $this->createHelper()->createFunction('my_udf', 'INT', 'test_udf.so')->execute();
+        $returnType = TestUtil::isSphinx3($this->conn) ? 'BIGINT' : 'INT';
+        $this->createHelper()->createFunction('my_udf', $returnType, 'test_udf.so')->execute();
         $this->assertSame(
             array(array('MY_UDF()' => '42')),
             $this->conn->query('SELECT MY_UDF()')->getStored()

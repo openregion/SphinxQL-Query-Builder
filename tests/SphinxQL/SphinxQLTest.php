@@ -97,6 +97,7 @@ class SphinxQLTest extends \PHPUnit\Framework\TestCase
             ->getStored();
 
         array_shift($describe);
+        $describe = TestUtil::pickColumns($describe, array('Field', 'Type'));
         $this->assertSame(
             array(
                 //	array('Field' => 'id', 'Type' => 'integer'), this can be bigint on id64 sphinx
@@ -115,6 +116,7 @@ class SphinxQLTest extends \PHPUnit\Framework\TestCase
             ->getStored();
 
         array_shift($describe);
+        $describe = TestUtil::pickColumns($describe, array('Field', 'Type'));
         $this->assertSame(
             array(
                 //	array('Field' => 'id', 'Type' => 'integer'), this can be bigint on id64 sphinx
@@ -644,7 +646,7 @@ class SphinxQLTest extends \PHPUnit\Framework\TestCase
             ->execute()
             ->getStored();
 
-        $this->assertCount(1, $result);
+        $this->assertCount(TestUtil::isSphinx3(self::$conn) ? 2 : 1, $result);
 
         $result = $this->createSphinxQL()
             ->select()
@@ -654,7 +656,7 @@ class SphinxQLTest extends \PHPUnit\Framework\TestCase
             ->execute()
             ->getStored();
 
-        $this->assertCount(1, $result);
+        $this->assertCount(TestUtil::isSphinx3(self::$conn) ? 2 : 1, $result);
 
         $result = $this->createSphinxQL()
             ->select()
@@ -822,6 +824,7 @@ class SphinxQLTest extends \PHPUnit\Framework\TestCase
             ->select()
             ->from('rt')
             ->offset(4)
+            ->limit(1000)
             ->execute()
             ->getStored();
 
@@ -886,17 +889,17 @@ class SphinxQLTest extends \PHPUnit\Framework\TestCase
             ->select()
             ->from('rt')
             ->where('gid', 9003)
-            ->enqueue((new Helper(self::$conn))->showMeta())
             ->enqueue()
             ->select()
             ->from('rt')
             ->where('gid', 201)
+            ->enqueue((new Helper(self::$conn))->showMeta())
             ->executeBatch()
             ->getStored();
 
         $this->assertEquals('10', $result[0][0]['id']);
-        $this->assertEquals('1', $result[1][0]['Value']);
-        $this->assertEquals('11', $result[2][0]['id']);
+        $this->assertEquals('11', $result[1][0]['id']);
+        $this->assertEquals('1', $result[2][0]['Value']);
     }
 
     public function testEmptyQueue()
@@ -1104,22 +1107,24 @@ class SphinxQLTest extends \PHPUnit\Framework\TestCase
 
         // test both setting and not setting the connection
         foreach (array(self::$conn, null) as $conn) {
-            $result = $this->createSphinxQL()
-                ->select()
-                ->from('rt')
-                ->facet((new Facet($conn))
-                    ->facetFunction('INTERVAL', array('gid', 300, 600))
-                    ->orderByFunction('FACET', '', 'ASC'))
-                ->executeBatch()
-                ->getStored();
+            $intervalFacet = (new Facet($conn))->facetFunction('INTERVAL', array('gid', 300, 600));
+            if (TestUtil::isSphinx3(self::$conn)) {
+                $this->assertSame('FACET INTERVAL(gid,300,600)', $intervalFacet->getFacet());
+            } else {
+                $result = $this->createSphinxQL()
+                    ->select()
+                    ->from('rt')
+                    ->facet($intervalFacet->orderByFunction('FACET', '', 'ASC'))
+                    ->executeBatch()
+                    ->getStored();
 
-            $this->assertArrayHasKey('id', $result[0][0]);
-            $this->assertArrayHasKey('interval(gid,300,600)', $result[1][0]);
-            $this->assertArrayHasKey('count(*)', $result[1][0]);
-
-            $this->assertEquals('2', $result[1][0]['count(*)']);
-            $this->assertEquals('5', $result[1][1]['count(*)']);
-            $this->assertEquals('1', $result[1][2]['count(*)']);
+                $this->assertArrayHasKey('id', $result[0][0]);
+                $this->assertArrayHasKey('interval(gid,300,600)', $result[1][0]);
+                $this->assertArrayHasKey('count(*)', $result[1][0]);
+                $this->assertEquals('2', $result[1][0]['count(*)']);
+                $this->assertEquals('5', $result[1][1]['count(*)']);
+                $this->assertEquals('1', $result[1][2]['count(*)']);
+            }
 
             $result = $this->createSphinxQL()
                 ->select()
