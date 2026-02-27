@@ -7,7 +7,11 @@ case $SEARCH_BUILD in
     /usr/local/sphinx/bin/searchd -c sphinx.conf
     ;;
   SPHINX3)
-    WORK=$HOME/search/sphinx-3.0.3
+    WORK=$(find "$HOME/search" -maxdepth 1 -type d -name 'sphinx-3.*' | head -n 1)
+    if [ -z "$WORK" ] || [ ! -d "$WORK" ]; then
+      echo "Unable to find extracted SPHINX3 directory."
+      exit 1
+    fi
     UDF_SRC="$WORK/src/udfexample.c"
     if [ ! -f "$UDF_SRC" ]; then
       UDF_SRC=$(find "$HOME/search" -path '*/src/udfexample.c' | head -n 1)

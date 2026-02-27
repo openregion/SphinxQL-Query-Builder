@@ -13,9 +13,12 @@ concurrency:
 jobs:
   test:
     name: PHP ${{ matrix.php }} / ${{ matrix.driver }} / ${{ matrix.search_build }}
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     timeout-minutes: 30
     continue-on-error: ${{ matrix.search_build == 'SPHINX3' }}
+    permissions:
+      contents: read
+      packages: read
     strategy:
       fail-fast: false
       matrix:
@@ -38,29 +41,65 @@ jobs:
           extensions: mysqli, pdo_mysql, mbstring
           tools: composer:v2
 
-      - name: Install system dependencies
+      - name: Resolve search image and group exclusions
+        id: vars
         run: |
-          sudo apt-get update
-          if ! sudo apt-get install -y --no-install-recommends libodbc1; then
-            sudo apt-get install -y --no-install-recommends libodbc2
-          fi
-          sudo apt-get install -y --no-install-recommends \
-            gcc \
-            g++ \
-            make \
-            autoconf \
-            automake \
-            libtool \
-            pkg-config \
-            wget \
-            tar
+          EXCLUDE_GROUP=""
+          SEARCH_IMAGE=""
+          SEARCH_DOCKERFILE=""
+          case "$SEARCH_BUILD" in
+            SPHINX2)
+              SEARCH_IMAGE="ghcr.io/foolcode/sphinxql-query-builder-search-sphinx2:sphinx2-latest"
+              SEARCH_DOCKERFILE="docker/search/sphinx2/Dockerfile"
+              EXCLUDE_GROUP="--exclude-group=Manticore"
+              ;;
+            SPHINX3)
+              SEARCH_IMAGE="ghcr.io/foolcode/sphinxql-query-builder-search-sphinx3:sphinx3-latest"
+              SEARCH_DOCKERFILE="docker/search/sphinx3/Dockerfile"
+              EXCLUDE_GROUP="--exclude-group=Manticore"
+              ;;
+            MANTICORE)
+              SEARCH_IMAGE="ghcr.io/foolcode/sphinxql-query-builder-search-manticore:manticore-latest"
+              SEARCH_DOCKERFILE="docker/search/manticore/Dockerfile"
+              ;;
+            *)
+              echo "Unknown SEARCH_BUILD: $SEARCH_BUILD"
+              exit 1
+              ;;
+          esac
+          {
+            echo "search_image=$SEARCH_IMAGE"
+            echo "search_dockerfile=$SEARCH_DOCKERFILE"
+            echo "exclude_group=$EXCLUDE_GROUP"
+          } >> "$GITHUB_OUTPUT"
 
-      - name: Install search engine
+      - name: Fetch search image
         run: |
-          mkdir -p "$HOME/search"
-          pushd "$HOME/search"
-          "$GITHUB_WORKSPACE/tests/install.sh"
-          popd
+          if ! docker pull "${{ steps.vars.outputs.search_image }}"; then
+            echo "Unable to pull image, building from repository Dockerfile fallback."
+            docker build -f "${{ steps.vars.outputs.search_dockerfile }}" -t "${{ steps.vars.outputs.search_image }}" .
+          fi
+
+      - name: Start search daemon container
+        run: |
+          docker run -d --name searchd \
+            -p 9307:9307 \
+            -p 9312:9312 \
+            "${{ steps.vars.outputs.search_image }}"
+
+      - name: Wait for searchd
+        run: |
+          n=0
+          while [ "$n" -lt 60 ]; do
+            if (echo > /dev/tcp/127.0.0.1/9307) >/dev/null 2>&1; then
+              exit 0
+            fi
+            n=$((n + 1))
+            sleep 1
+          done
+          echo "searchd did not become ready on 127.0.0.1:9307"
+          docker logs searchd || true
+          exit 1
 
       - name: Install dependencies
         run: composer update --prefer-dist --no-interaction
@@ -68,18 +107,9 @@ jobs:
       - name: Prepare autoload
         run: composer dump-autoload
 
-      - name: Start search daemon
-        run: |
-          cd tests
-          "$GITHUB_WORKSPACE/tests/run.sh"
-
       - name: Run tests
         run: |
-          EXCLUDE_GROUP=""
-          if [ "$SEARCH_BUILD" != "MANTICORE" ]; then
-            EXCLUDE_GROUP="--exclude-group=Manticore"
-          fi
-          ./vendor/bin/phpunit --configuration "tests/travis/${DRIVER}.phpunit.xml" --coverage-text $EXCLUDE_GROUP
+          ./vendor/bin/phpunit --configuration "tests/travis/${DRIVER}.phpunit.xml" --coverage-text ${{ steps.vars.outputs.exclude_group }}
 
       - name: Upload debug artifacts on failure
         if: failure()
@@ -91,3 +121,11 @@ jobs:
             tests/searchd.log
             tests/searchd.pid
             tests/data/*
+
+      - name: Show searchd logs
+        if: always()
+        run: docker logs searchd || true
+
+      - name: Stop searchd container
+        if: always()
+        run: docker rm -f searchd || true
