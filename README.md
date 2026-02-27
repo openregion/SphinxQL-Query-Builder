@@ -2,6 +2,7 @@ Query Builder for SphinxQL
 ==========================
 
 [![CI](https://github.com/FoolCode/SphinxQL-Query-Builder/actions/workflows/ci.yml/badge.svg)](https://github.com/FoolCode/SphinxQL-Query-Builder/actions/workflows/ci.yml)
+[![Documentation](https://github.com/FoolCode/SphinxQL-Query-Builder/actions/workflows/docs.yml/badge.svg)](https://github.com/FoolCode/SphinxQL-Query-Builder/actions/workflows/docs.yml)
 [![Latest Stable Version](https://poser.pugx.org/foolz/sphinxql-query-builder/v/stable)](https://packagist.org/packages/foolz/sphinxql-query-builder)
 [![Latest Unstable Version](https://poser.pugx.org/foolz/sphinxql-query-builder/v/unstable)](https://packagist.org/packages/foolz/sphinxql-query-builder)
 [![Total Downloads](https://poser.pugx.org/foolz/sphinxql-query-builder/downloads)](https://packagist.org/packages/foolz/sphinxql-query-builder)
@@ -27,6 +28,20 @@ a pull request.
 The majority of the methods in the package have been unit tested.
 
 Helper methods and engine compatibility scenarios are covered by the test suite.
+
+## Documentation
+
+The docs are built with modern Sphinx + Furo styling.
+
+Build locally:
+
+```bash
+python3 -m pip install -r docs/requirements.txt
+sphinx-build --fail-on-warning --keep-going -b html docs docs/_build/html
+```
+
+CI builds docs for pull requests and deploys the rendered site to GitHub Pages
+on pushes to `master`.
 
 ## How to Contribute
 

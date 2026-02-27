@@ -20,6 +20,18 @@ Testing
 
 All pull requests must be accompanied with passing tests and code coverage. The SphinxQL Query Builder uses `PHPUnit <https://github.com/sebastianbergmann/phpunit/>`_ for testing.
 
+Documentation
+-------------
+
+Documentation is built with Sphinx and the Furo theme.
+
+Build locally:
+
+.. code-block:: bash
+
+    python3 -m pip install -r docs/requirements.txt
+    sphinx-build --fail-on-warning --keep-going -b html docs docs/_build/html
+
 Issue Tracker
 -------------
 

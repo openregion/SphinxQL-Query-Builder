@@ -1,0 +1,9 @@
+:root {
+  --color-brand-primary: #1c7ed6;
+  --color-brand-content: #1864ab;
+}
+
+.sidebar-brand-text {
+  font-weight: 700;
+  letter-spacing: 0.01em;
+}
