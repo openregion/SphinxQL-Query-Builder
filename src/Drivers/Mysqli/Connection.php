@@ -8,6 +8,7 @@ use Foolz\SphinxQL\Drivers\ResultSet;
 use Foolz\SphinxQL\Exception\ConnectionException;
 use Foolz\SphinxQL\Exception\DatabaseException;
 use Foolz\SphinxQL\Exception\SphinxQLException;
+use mysqli_sql_exception;
 
 /**
  * SphinxQL connection class utilizing the MySQLi extension.
@@ -51,6 +52,12 @@ class Connection extends ConnectionBase
             if (!$conn->real_connect($data['host'], null, null, null, (int) $data['port'], $data['socket'])) {
                 throw new ConnectionException('Connection Error: ['.$conn->connect_errno.']'.$conn->connect_error);
             }
+        } catch (mysqli_sql_exception $exception) {
+            throw new ConnectionException(
+                'Connection Error: ['.$exception->getCode().']'.$exception->getMessage(),
+                (int) $exception->getCode(),
+                $exception
+            );
         } finally {
             restore_error_handler();
         }
@@ -102,6 +109,12 @@ class Connection extends ConnectionBase
              * ERROR mysqli::prepare(): (08S01/1047): unknown command (code=22) - prepare() not implemented by Sphinx/Manticore
              */
             $resource = @$this->getConnection()->query($query);
+        } catch (mysqli_sql_exception $exception) {
+            throw new DatabaseException(
+                '['.$exception->getCode().'] '.$exception->getMessage().' [ '.$query.']',
+                (int) $exception->getCode(),
+                $exception
+            );
         } finally {
             restore_error_handler();
         }        
@@ -127,7 +140,15 @@ class Connection extends ConnectionBase
 
         $this->ensureConnection();
 
-        $this->getConnection()->multi_query(implode(';', $queue));
+        try {
+            $this->getConnection()->multi_query(implode(';', $queue));
+        } catch (mysqli_sql_exception $exception) {
+            throw new DatabaseException(
+                '['.$exception->getCode().'] '.$exception->getMessage().' [ '.implode(';', $queue).']',
+                (int) $exception->getCode(),
+                $exception
+            );
+        }
 
         if ($this->getConnection()->error) {
             throw new DatabaseException('['.$this->getConnection()->errno.'] '.
@@ -146,7 +167,13 @@ class Connection extends ConnectionBase
     {
         $this->ensureConnection();
 
-        if (($value = $this->getConnection()->real_escape_string((string) $value)) === false) {
+        try {
+            $value = $this->getConnection()->real_escape_string((string) $value);
+        } catch (mysqli_sql_exception $exception) {
+            throw new DatabaseException($exception->getMessage(), (int) $exception->getCode(), $exception);
+        }
+
+        if ($value === false) {
             // @codeCoverageIgnoreStart
             throw new DatabaseException($this->getConnection()->error, $this->getConnection()->errno);
             // @codeCoverageIgnoreEnd

@@ -1,7 +1,7 @@
 Query Builder for SphinxQL
 ==========================
 
-[![Build Status](https://travis-ci.org/FoolCode/SphinxQL-Query-Builder.png)](https://travis-ci.org/FoolCode/SphinxQL-Query-Builder)
+[![CI](https://github.com/FoolCode/SphinxQL-Query-Builder/actions/workflows/ci.yml/badge.svg)](https://github.com/FoolCode/SphinxQL-Query-Builder/actions/workflows/ci.yml)
 [![Latest Stable Version](https://poser.pugx.org/foolz/sphinxql-query-builder/v/stable)](https://packagist.org/packages/foolz/sphinxql-query-builder)
 [![Latest Unstable Version](https://poser.pugx.org/foolz/sphinxql-query-builder/v/unstable)](https://packagist.org/packages/foolz/sphinxql-query-builder)
 [![Total Downloads](https://poser.pugx.org/foolz/sphinxql-query-builder/downloads)](https://packagist.org/packages/foolz/sphinxql-query-builder)

@@ -1,0 +1,91 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches:
+      - master
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    name: PHP ${{ matrix.php }} / ${{ matrix.driver }} / ${{ matrix.search_build }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    continue-on-error: ${{ matrix.search_build == 'SPHINX3' }}
+    strategy:
+      fail-fast: false
+      matrix:
+        php: ['7.4', '8.0', '8.1']
+        driver: [mysqli, pdo]
+        search_build: [SPHINX2, SPHINX3, MANTICORE]
+    env:
+      DRIVER: ${{ matrix.driver }}
+      SEARCH_BUILD: ${{ matrix.search_build }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php }}
+          coverage: none
+          extensions: mysqli, pdo_mysql, mbstring
+          tools: composer:v2
+
+      - name: Install system dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends \
+            libodbc1 \
+            gcc \
+            g++ \
+            make \
+            autoconf \
+            automake \
+            libtool \
+            pkg-config \
+            wget \
+            tar
+
+      - name: Install search engine
+        run: |
+          mkdir -p "$HOME/search"
+          pushd "$HOME/search"
+          "$GITHUB_WORKSPACE/tests/install.sh"
+          popd
+
+      - name: Install dependencies
+        run: composer update --prefer-dist --no-interaction
+
+      - name: Prepare autoload
+        run: composer dump-autoload
+
+      - name: Start search daemon
+        run: |
+          cd tests
+          "$GITHUB_WORKSPACE/tests/run.sh"
+
+      - name: Run tests
+        run: |
+          EXCLUDE_GROUP=""
+          if [ "$SEARCH_BUILD" != "MANTICORE" ]; then
+            EXCLUDE_GROUP="--exclude-group=Manticore"
+          fi
+          ./vendor/bin/phpunit --configuration "tests/travis/${DRIVER}.phpunit.xml" --coverage-text $EXCLUDE_GROUP
+
+      - name: Upload debug artifacts on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ci-debug-php${{ matrix.php }}-${{ matrix.driver }}-${{ matrix.search_build }}
+          if-no-files-found: ignore
+          path: |
+            tests/searchd.log
+            tests/searchd.pid
+            tests/data/*
