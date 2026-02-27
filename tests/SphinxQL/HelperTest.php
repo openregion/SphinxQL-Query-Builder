@@ -181,6 +181,9 @@ class HelperTest extends \PHPUnit\Framework\TestCase
             $this->conn->query('SELECT MY_UDF()')->getStored()
         );
         $this->createHelper()->dropFunction('my_udf')->execute();
+
+        $this->expectException(Foolz\SphinxQL\Exception\DatabaseException::class);
+        $this->conn->query('SELECT MY_UDF()');
     }
 
     /**
@@ -244,5 +247,51 @@ class HelperTest extends \PHPUnit\Framework\TestCase
 
         $query = $this->createHelper()->flushRamchunk('rt');
         $this->assertEquals('FLUSH RAMCHUNK rt', $query->compile()->getCompiled());
+    }
+
+    public function testShowWarningsAndStatusExecution()
+    {
+        $warnings = $this->createHelper()->showWarnings()->execute()->getStored();
+        if (is_int($warnings)) {
+            $this->assertGreaterThanOrEqual(0, $warnings);
+        } else {
+            $this->assertIsArray($warnings);
+        }
+
+        $status = $this->createHelper()->showStatus()->execute()->getStored();
+        $this->assertNotEmpty($status);
+        $this->assertArrayHasKey('Value', $status[0]);
+    }
+
+    public function testShowIndexStatusExecution()
+    {
+        $statusRows = $this->createHelper()->showIndexStatus('rt')->execute()->getStored();
+        $this->assertNotEmpty($statusRows);
+
+        $found = false;
+        foreach ($statusRows as $row) {
+            if (($row['Variable_name'] ?? null) === 'index_type') {
+                $found = true;
+                $this->assertSame('rt', (string) ($row['Value'] ?? ''));
+                break;
+            }
+        }
+
+        $this->assertTrue($found);
+    }
+
+    public function testFlushAndOptimizeExecution()
+    {
+        $result = $this->createHelper()->flushRamchunk('rt')->execute()->getStored();
+        $this->assertIsInt($result);
+        $this->assertGreaterThanOrEqual(0, $result);
+
+        $result = $this->createHelper()->flushRtIndex('rt')->execute()->getStored();
+        $this->assertIsInt($result);
+        $this->assertGreaterThanOrEqual(0, $result);
+
+        $result = $this->createHelper()->optimizeIndex('rt')->execute()->getStored();
+        $this->assertIsInt($result);
+        $this->assertGreaterThanOrEqual(0, $result);
     }
 }
