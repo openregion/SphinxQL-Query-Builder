@@ -30,6 +30,8 @@ Available Methods
 - ``showAgentStatus()``
 - ``showScroll()``
 - ``showDatabases()``
+- ``showCharacterSet()``
+- ``showCollation()``
 - ``showTables($index)``
 - ``showVariables()``
 - ``showCreateTable($table)``

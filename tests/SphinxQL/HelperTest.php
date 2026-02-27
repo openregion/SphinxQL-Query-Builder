@@ -283,6 +283,12 @@ class HelperTest extends \PHPUnit\Framework\TestCase
         $query = $this->createHelper()->showDatabases();
         $this->assertEquals('SHOW DATABASES', $query->compile()->getCompiled());
 
+        $query = $this->createHelper()->showCharacterSet();
+        $this->assertEquals('SHOW CHARACTER SET', $query->compile()->getCompiled());
+
+        $query = $this->createHelper()->showCollation();
+        $this->assertEquals('SHOW COLLATION', $query->compile()->getCompiled());
+
         $query = $this->createHelper()->showCreateTable('rt');
         $this->assertEquals('SHOW CREATE TABLE rt', $query->compile()->getCompiled());
 
@@ -432,6 +438,11 @@ class HelperTest extends \PHPUnit\Framework\TestCase
         $this->assertNotEmpty($caps->getEngine());
         $this->assertTrue($this->createHelper()->supports('grouped_where'));
         $this->assertIsBool($this->createHelper()->supports('show_profile'));
+        $this->assertIsBool($this->createHelper()->supports('show_character_set'));
+        $this->assertIsBool($this->createHelper()->supports('show_collation'));
+        $this->assertSame($caps->isManticore(), $caps->getEngine() === 'MANTICORE');
+        $this->assertSame($caps->isSphinx2(), $caps->getEngine() === 'SPHINX2');
+        $this->assertSame($caps->isSphinx3(), $caps->getEngine() === 'SPHINX3');
     }
 
     public function testSupportsUnknownFeatureValidation()
@@ -470,6 +481,26 @@ class HelperTest extends \PHPUnit\Framework\TestCase
         }
 
         $rows = $this->createHelper()->showPlugins()->execute()->getStored();
+        $this->assertIsArray($rows);
+    }
+
+    public function testShowCharacterSetExecutionWhenSupported()
+    {
+        if (!TestUtil::supportsCommand($this->conn, 'SHOW CHARACTER SET')) {
+            $this->markTestSkipped('SHOW CHARACTER SET is not supported by this engine.');
+        }
+
+        $rows = $this->createHelper()->showCharacterSet()->execute()->getStored();
+        $this->assertIsArray($rows);
+    }
+
+    public function testShowCollationExecutionWhenSupported()
+    {
+        if (!TestUtil::supportsCommand($this->conn, 'SHOW COLLATION')) {
+            $this->markTestSkipped('SHOW COLLATION is not supported by this engine.');
+        }
+
+        $rows = $this->createHelper()->showCollation()->execute()->getStored();
         $this->assertIsArray($rows);
     }
 

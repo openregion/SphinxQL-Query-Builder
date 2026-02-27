@@ -295,6 +295,26 @@ class SphinxQL
     }
 
     /**
+     * Throws when a named feature is not supported.
+     *
+     * @param string $feature
+     * @param string $context
+     *
+     * @return self
+     * @throws SphinxQLException
+     */
+    public function requireSupport($feature, $context = '')
+    {
+        if ($this->connection === null) {
+            throw new SphinxQLException('requireSupport() requires an attached connection.');
+        }
+
+        (new Helper($this->connection))->requireSupport($feature, $context);
+
+        return $this;
+    }
+
+    /**
      * Avoids having the expressions escaped
      *
      * Examples:

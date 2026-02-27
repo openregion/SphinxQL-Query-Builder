@@ -1391,6 +1391,19 @@ class SphinxQLTest extends \PHPUnit\Framework\TestCase
         $this->assertTrue($query->supports('grouped_where'));
     }
 
+    public function testSphinxQLRequireSupport()
+    {
+        $query = $this->createSphinxQL();
+        if ($query->supports('call_qsuggest')) {
+            $this->assertSame($query, $query->requireSupport('call_qsuggest'));
+
+            return;
+        }
+
+        $this->expectException(Foolz\SphinxQL\Exception\UnsupportedFeatureException::class);
+        $query->requireSupport('call_qsuggest');
+    }
+
     public function testSphinxQLSupportsUnknownFeatureValidation()
     {
         $this->expectException(Foolz\SphinxQL\Exception\SphinxQLException::class);

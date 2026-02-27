@@ -90,6 +90,8 @@ We support the following database connection drivers:
 | Sphinx 3.x | Supported | Supported with engine-specific assertions | Full CI lane |
 | Manticore | Supported | Supported + Percolate | Full CI lane |
 
+Detailed feature-level support is tracked in [`docs/feature-matrix.yml`](docs/feature-matrix.yml).
+
 ### Migration to 4.0
 
 See [`MIGRATING-4.0.md`](MIGRATING-4.0.md) for the complete migration checklist,
@@ -452,6 +454,12 @@ Remember to `->execute()` to get a result.
 
 	Throws `UnsupportedFeatureException` when the requested feature is not available.
 
+`SphinxQL` also exposes capability helpers:
+
+* __$sphinxql->getCapabilities()__
+* __$sphinxql->supports($feature)__
+* __$sphinxql->requireSupport($feature, $context = '')__
+
 The following methods return a prepared `SphinxQL` object. You can also use `->enqueue($next_object)`:
 
 ```php
@@ -481,6 +489,8 @@ $result = (new SphinxQL($this->conn))
 * `(new Helper($conn))->showAgentStatus() => 'SHOW AGENT STATUS'`
 * `(new Helper($conn))->showScroll() => 'SHOW SCROLL'`
 * `(new Helper($conn))->showDatabases() => 'SHOW DATABASES'`
+* `(new Helper($conn))->showCharacterSet() => 'SHOW CHARACTER SET'`
+* `(new Helper($conn))->showCollation() => 'SHOW COLLATION'`
 * `(new Helper($conn))->showTables() => 'SHOW TABLES'`
 * `(new Helper($conn))->showVariables() => 'SHOW VARIABLES'`
 * `(new Helper($conn))->showCreateTable($table)`

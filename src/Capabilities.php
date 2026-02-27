@@ -59,6 +59,30 @@ class Capabilities
     }
 
     /**
+     * @return bool
+     */
+    public function isManticore()
+    {
+        return $this->engine === 'MANTICORE';
+    }
+
+    /**
+     * @return bool
+     */
+    public function isSphinx2()
+    {
+        return $this->engine === 'SPHINX2';
+    }
+
+    /**
+     * @return bool
+     */
+    public function isSphinx3()
+    {
+        return $this->engine === 'SPHINX3';
+    }
+
+    /**
      * @param string $feature
      *
      * @return bool
@@ -80,4 +104,3 @@ class Capabilities
         );
     }
 }
-

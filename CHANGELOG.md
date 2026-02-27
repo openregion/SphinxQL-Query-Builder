@@ -9,6 +9,9 @@
 * Added fluent boolean grouping APIs (`orWhere`, `whereOpen/whereClose`, `orHaving`, `havingOpen/havingClose`) and JOIN builders (`join`, `innerJoin`, `leftJoin`, `rightJoin`, `crossJoin`)
 * Added `orderByKnn()` and broader helper wrappers for operational and Manticore-oriented commands (`SHOW PROFILE/PLAN/THREADS/VERSION/PLUGINS`, table status/settings/indexes, flush/reload/kill, suggest family)
 * Added capability discovery and feature-gating APIs (`Capabilities`, `getCapabilities()`, `supports()`, `requireSupport()`) with `UnsupportedFeatureException` for unsupported command families
+* Added `SphinxQL::requireSupport()` passthrough and convenience engine predicates on `Capabilities` (`isManticore`, `isSphinx2`, `isSphinx3`)
+* Added helper parity wrappers for `SHOW CHARACTER SET` and `SHOW COLLATION`
+* Added `docs/feature-matrix.yml` as a feature-level support map across Sphinx2/Sphinx3/Manticore
 * Added capability-aware runtime tests for optional engine features (`supportsCommand`, Buddy-gated checks)
 * Added and stabilized Sphinx 3 compatibility coverage while preserving Sphinx 2 and Manticore test behavior
 * Migrated CI to GitHub Actions-only validation with strict composer metadata checks

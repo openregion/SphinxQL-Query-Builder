@@ -187,6 +187,26 @@ class Helper
     }
 
     /**
+     * Runs query: SHOW CHARACTER SET
+     *
+     * @return SphinxQL
+     */
+    public function showCharacterSet()
+    {
+        return $this->query('SHOW CHARACTER SET');
+    }
+
+    /**
+     * Runs query: SHOW COLLATION
+     *
+     * @return SphinxQL
+     */
+    public function showCollation()
+    {
+        return $this->query('SHOW COLLATION');
+    }
+
+    /**
      * Runs query: SHOW TABLES
      *
      * @return SphinxQL A SphinxQL object ready to be ->execute();
@@ -275,6 +295,8 @@ class Helper
             'show_threads',
             'show_plugins',
             'show_queries',
+            'show_character_set',
+            'show_collation',
             'show_table_settings',
             'show_table_indexes',
             'call_suggest',
@@ -297,6 +319,8 @@ class Helper
                 'show_threads' => 'SHOW THREADS',
                 'show_plugins' => 'SHOW PLUGINS',
                 'show_queries' => 'SHOW QUERIES',
+                'show_character_set' => 'SHOW CHARACTER SET',
+                'show_collation' => 'SHOW COLLATION',
                 'show_table_settings' => 'SHOW TABLE rt SETTINGS',
                 'show_table_indexes' => 'SHOW TABLE rt INDEXES',
                 'call_suggest' => "CALL SUGGEST('teh', 'rt')",

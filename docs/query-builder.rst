@@ -91,3 +91,4 @@ Capability Introspection
 
 - ``getCapabilities()``
 - ``supports($feature)``
+- ``requireSupport($feature, $context = '')``
