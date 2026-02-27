@@ -4,7 +4,6 @@ namespace Foolz\SphinxQL\Tests;
 
 use Foolz\SphinxQL\Drivers\Mysqli\Connection as MysqliConnection;
 use Foolz\SphinxQL\Drivers\Pdo\Connection as PdoConnection;
-use PDO;
 
 class TestUtil
 {
@@ -13,18 +12,8 @@ class TestUtil
      */
     public static function getConnectionDriver()
     {
-        if ($GLOBALS['driver'] === 'Pdo') {
-            return new class extends PdoConnection {
-                public function connect()
-                {
-                    $connected = parent::connect();
-                    $this->getConnection()->setAttribute(PDO::ATTR_STRINGIFY_FETCHES, true);
+        $connection = '\\Foolz\\SphinxQL\\Drivers\\'.$GLOBALS['driver'].'\\Connection';
 
-                    return $connected;
-                }
-            };
-        }
-
-        return new MysqliConnection();
+        return new $connection();
     }
 }

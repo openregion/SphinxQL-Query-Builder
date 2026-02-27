@@ -12,7 +12,7 @@
         "irc": "irc://irc.irchighway.net/fooldriver"
     },
     "require": {
-        "php": "^7.1 || ^8"
+        "php": "^8.2"
     },
     "require-dev": {
         "phpunit/phpunit": "^7 || ^8 || ^9"

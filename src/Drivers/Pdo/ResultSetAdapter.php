@@ -69,7 +69,7 @@ class ResultSetAdapter implements ResultSetAdapterInterface
      */
     public function store()
     {
-        return $this->statement->fetchAll(PDO::FETCH_NUM);
+        return $this->normalizeRows($this->statement->fetchAll(PDO::FETCH_NUM));
     }
 
     /**
@@ -118,6 +118,8 @@ class ResultSetAdapter implements ResultSetAdapterInterface
         if (!$row) {
             $this->valid = false;
             $row = null;
+        } else {
+            $row = $this->normalizeRow($row);
         }
 
         return $row;
@@ -138,6 +140,37 @@ class ResultSetAdapter implements ResultSetAdapterInterface
             $this->valid = false;
         }
 
+        return $this->normalizeRows($row);
+    }
+
+    /**
+     * Cast scalar non-string values to string to keep PDO and MySQLi
+     * result typing aligned across PHP versions.
+     *
+     * @param array $row
+     * @return array
+     */
+    protected function normalizeRow(array $row)
+    {
+        foreach ($row as $key => $value) {
+            if (is_scalar($value) && !is_string($value)) {
+                $row[$key] = (string) $value;
+            }
+        }
+
         return $row;
+    }
+
+    /**
+     * @param array $rows
+     * @return array
+     */
+    protected function normalizeRows(array $rows)
+    {
+        foreach ($rows as $index => $row) {
+            $rows[$index] = $this->normalizeRow($row);
+        }
+
+        return $rows;
     }
 }

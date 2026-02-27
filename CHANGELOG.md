@@ -1,3 +1,9 @@
+#### 4.0.0
+* Dropped support for PHP 8.1 and lower (minimum PHP is now 8.2)
+* Updated CI PHP matrix to 8.2 and 8.3
+* Restored runtime-level driver normalization for PDO/MySQLi scalar fetch values
+* Normalized MySQLi driver exception handling for modern PHP `mysqli_sql_exception` behavior
+
 #### 3.0.2
 * Dropped support for PHP 7.3 and lower
 
