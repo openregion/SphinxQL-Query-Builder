@@ -14,9 +14,11 @@
 * Added `docs/feature-matrix.yml` as a feature-level support map across Sphinx2/Sphinx3/Manticore
 * Added capability-aware runtime tests for optional engine features (`supportsCommand`, Buddy-gated checks)
 * Added and stabilized Sphinx 3 compatibility coverage while preserving Sphinx 2 and Manticore test behavior
-* Added support for optional connection credentials (`username`/`password`) in both PDO and MySQLi drivers
-* Added optional-index `update($index = null)` flow for fluent `->update()->into($index)` usage
-* Added a root `LICENSE` file and aligned README/config docs for escaping and connection parameter behavior
+* Added support for optional connection credentials (`username`/`password`) in both PDO and MySQLi drivers (closes #208)
+* Added optional-index `update($index = null)` flow for fluent `->update()->into($index)` usage (closes #184)
+* Added MVA insert/update array example in README (closes #178)
+* Corrected escaping docs to reference connection-level helpers and clarified `quoteIdentifier()` availability (closes #203)
+* Added a root `LICENSE` file (closes #171)
 * Migrated CI to GitHub Actions-only validation with strict composer metadata checks
 * Updated documentation and added a dedicated `MIGRATING-4.0.md` guide
 
