@@ -1,31 +1,37 @@
 Contribute
 ==========
 
+Thanks for improving SphinxQL Query Builder.
+
 Pull Requests
 -------------
 
-1. Fork `SphinxQL Query Builder <https://github.com/FoolCode/SphinxQL-Query-Builder>`_
-2. Create a new branch for each feature or improvement
-3. Submit a pull request with your branch against the default branch
+1. Fork `SphinxQL Query Builder <https://github.com/FoolCode/SphinxQL-Query-Builder>`_.
+2. Create a branch for your change.
+3. Open a pull request against the default branch.
 
-It is very important that you create a new branch for each feature, improvement, or fix so that may review the changes and merge the pull requests in a timely manner.
+Please keep each pull request focused on one logical change.
 
-Coding Style
-------------
+Development Guidelines
+----------------------
 
-All pull requests should follow modern PHP style conventions (PSR-12 compatible formatting).
+- Follow PSR-12 style.
+- Add/update tests for behavior changes.
+- Update docs when public API behavior changes.
 
 Testing
 -------
 
-All pull requests must be accompanied with passing tests and code coverage. The SphinxQL Query Builder uses `PHPUnit <https://github.com/sebastianbergmann/phpunit/>`_ for testing.
+Run the Docker-based matrix used in CI:
 
-Documentation
--------------
+.. code-block:: bash
 
-Documentation is built with Sphinx and the Furo theme.
+    ./scripts/run-tests-docker.sh
 
-Build locally:
+This runs PHPUnit for both mysqli and PDO configurations.
+
+Build Docs Locally
+------------------
 
 .. code-block:: bash
 
@@ -35,4 +41,5 @@ Build locally:
 Issue Tracker
 -------------
 
-You can find our issue tracker at our `SphinxQL Query Builder <https://github.com/FoolCode/SphinxQL-Query-Builder>`_ repository.
+Use the GitHub issue tracker:
+`github.com/FoolCode/SphinxQL-Query-Builder/issues <https://github.com/FoolCode/SphinxQL-Query-Builder/issues>`_.
