@@ -5,7 +5,7 @@ author = "FoolCode"
 copyright = f"2012-{date.today().year}, {author}"
 
 # We track release notes in CHANGELOG.md and do not hardcode package versions here.
-version = "4.x"
+version = "current"
 release = version
 
 extensions = [
