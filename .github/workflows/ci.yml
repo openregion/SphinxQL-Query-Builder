@@ -134,8 +134,9 @@ jobs:
       - name: Run PHPStan
         if: env.COVERAGE_LANE == 'true'
         run: |
+          set -o pipefail
           mkdir -p static-analysis
-          ./vendor/bin/phpstan analyse --configuration phpstan.neon.dist --memory-limit=1G --no-progress --error-format=raw > static-analysis/phpstan.txt
+          ./vendor/bin/phpstan analyse --configuration phpstan.neon.dist --memory-limit=1G --no-progress --error-format=raw 2>&1 | tee static-analysis/phpstan.txt
 
       - name: Run tests
         run: |
