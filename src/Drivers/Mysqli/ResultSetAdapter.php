@@ -11,23 +11,23 @@ class ResultSetAdapter implements ResultSetAdapterInterface
     /**
      * @var Connection
      */
-    protected $connection;
+    protected Connection $connection;
 
     /**
      * @var mysqli_result|bool
      */
-    protected $result;
+    protected mysqli_result|bool $result;
 
     /**
      * @var bool
      */
-    protected $valid = true;
+    protected bool $valid = true;
 
     /**
      * @param Connection         $connection
      * @param mysqli_result|bool $result
      */
-    public function __construct(Connection $connection, $result)
+    public function __construct(Connection $connection, mysqli_result|bool $result)
     {
         $this->connection = $connection;
         $this->result = $result;
@@ -37,7 +37,7 @@ class ResultSetAdapter implements ResultSetAdapterInterface
      * @inheritdoc
      * @throws ConnectionException
      */
-    public function getAffectedRows()
+    public function getAffectedRows(): int
     {
         return $this->connection->getConnection()->affected_rows;
     }
@@ -45,7 +45,7 @@ class ResultSetAdapter implements ResultSetAdapterInterface
     /**
      * @inheritdoc
      */
-    public function getNumRows()
+    public function getNumRows(): int
     {
         return $this->result->num_rows;
     }
@@ -53,7 +53,7 @@ class ResultSetAdapter implements ResultSetAdapterInterface
     /**
      * @inheritdoc
      */
-    public function getFields()
+    public function getFields(): array
     {
         return $this->result->fetch_fields();
     }
@@ -61,7 +61,7 @@ class ResultSetAdapter implements ResultSetAdapterInterface
     /**
      * @inheritdoc
      */
-    public function isDml()
+    public function isDml(): bool
     {
         return !($this->result instanceof mysqli_result);
     }
@@ -69,7 +69,7 @@ class ResultSetAdapter implements ResultSetAdapterInterface
     /**
      * @inheritdoc
      */
-    public function store()
+    public function store(): array
     {
         $this->result->data_seek(0);
 
@@ -79,7 +79,7 @@ class ResultSetAdapter implements ResultSetAdapterInterface
     /**
      * @inheritdoc
      */
-    public function toRow($num)
+    public function toRow(int $num): void
     {
         $this->result->data_seek($num);
     }
@@ -87,7 +87,7 @@ class ResultSetAdapter implements ResultSetAdapterInterface
     /**
      * @inheritdoc
      */
-    public function freeResult()
+    public function freeResult(): void
     {
         $this->result->free_result();
     }
@@ -95,7 +95,7 @@ class ResultSetAdapter implements ResultSetAdapterInterface
     /**
      * @inheritdoc
      */
-    public function rewind()
+    public function rewind(): void
     {
         $this->valid = true;
         $this->result->data_seek(0);
@@ -104,7 +104,7 @@ class ResultSetAdapter implements ResultSetAdapterInterface
     /**
      * @inheritdoc
      */
-    public function valid()
+    public function valid(): bool
     {
         return $this->valid;
     }
@@ -112,7 +112,7 @@ class ResultSetAdapter implements ResultSetAdapterInterface
     /**
      * @inheritdoc
      */
-    public function fetch($assoc = true)
+    public function fetch(bool $assoc = true): ?array
     {
         if ($assoc) {
             $row = $this->result->fetch_assoc();
@@ -124,13 +124,13 @@ class ResultSetAdapter implements ResultSetAdapterInterface
             $this->valid = false;
         }
 
-        return $row;
+        return $row === false ? null : $row;
     }
 
     /**
      * @inheritdoc
      */
-    public function fetchAll($assoc = true)
+    public function fetchAll(bool $assoc = true): array
     {
         if ($assoc) {
             $row = $this->result->fetch_all(MYSQLI_ASSOC);

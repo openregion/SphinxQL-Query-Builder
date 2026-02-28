@@ -1,12 +1,22 @@
 #!/bin/sh
 
+if command -v sudo >/dev/null 2>&1; then
+  as_root() {
+    sudo "$@"
+  }
+else
+  as_root() {
+    "$@"
+  }
+fi
+
 case $SEARCH_BUILD in
   SPHINX2)
     wget --quiet https://sphinxsearch.com/files/sphinx-2.3.2-beta.tar.gz
     tar zxvf sphinx-2.3.2-beta.tar.gz
     cd sphinx-2.3.2-beta
     ./configure --prefix=/usr/local/sphinx --without-mysql
-    sudo make && sudo make install
+    as_root make && as_root make install
     ;;
   SPHINX3)
     wget --quiet https://sphinxsearch.com/files/sphinx-3.9.1-141d2ea-linux-amd64.tar.gz

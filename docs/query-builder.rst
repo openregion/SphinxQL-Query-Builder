@@ -1,10 +1,8 @@
 SphinxQL Query Builder
 ======================
 
-Creating a Query Builder Instance
----------------------------------
-
-You can create an instance by using the following code and passing a configured `Connection` class.
+Creating a Builder
+------------------
 
 .. code-block:: php
 
@@ -14,222 +12,111 @@ You can create an instance by using the following code and passing a configured 
     use Foolz\SphinxQL\SphinxQL;
 
     $conn = new Connection();
-    $queryBuilder = SphinxQL::create($conn);
+    $conn->setParams(array('host' => '127.0.0.1', 'port' => 9306));
 
-Building a Query
-----------------
+    $queryBuilder = new SphinxQL($conn);
 
-The `Foolz\\SphinxQL\\SphinxQL` class supports building the following queries: `SELECT`, `INSERT`, `UPDATE`, and `DELETE`. Which sort of query being generated depends on the methods called.
+Supported Query Types
+---------------------
 
-For `SELECT` queries, you would start by invoking the `select()` method:
+- ``SELECT``
+- ``INSERT``
+- ``REPLACE``
+- ``UPDATE``
+- ``DELETE``
+- raw query via ``query($sql)``
 
-.. code-block:: php
-
-    $queryBuilder
-      ->select('id', 'name')
-      ->from('index');
-
-For `INSERT`, `REPLACE`, `UPDATE` and `DELETE` queries, you can pass the index as a parameter into the following methods:
-
-.. code-block:: php
-
-    $queryBuilder
-      ->insert('index');
-
-    $queryBuilder
-      ->replace('index');
-
-    $queryBuilder
-      ->update('index');
-
-    $queryBuilder
-      ->delete('index');
-
-.. note::
-
-    You can convert the query builder into its compiled SphinxQL dialect string representation by calling `$queryBuilder->compile()->getCompiled()`.
-
-Security: Bypass Query Escaping
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Compilation and Execution
+-------------------------
 
 .. code-block:: php
 
-    SphinxQL::expr($string)
-
-Security: Query Escaping
-^^^^^^^^^^^^^^^^^^^^^^^^
-
-.. code-block:: php
-
-    $queryBuilder
-      ->escape($value);
+    $sql = $queryBuilder
+        ->select('id')
+        ->from('rt')
+        ->compile()
+        ->getCompiled();
 
 .. code-block:: php
 
-    $queryBuilder
-      ->quoteIdentifier($value);
+    $result = $queryBuilder
+        ->select('id')
+        ->from('rt')
+        ->execute();
 
-.. code-block:: php
+Escaping
+--------
 
-    $queryBuilder
-      ->quote($value);
+- ``SphinxQL::expr()`` bypasses escaping for trusted SQL fragments.
+- ``quote()`` and ``quoteArr()`` are provided by the connection.
+- ``escapeMatch()`` and ``halfEscapeMatch()`` are available on ``SphinxQL``.
 
-.. code-block:: php
+Strict Validation in 4.0
+------------------------
 
-    $queryBuilder
-      ->escapeMatch($value);
+The builder now validates critical query-shape input and throws
+``SphinxQLException`` on invalid values:
 
-.. code-block:: php
+- invalid ``setType()`` values
+- invalid order direction values
+- negative ``limit()`` / ``offset()``
+- invalid shapes for ``IN`` and ``BETWEEN`` filters
+- invalid ``facet()`` object type
 
-    $queryBuilder
-      ->halfEscapeMatch($value);
+Boolean Grouping and OR Filters
+-------------------------------
 
-WHERE Clause
-^^^^^^^^^^^^
+The builder supports grouped boolean filters for ``WHERE`` and ``HAVING``:
 
-The `SELECT`, `UPDATE` and `DELETE` statements supports the `WHERE` clause with the following API methods:
+- ``orWhere()``
+- ``whereOpen()`` / ``orWhereOpen()`` / ``whereClose()``
+- ``orHaving()``
+- ``havingOpen()`` / ``orHavingOpen()`` / ``havingClose()``
 
+Repeated ``having()`` calls are additive and compile as ``AND`` conditions unless
+you explicitly use ``orHaving()`` / grouped clauses.
 
-.. code-block:: php
+JOIN and KNN Ordering
+---------------------
 
-    // WHERE `$column` = '$value'
-    $queryBuilder
-      ->where($column, $value);
+``SELECT`` queries support fluent joins:
 
-    // WHERE `$column` = '$value'
-    $queryBuilder
-      ->where($column, '=', $value);
+- ``join()``, ``innerJoin()``, ``leftJoin()``, ``rightJoin()``, ``crossJoin()``
 
-    // WHERE `$column` >= '$value'
-    $queryBuilder
-      ->where($column, '>=', $value)
+Vector-oriented ordering is available through:
 
-    // WHERE `$column` IN ('$value1', '$value2', '$value3')
-    $queryBuilder
-      ->where($column, 'IN', array($value1, $value2, $value3));
+- ``orderByKnn($field, $k, array $vector, $direction = 'ASC')``
 
-    // WHERE `$column` NOT IN ('$value1', '$value2', '$value3')
-    $queryBuilder
-      ->where($column, 'NOT IN', array($value1, $value2, $value3));
+Capability Introspection
+------------------------
 
-    // WHERE `$column` BETWEEN '$value1' AND '$value2'
-    $queryBuilder
-      ->where($column, 'BETWEEN', array($value1, $value2))
+``SphinxQL`` exposes runtime capability helpers for connection-aware behavior:
 
-.. warning::
+- ``getCapabilities()``
+- ``supports($feature)``
+- ``requireSupport($feature, $context = '')``
 
-    Currently, the SphinxQL dialect does not support the `OR` operator and grouping with parenthesis.
+Helper Capability-Aware Calls
+-----------------------------
 
-MATCH Clause
-^^^^^^^^^^^^
+The same capability model is used by ``Helper`` wrappers:
 
-`MATCH` extends the `WHERE` clause and allows for full-text search capabilities.
+- filtered ``SHOW`` wrappers:
 
-.. code-block:: php
+  - ``showTables($index = null)`` => ``SHOW TABLES`` (when ``null`` or empty) or ``SHOW TABLES LIKE <quoted index>``
+  - ``showTableStatus($table = null)`` => ``SHOW TABLE STATUS`` or ``SHOW TABLE <table> STATUS``
 
-    $queryBuilder
-      ->match($column, $value, $halfEscape = false);
+- suggest-family option contract (``callSuggest()``, ``callQSuggest()``,
+  ``callAutocomplete()``):
 
-By default, all inputs are automatically escaped by the query builder. The usage of `SphinxQL::expr($value)` can be used to bypass the default query escaping and quoting functions in place during query compilation. The `$column` argument accepts a string or an array. The `$halfEscape` argument, if set to `true`, will not escape and allow the usage of the following special characters: `-`, `|`, and `"`.
+  - options must be an associative array
+  - option keys must be non-empty strings
+  - values are quoted by the active connection (``quote()``/``quoteArr()``)
+  - tested keys in this repository are ``limit`` (numeric) and ``fuzzy`` (numeric, autocomplete)
 
-SET Clause
-^^^^^^^^^^
+- capability behavior:
 
-.. code-block:: php
-
-    $queryBuilder
-      ->set($associativeArray);
-
-.. code-block:: php
-
-    $queryBuilder
-      ->value($column1, $value1)
-      ->value($colume2, $value2);
-
-.. code-block:: php
-
-    $queryBuilder
-      ->columns($column1, $column2, $column3)
-      ->values($value1_1, $value2_1, $value3_1)
-      ->values($value1_2, $value2_2, $value3_2);
-
-GROUP BY Clause
-^^^^^^^^^^^^
-
-The `GROUP BY` supports grouping by multiple columns or computed expressions.
-
-.. code-block:: php
-
-    // GROUP BY $column
-    $queryBuilder
-      ->groupBy($column);
-
-WITHIN GROUP ORDER BY
-^^^^^^^^^^^^^^^^^^^^^
-
-The `WITHIN GROUP ORDER BY` clause allows you to control how the best row within a group will be selected.
-
-.. code-block:: php
-
-    // WITHIN GROUP ORDER BY $column [$direction]
-    $queryBuilder
-      ->withinGroupOrderBy($column, $direction = null);
-
-ORDER BY Clause
-^^^^^^^^^^^^^^^
-
-Unlike in regular SQL, only column names (not expressions) are allowed.
-
-.. code-block:: php
-
-    // ORDER BY $column [$direction]
-    $queryBuilder
-      ->orderBy($column, $direction = null);
-
-OFFSET and LIMIT Clause
-^^^^^^^^^^^^^^^^^^^^^^^
-
-.. code-block:: php
-
-    // LIMIT $offset, $limit
-    $queryBuilder
-      ->limit($offset, $limit);
-
-.. code-block:: php
-
-    // LIMIT $limit
-    $queryBuilder
-      ->limit($limit);
-
-OPTION Clause
-^^^^^^^^^^^^^
-
-The `OPTION` clause allows you to control a number of per-query options.
-
-.. code-block:: php
-
-    // OPTION $name = $value
-    $queryBuilder
-      ->option($name, $value);
-
-COMPILE
--------
-
-You can have the query builder compile the generated query for debugging with the following method:
-
-.. code-block:: php
-
-    $queryBuilder
-      ->compile();
-
-This can be used for debugging purposes and obtaining the resulting query generated.
-
-EXECUTE
--------
-
-In order to run the query, you must invoke the `execute()` method so that the query builder can compile the query for execution and then return the results of the query.
-
-.. code-block:: php
-
-    $queryBuilder
-      ->execute();
+  - ``callQSuggest()`` and ``callAutocomplete()`` are feature-gated and may throw
+    ``UnsupportedFeatureException`` when unsupported
+  - ``callSuggest()`` is runtime-conditional; use ``supports('call_suggest')`` for
+    portable code paths

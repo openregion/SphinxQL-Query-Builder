@@ -3,16 +3,36 @@
 Introduction
 ============
 
-The SphinxQL Query Builder provides a simple abstraction and access layer which allows developers to generate SphinxQL statements which can be used to query an instance of the Sphinx search engine for results.
+SphinxQL Query Builder is a lightweight query builder for SphinxQL and ManticoreQL.
+It supports both ``mysqli`` and ``PDO`` connection drivers and focuses on
+predictable SQL generation with explicit runtime validation.
 
-Compatiblity
-------------
-SphinxQL Query Builder is tested against the following environments:
+Compatibility
+-------------
 
-- PHP 5.6 and later
-- Sphinx (Stable)
-- Sphinx (Development)
+The 4.0 line targets:
 
-.. note::
+- PHP 8.2+
+- Sphinx 2.x
+- Sphinx 3.x
+- Manticore Search
 
-    It is recommended that you always use the latest stable version of Sphinx with the query builder.
+Driver support:
+
+- ``Foolz\\SphinxQL\\Drivers\\Mysqli\\Connection``
+- ``Foolz\\SphinxQL\\Drivers\\Pdo\\Connection``
+
+Runtime Contract
+----------------
+
+Starting with 4.0 pre-release hardening, invalid builder input fails fast with
+``SphinxQLException`` rather than being silently coerced.
+
+Examples:
+
+- invalid query type in ``setType()``
+- invalid order direction (must be ``ASC`` or ``DESC``)
+- negative ``limit()`` / ``offset()``
+- invalid ``WHERE/HAVING`` payload shapes for ``IN`` / ``BETWEEN``
+
+See the migration guide for complete details.

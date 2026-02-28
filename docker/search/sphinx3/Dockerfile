@@ -20,10 +20,10 @@ RUN wget --quiet "https://sphinxsearch.com/files/sphinx-${SPHINX3_VERSION}-${SPH
     && rm -f "sphinx-${SPHINX3_VERSION}-${SPHINX3_BUILD}-linux-amd64.tar.gz"
 
 COPY tests/sphinx.conf /opt/sphinx-tests/sphinx.conf
-COPY tests/test_udf.c /opt/sphinx-tests/test_udf.c
+COPY tests/s3_test_udf.c /opt/sphinx-tests/s3_test_udf.c
 
 RUN mkdir -p /opt/sphinx-tests/data \
-    && gcc -shared -o /opt/sphinx-tests/data/test_udf.so /opt/sphinx-tests/test_udf.c
+    && gcc -shared -I/opt/sphinx3/src -o /opt/sphinx-tests/data/test_udf.so /opt/sphinx-tests/s3_test_udf.c
 
 EXPOSE 9307 9312
 

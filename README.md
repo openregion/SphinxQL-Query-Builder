@@ -2,29 +2,46 @@ Query Builder for SphinxQL
 ==========================
 
 [![CI](https://github.com/FoolCode/SphinxQL-Query-Builder/actions/workflows/ci.yml/badge.svg)](https://github.com/FoolCode/SphinxQL-Query-Builder/actions/workflows/ci.yml)
+[![Documentation](https://github.com/FoolCode/SphinxQL-Query-Builder/actions/workflows/docs.yml/badge.svg)](https://github.com/FoolCode/SphinxQL-Query-Builder/actions/workflows/docs.yml)
 [![Latest Stable Version](https://poser.pugx.org/foolz/sphinxql-query-builder/v/stable)](https://packagist.org/packages/foolz/sphinxql-query-builder)
 [![Latest Unstable Version](https://poser.pugx.org/foolz/sphinxql-query-builder/v/unstable)](https://packagist.org/packages/foolz/sphinxql-query-builder)
 [![Total Downloads](https://poser.pugx.org/foolz/sphinxql-query-builder/downloads)](https://packagist.org/packages/foolz/sphinxql-query-builder)
 
 ## About
 
-This is a SphinxQL Query Builder used to work with SphinxQL, a SQL dialect used with the Sphinx search engine and it's fork Manticore. It maps most of the functions listed in the [SphinxQL reference](http://sphinxsearch.com/docs/current.html#SphinxQL-reference) and is generally [faster](http://sphinxsearch.com/blog/2010/04/25/sphinxapi-vs-SphinxQL-benchmark/) than the available Sphinx API.
+This is a query builder for SphinxQL/ManticoreQL, the SQL dialect used by
+Sphinx Search and Manticore Search. It maps most common query-builder use cases
+and supports both `mysqli` and `PDO` drivers.
 
-This Query Builder has no dependencies except PHP 7.1 or later, `\MySQLi` extension, `PDO`, and [Sphinx](http://sphinxsearch.com)/[Manticore](https://manticoresearch.com).
+This Query Builder has no dependencies except PHP 8.2 or later, `\MySQLi` extension, `PDO`, and [Sphinx](http://sphinxsearch.com)/[Manticore](https://manticoresearch.com).
 
 ### Missing methods?
 
-SphinxQL evolves very fast.
+SphinxQL and ManticoreQL evolve fast. This library provides fluent builders for
+core query composition and helper wrappers for common operational commands.
 
-Most of the new functions are static one liners like `SHOW PLUGINS`. We'll avoid trying to keep up with these methods, as they are easy to just call directly (`(new SphinxQL($conn))->query($sql)->execute()`). You're free to submit pull requests to support these methods.
-
-If any feature is unreachable through this library, open a new issue or send a pull request.
+If any feature is still unreachable through this library, open an issue or send
+a pull request.
 
 ## Code Quality
 
 The majority of the methods in the package have been unit tested.
 
-The only methods that have not been fully tested are the Helpers, which are mostly simple shorthands for SQL strings.
+Helper methods and engine compatibility scenarios are covered by the test suite.
+
+## Documentation
+
+The docs are built with modern Sphinx + Furo styling.
+
+Build locally:
+
+```bash
+python3 -m pip install -r docs/requirements.txt
+sphinx-build --fail-on-warning --keep-going -b html docs docs/_build/html
+```
+
+CI builds docs for pull requests and deploys the rendered site to GitHub Pages
+on pushes to `master`.
 
 ## How to Contribute
 
@@ -32,14 +49,14 @@ The only methods that have not been fully tested are the Helpers, which are most
 
 1. Fork the SphinxQL Query Builder repository
 2. Create a new branch for each feature or improvement
-3. Submit a pull request from each branch to the **master** branch
+3. Submit a pull request from each branch to the repository default branch
 
 It is very important to separate new features or improvements into separate feature branches, and to send a pull
 request for each branch. This allows me to review and pull in new features or improvements individually.
 
 ### Style Guide
 
-All pull requests must adhere to the [PSR-2](https://github.com/php-fig/fig-standards/blob/master/accepted/PSR-2-coding-style-guide.md) standard.
+All pull requests should follow PSR-12-compatible formatting.
 
 ### Unit Testing
 
@@ -80,6 +97,21 @@ We support the following database connection drivers:
 * Foolz\SphinxQL\Drivers\Mysqli\Connection
 * Foolz\SphinxQL\Drivers\Pdo\Connection
 
+### Engine Compatibility Matrix
+
+| Engine | Query Builder | Helper APIs | Notes |
+| --- | --- | --- | --- |
+| Sphinx 2.x | Supported | Supported | Full CI lane |
+| Sphinx 3.x | Supported | Supported with engine-specific assertions | Full CI lane |
+| Manticore | Supported | Supported + Percolate | Full CI lane |
+
+Detailed feature-level support is tracked in [`docs/feature-matrix.yml`](docs/feature-matrix.yml).
+
+### Migration to 4.0
+
+See [`MIGRATING-4.0.md`](MIGRATING-4.0.md) for the complete migration checklist,
+including strict runtime validation behavior introduced in the 4.0 line.
+
 ### Connection
 
 * __$conn = new Connection()__
@@ -88,7 +120,7 @@ We support the following database connection drivers:
 
 * __$conn->setParams($params = array('host' => '127.0.0.1', 'port' => 9306))__
 
-	Sets the connection parameters used to establish a connection to the server. Supported parameters: 'host', 'port', 'socket', 'options'.
+	Sets the connection parameters used to establish a connection to the server. Supported parameters: 'host', 'port', 'socket', 'username', 'password', 'options'.
 
 * __$conn->query($query)__
 
@@ -112,19 +144,17 @@ Often, you would need to call and run SQL functions that shouldn't be escaped in
 
 #### Query Escaping
 
-There are cases when an input __must__ be escaped in the SQL statement. The following functions are used to handle any escaping required for the query.
+There are cases when an input __must__ be escaped in the SQL statement. SQL value escaping is handled by the active connection object:
 
-* __$sq->escape($value)__
+* __$conn->escape($value)__
 
 	Returns the escaped value. This is processed with the `\MySQLi::real_escape_string()` function.
 
-* __$sq->quoteIdentifier($identifier)__
+* __$conn->quote($value)__
 
-	Adds backtick quotes to the identifier. For array elements, use `$sq->quoteIdentifierArray($arr)`.
+	Adds quotes to the value and escapes it. For array elements, use `$conn->quoteArr($arr)`.
 
-* __$sq->quote($value)__
-
-	Adds quotes to the value and escapes it. For array elements, use `$sq->quoteArr($arr)`.
+`SphinxQL` itself exposes MATCH helpers:
 
 * __$sq->escapeMatch($value)__
 
@@ -135,6 +165,17 @@ There are cases when an input __must__ be escaped in the SQL statement. The foll
 	Escapes the string to be used in `MATCH`. The following characters are allowed: `-`, `|`, and `"`.
 
 	_Refer to `$sq->match()` for more information._
+
+There is no dedicated `quoteIdentifier()` helper; pass only trusted index/column identifiers.
+
+#### Strict Validation in 4.0
+
+4.0 performs fail-fast validation for invalid query-shape input. Examples:
+
+* invalid `setType()` values
+* invalid `ORDER BY` direction values
+* negative `limit()`/`offset()`
+* invalid value shapes for `IN`/`BETWEEN`
 
 #### SELECT
 
@@ -168,13 +209,29 @@ This will return an `INT` with the number of rows affected.
 
 	Both `$column1` and `$index1` can be arrays.
 
+MVA attributes are inserted/updated by passing arrays as values:
+
+```php
+<?php
+(new SphinxQL($conn))
+    ->replace()
+    ->into('rt')
+    ->set(array(
+        'id' => 123,
+        'title' => 'example',
+        'rubrics' => array(10, 20),
+        'districts' => array(1, 3, 5),
+    ))
+    ->execute();
+```
+
 #### UPDATE
 
 This will return an `INT` with the number of rows affected.
 
-* __$sq = (new SphinxQL($conn))->update($index)__
+* __$sq = (new SphinxQL($conn))->update($index = null)__
 
-	Begins an `UPDATE`.
+	Begins an `UPDATE`. You can pass the index immediately or set it later with `->into($index)`.
 
 * __$sq->value($column1, $value1)->value($column2, $value2)__
 
@@ -220,7 +277,12 @@ Will return an array with an `INT` as first member, the number of rows deleted.
     $sq->where('column', 'BETWEEN', array('value1', 'value2'));
 	```
 
-	_It should be noted that `OR` and parenthesis are not supported and implemented in the SphinxQL dialect yet._
+		You can compose grouped boolean filters with:
+		`orWhere()`, `whereOpen()`, `orWhereOpen()`, and `whereClose()`.
+		The same grouped API exists for `HAVING` via `having()`, `orHaving()`,
+		`havingOpen()`, `orHavingOpen()`, and `havingClose()`.
+		Repeated `having()` calls are additive (`AND`) unless you explicitly use
+		`orHaving()` or grouped clauses.
 
 #### MATCH
 
@@ -276,6 +338,18 @@ Will return an array with an `INT` as first member, the number of rows deleted.
 	`ORDER BY $column [$direction]`
 
 	Direction can be omitted with `null`, or be `ASC` or `DESC` case insensitive.
+
+* __$sq->orderByKnn($field, $k, array $vector, $direction = 'ASC')__
+
+	`ORDER BY KNN($field, $k, $vector) [$direction]`
+
+#### JOIN
+
+* __$sq->join($table, $left, $operator, $right, $type = 'INNER')__
+* __$sq->innerJoin($table, $left, $operator, $right)__
+* __$sq->leftJoin($table, $left, $operator, $right)__
+* __$sq->rightJoin($table, $left, $operator, $right)__
+* __$sq->crossJoin($table)__
 
 * __$sq->offset($offset)__
 
@@ -407,6 +481,24 @@ Remember to `->execute()` to get a result.
 
 	Takes the pairs from a SHOW command and returns an associative array key=>value
 
+* __$helper->getCapabilities()__
+
+	Returns a `Capabilities` object with detected engine/version and feature flags.
+
+* __$helper->supports($feature)__
+
+	Checks whether a named feature is supported by the current backend/runtime.
+
+* __$helper->requireSupport($feature, $context = '')__
+
+	Throws `UnsupportedFeatureException` when the requested feature is not available.
+
+`SphinxQL` also exposes capability helpers:
+
+* __$sphinxql->getCapabilities()__
+* __$sphinxql->supports($feature)__
+* __$sphinxql->requireSupport($feature, $context = '')__
+
 The following methods return a prepared `SphinxQL` object. You can also use `->enqueue($next_object)`:
 
 ```php
@@ -428,11 +520,29 @@ $result = (new SphinxQL($this->conn))
 * `(new Helper($conn))->showMeta() => 'SHOW META'`
 * `(new Helper($conn))->showWarnings() => 'SHOW WARNINGS'`
 * `(new Helper($conn))->showStatus() => 'SHOW STATUS'`
-* `(new Helper($conn))->showTables() => 'SHOW TABLES'`
+* `(new Helper($conn))->showProfile() => 'SHOW PROFILE'`
+* `(new Helper($conn))->showPlan() => 'SHOW PLAN'`
+* `(new Helper($conn))->showThreads() => 'SHOW THREADS'`
+* `(new Helper($conn))->showVersion() => 'SHOW VERSION'`
+* `(new Helper($conn))->showPlugins() => 'SHOW PLUGINS'`
+* `(new Helper($conn))->showAgentStatus() => 'SHOW AGENT STATUS'`
+* `(new Helper($conn))->showScroll() => 'SHOW SCROLL'`
+* `(new Helper($conn))->showDatabases() => 'SHOW DATABASES'`
+* `(new Helper($conn))->showCharacterSet() => 'SHOW CHARACTER SET'`
+* `(new Helper($conn))->showCollation() => 'SHOW COLLATION'`
+* `(new Helper($conn))->showTables($index = null) => 'SHOW TABLES' (null/empty) or 'SHOW TABLES LIKE <quoted index>'`
 * `(new Helper($conn))->showVariables() => 'SHOW VARIABLES'`
+* `(new Helper($conn))->showCreateTable($table)`
+* `(new Helper($conn))->showTableStatus($table = null) => 'SHOW TABLE STATUS' or 'SHOW TABLE <table> STATUS'`
+* `(new Helper($conn))->showTableSettings($table)`
+* `(new Helper($conn))->showTableIndexes($table)`
+* `(new Helper($conn))->showQueries()`
 * `(new Helper($conn))->setVariable($name, $value, $global = false)`
 * `(new Helper($conn))->callSnippets($data, $index, $query, $options = array())`
 * `(new Helper($conn))->callKeywords($text, $index, $hits = null)`
+* `(new Helper($conn))->callSuggest($text, $index, $options = array())`
+* `(new Helper($conn))->callQSuggest($text, $index, $options = array())`
+* `(new Helper($conn))->callAutocomplete($text, $index, $options = array())`
 * `(new Helper($conn))->describe($index)`
 * `(new Helper($conn))->createFunction($udf_name, $returns, $soname)`
 * `(new Helper($conn))->dropFunction($udf_name)`
@@ -441,6 +551,20 @@ $result = (new SphinxQL($this->conn))
 * `(new Helper($conn))->optimizeIndex($index)`
 * `(new Helper($conn))->showIndexStatus($index)`
 * `(new Helper($conn))->flushRamchunk($index)`
+* `(new Helper($conn))->flushAttributes()`
+* `(new Helper($conn))->flushHostnames()`
+* `(new Helper($conn))->flushLogs()`
+* `(new Helper($conn))->reloadPlugins()`
+* `(new Helper($conn))->kill($queryId)`
+
+Suggest-family option contract and capability behavior:
+
+* `callSuggest()`, `callQSuggest()`, and `callAutocomplete()` accept `$options` as an associative array.
+* Option keys must be non-empty strings. Each option is compiled as `<quoted_value> AS <key>`.
+* Option values are quoted by the active connection (`quote()`/`quoteArr()`), covering scalar values, `null`, `Expression`, and arrays.
+* Repository-tested option keys are `limit` (numeric) and `fuzzy` (numeric, `callAutocomplete()`).
+* `callQSuggest()` and `callAutocomplete()` are feature-gated and throw `UnsupportedFeatureException` when unavailable.
+* `callSuggest()` is runtime-conditional by backend support; use `$helper->supports('call_suggest')` for portable flows.
 
 ### Percolate
  The `Percolate` class provides methods for the "Percolate query" feature of Manticore Search.

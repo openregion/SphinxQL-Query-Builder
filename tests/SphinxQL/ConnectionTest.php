@@ -24,7 +24,7 @@ class ConnectionTest extends \PHPUnit\Framework\TestCase
 
     public function test()
     {
-        TestUtil::getConnectionDriver();
+        $this->assertInstanceOf(ConnectionInterface::class, TestUtil::getConnectionDriver());
     }
 
     public function testGetParams()
@@ -74,6 +74,23 @@ class ConnectionTest extends \PHPUnit\Framework\TestCase
         $this->assertSame(array('host' => '127.0.0.1', 'port' => 9308, 'socket' => null), $this->connection->getParams());
     }
 
+    public function testCredentialsParams()
+    {
+        $this->connection->setParam('username', 'tester');
+        $this->connection->setParam('password', 'secret');
+
+        $this->assertSame(
+            array(
+                'host' => '127.0.0.1',
+                'port' => 9307,
+                'socket' => null,
+                'username' => 'tester',
+                'password' => 'secret',
+            ),
+            $this->connection->getParams()
+        );
+    }
+
     public function testGetConnection()
     {
         $this->connection->connect();
@@ -89,9 +106,27 @@ class ConnectionTest extends \PHPUnit\Framework\TestCase
     public function testConnect()
     {
         $this->connection->connect();
+        $this->assertNotNull($this->connection->getConnection());
 
         $this->connection->setParam('options', array(MYSQLI_OPT_CONNECT_TIMEOUT => 1));
         $this->connection->connect();
+        $this->assertNotNull($this->connection->getConnection());
+    }
+
+    public function testConnectWithCredentialsParams()
+    {
+        $this->connection->setParam('username', null);
+        $this->connection->setParam('password', null);
+        $this->connection->connect();
+
+        $this->assertNotNull($this->connection->getConnection());
+    }
+
+    public function testCredentialsParamValidation()
+    {
+        $this->expectException(Foolz\SphinxQL\Exception\SphinxQLException::class);
+        $this->expectExceptionMessage('setParam("username") expects null or string.');
+        $this->connection->setParam('username', array('invalid'));
     }
 
     public function testConnectThrowsException()
@@ -155,12 +190,14 @@ class ConnectionTest extends \PHPUnit\Framework\TestCase
     public function testMultiQueryThrowsException()
     {
         $this->expectException(Foolz\SphinxQL\Exception\DatabaseException::class);
+        $this->expectExceptionMessage($GLOBALS['driver'] === 'Pdo' ? '[pdo][multi_query]' : '[mysqli][multi_query]');
         $this->connection->multiQuery(array('SHOW METAL'));
     }
 
     public function testQueryThrowsException()
     {
         $this->expectException(Foolz\SphinxQL\Exception\DatabaseException::class);
+        $this->expectExceptionMessage($GLOBALS['driver'] === 'Pdo' ? '[pdo][query]' : '[mysqli][query]');
         $this->connection->query('SHOW METAL');
     }
 

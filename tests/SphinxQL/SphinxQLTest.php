@@ -39,6 +39,17 @@ class SphinxQLTest extends \PHPUnit\Framework\TestCase
         (new SphinxQL(self::$conn))->getConnection()->query('TRUNCATE RTINDEX rt');
     }
 
+    public static function tearDownAfterClass(): void
+    {
+        if (self::$conn) {
+            try {
+                self::$conn->close();
+            } catch (\Exception $exception) {
+                // no-op in test teardown
+            }
+        }
+    }
+
     /**
      * @return SphinxQL
      */
@@ -87,6 +98,13 @@ class SphinxQLTest extends \PHPUnit\Framework\TestCase
         $this->createSphinxQL()->transactionRollback();
         $this->createSphinxQL()->transactionBegin();
         $this->createSphinxQL()->transactionCommit();
+
+        $variables = Helper::pairsToAssoc(
+            (new Helper(self::$conn))->showVariables()->execute()->getStored()
+        );
+
+        $this->assertArrayHasKey('autocommit', $variables);
+        $this->assertSame(1, (int) $variables['autocommit']);
     }
 
     public function testQuery()
@@ -97,6 +115,7 @@ class SphinxQLTest extends \PHPUnit\Framework\TestCase
             ->getStored();
 
         array_shift($describe);
+        $describe = TestUtil::pickColumns($describe, array('Field', 'Type'));
         $this->assertSame(
             array(
                 //	array('Field' => 'id', 'Type' => 'integer'), this can be bigint on id64 sphinx
@@ -115,6 +134,7 @@ class SphinxQLTest extends \PHPUnit\Framework\TestCase
             ->getStored();
 
         array_shift($describe);
+        $describe = TestUtil::pickColumns($describe, array('Field', 'Type'));
         $this->assertSame(
             array(
                 //	array('Field' => 'id', 'Type' => 'integer'), this can be bigint on id64 sphinx
@@ -330,6 +350,7 @@ class SphinxQLTest extends \PHPUnit\Framework\TestCase
      * @covers \Foolz\SphinxQL\SphinxQL::compile
      * @covers \Foolz\SphinxQL\SphinxQL::compileUpdate
      * @covers \Foolz\SphinxQL\SphinxQL::compileSelect
+     * @covers \Foolz\SphinxQL\SphinxQL::into
      * @covers \Foolz\SphinxQL\SphinxQL::update
      * @covers \Foolz\SphinxQL\SphinxQL::value
      */
@@ -412,6 +433,41 @@ class SphinxQLTest extends \PHPUnit\Framework\TestCase
             $result
         );
         self::$conn->query('ALTER TABLE rt DROP COLUMN tags');
+    }
+
+    /**
+     * @covers \Foolz\SphinxQL\SphinxQL::compile
+     * @covers \Foolz\SphinxQL\SphinxQL::compileUpdate
+     * @covers \Foolz\SphinxQL\SphinxQL::update
+     * @covers \Foolz\SphinxQL\SphinxQL::into
+     */
+    public function testUpdateWithLateInto()
+    {
+        $query = $this->createSphinxQL()
+            ->update()
+            ->into('rt')
+            ->set(array('gid' => 777))
+            ->where('id', '=', 11)
+            ->compile()
+            ->getCompiled();
+
+        $this->assertSame('UPDATE rt SET gid = 777 WHERE id = 11', $query);
+    }
+
+    /**
+     * @covers \Foolz\SphinxQL\SphinxQL::compileUpdate
+     * @covers \Foolz\SphinxQL\SphinxQL::update
+     */
+    public function testUpdateWithoutIntoThrows()
+    {
+        $this->expectException(Foolz\SphinxQL\Exception\SphinxQLException::class);
+        $this->expectExceptionMessage('update() requires into($index) before compile() or execute().');
+
+        $this->createSphinxQL()
+            ->update()
+            ->set(array('gid' => 777))
+            ->where('id', '=', 11)
+            ->compile();
     }
 
     /**
@@ -644,7 +700,7 @@ class SphinxQLTest extends \PHPUnit\Framework\TestCase
             ->execute()
             ->getStored();
 
-        $this->assertCount(1, $result);
+        $this->assertCount(TestUtil::isSphinx3(self::$conn) ? 2 : 1, $result);
 
         $result = $this->createSphinxQL()
             ->select()
@@ -654,7 +710,7 @@ class SphinxQLTest extends \PHPUnit\Framework\TestCase
             ->execute()
             ->getStored();
 
-        $this->assertCount(1, $result);
+        $this->assertCount(TestUtil::isSphinx3(self::$conn) ? 2 : 1, $result);
 
         $result = $this->createSphinxQL()
             ->select()
@@ -822,6 +878,7 @@ class SphinxQLTest extends \PHPUnit\Framework\TestCase
             ->select()
             ->from('rt')
             ->offset(4)
+            ->limit(1000)
             ->execute()
             ->getStored();
 
@@ -886,17 +943,17 @@ class SphinxQLTest extends \PHPUnit\Framework\TestCase
             ->select()
             ->from('rt')
             ->where('gid', 9003)
-            ->enqueue((new Helper(self::$conn))->showMeta())
             ->enqueue()
             ->select()
             ->from('rt')
             ->where('gid', 201)
+            ->enqueue((new Helper(self::$conn))->showMeta())
             ->executeBatch()
             ->getStored();
 
         $this->assertEquals('10', $result[0][0]['id']);
-        $this->assertEquals('1', $result[1][0]['Value']);
-        $this->assertEquals('11', $result[2][0]['id']);
+        $this->assertEquals('11', $result[1][0]['id']);
+        $this->assertEquals('1', $result[2][0]['Value']);
     }
 
     public function testEmptyQueue()
@@ -1104,22 +1161,24 @@ class SphinxQLTest extends \PHPUnit\Framework\TestCase
 
         // test both setting and not setting the connection
         foreach (array(self::$conn, null) as $conn) {
-            $result = $this->createSphinxQL()
-                ->select()
-                ->from('rt')
-                ->facet((new Facet($conn))
-                    ->facetFunction('INTERVAL', array('gid', 300, 600))
-                    ->orderByFunction('FACET', '', 'ASC'))
-                ->executeBatch()
-                ->getStored();
+            $intervalFacet = (new Facet($conn))->facetFunction('INTERVAL', array('gid', 300, 600));
+            if (TestUtil::isSphinx3(self::$conn)) {
+                $this->assertSame('FACET INTERVAL(gid,300,600)', $intervalFacet->getFacet());
+            } else {
+                $result = $this->createSphinxQL()
+                    ->select()
+                    ->from('rt')
+                    ->facet($intervalFacet->orderByFunction('FACET', '', 'ASC'))
+                    ->executeBatch()
+                    ->getStored();
 
-            $this->assertArrayHasKey('id', $result[0][0]);
-            $this->assertArrayHasKey('interval(gid,300,600)', $result[1][0]);
-            $this->assertArrayHasKey('count(*)', $result[1][0]);
-
-            $this->assertEquals('2', $result[1][0]['count(*)']);
-            $this->assertEquals('5', $result[1][1]['count(*)']);
-            $this->assertEquals('1', $result[1][2]['count(*)']);
+                $this->assertArrayHasKey('id', $result[0][0]);
+                $this->assertArrayHasKey('interval(gid,300,600)', $result[1][0]);
+                $this->assertArrayHasKey('count(*)', $result[1][0]);
+                $this->assertEquals('2', $result[1][0]['count(*)']);
+                $this->assertEquals('5', $result[1][1]['count(*)']);
+                $this->assertEquals('1', $result[1][2]['count(*)']);
+            }
 
             $result = $this->createSphinxQL()
                 ->select()
@@ -1161,5 +1220,237 @@ class SphinxQLTest extends \PHPUnit\Framework\TestCase
             "SELECT * FROM rt WHERE MATCH('(@strlen value)')",
             $query->compile()->getCompiled()
         );
+    }
+
+    public function testCompileWithoutTypeThrowsException()
+    {
+        $this->expectException(Foolz\SphinxQL\Exception\SphinxQLException::class);
+        (new SphinxQL(self::$conn))->compile();
+    }
+
+    public function testSetTypeValidation()
+    {
+        $query = new SphinxQL(self::$conn);
+        $result = $query->setType('select');
+        $this->assertSame($query, $result);
+
+        $this->expectException(Foolz\SphinxQL\Exception\SphinxQLException::class);
+        $query->setType('invalid_type');
+    }
+
+    public function testFromValidation()
+    {
+        $this->expectException(Foolz\SphinxQL\Exception\SphinxQLException::class);
+        $this->createSphinxQL()->select()->from();
+    }
+
+    public function testWhereValidation()
+    {
+        $this->expectException(Foolz\SphinxQL\Exception\SphinxQLException::class);
+        $this->createSphinxQL()->select()->from('rt')->where('gid', 'IN', array());
+    }
+
+    public function testHavingValidation()
+    {
+        $this->expectException(Foolz\SphinxQL\Exception\SphinxQLException::class);
+        $this->createSphinxQL()
+            ->select()
+            ->from('rt')
+            ->groupBy('gid')
+            ->having('gid', 'BETWEEN', array(1));
+    }
+
+    public function testOrderDirectionValidation()
+    {
+        $this->expectException(Foolz\SphinxQL\Exception\SphinxQLException::class);
+        $this->createSphinxQL()->select()->from('rt')->orderBy('id', 'sideways');
+    }
+
+    public function testWithinGroupOrderDirectionValidation()
+    {
+        $this->expectException(Foolz\SphinxQL\Exception\SphinxQLException::class);
+        $this->createSphinxQL()->select()->from('rt')->withinGroupOrderBy('id', 'sideways');
+    }
+
+    public function testLimitOffsetValidation()
+    {
+        $this->expectException(Foolz\SphinxQL\Exception\SphinxQLException::class);
+        $this->createSphinxQL()->select()->from('rt')->limit(-1);
+    }
+
+    public function testGroupNByValidation()
+    {
+        $this->expectException(Foolz\SphinxQL\Exception\SphinxQLException::class);
+        $this->createSphinxQL()->select()->from('rt')->groupNBy(0);
+    }
+
+    public function testFacetTypeValidation()
+    {
+        $this->expectException(Foolz\SphinxQL\Exception\SphinxQLException::class);
+        $this->createSphinxQL()->select()->from('rt')->facet('gid');
+    }
+
+    public function testSetQueuePrevValidation()
+    {
+        $this->expectException(\InvalidArgumentException::class);
+        $this->createSphinxQL()->setQueuePrev('not-a-query');
+    }
+
+    public function testOrWhereAndGroupingCompilation()
+    {
+        $compiled = $this->createSphinxQL()
+            ->select()
+            ->from('rt')
+            ->where('gid', 200)
+            ->orWhereOpen()
+            ->where('gid', 304)
+            ->where('id', '>', 12)
+            ->whereClose()
+            ->compile()
+            ->getCompiled();
+
+        $this->assertSame(
+            'SELECT * FROM rt WHERE gid = 200 OR ( gid = 304 AND id > 12 )',
+            $compiled
+        );
+    }
+
+    public function testOrHavingAndGroupingCompilation()
+    {
+        $compiled = $this->createSphinxQL()
+            ->select('gid')
+            ->from('rt')
+            ->groupBy('gid')
+            ->having('gid', '>', 100)
+            ->orHavingOpen()
+            ->having('gid', '<', 10)
+            ->having('gid', '>', 9000)
+            ->havingClose()
+            ->compile()
+            ->getCompiled();
+
+        $this->assertSame(
+            'SELECT gid FROM rt GROUP BY gid HAVING gid > 100 OR ( gid < 10 AND gid > 9000 )',
+            $compiled
+        );
+    }
+
+    public function testWhereGroupingValidation()
+    {
+        $this->expectException(Foolz\SphinxQL\Exception\SphinxQLException::class);
+        $this->createSphinxQL()
+            ->select()
+            ->from('rt')
+            ->whereClose()
+            ->compile();
+    }
+
+    public function testJoinCompilation()
+    {
+        $compiled = $this->createSphinxQL()
+            ->select('a.id')
+            ->from('rt a')
+            ->leftJoin('rt b', 'a.id', '=', 'b.id')
+            ->where('a.id', '>', 1)
+            ->compile()
+            ->getCompiled();
+
+        $this->assertSame(
+            'SELECT a.id FROM rt a LEFT JOIN rt b ON a.id = b.id WHERE a.id > 1',
+            $compiled
+        );
+    }
+
+    public function testCrossJoinCompilation()
+    {
+        $compiled = $this->createSphinxQL()
+            ->select('a.id')
+            ->from('rt a')
+            ->crossJoin('rt b')
+            ->compile()
+            ->getCompiled();
+
+        $this->assertSame(
+            'SELECT a.id FROM rt a CROSS JOIN rt b',
+            $compiled
+        );
+    }
+
+    public function testJoinValidation()
+    {
+        $this->expectException(Foolz\SphinxQL\Exception\SphinxQLException::class);
+        $this->createSphinxQL()
+            ->select()
+            ->from('rt')
+            ->join('rt2', 'rt.id', '=', 'rt2.id', 'diagonal');
+    }
+
+    public function testOrderByKnnCompilation()
+    {
+        $compiled = $this->createSphinxQL()
+            ->select('id')
+            ->from('rt')
+            ->orderByKnn('embeddings', 5, array(0.1, 0.2, 0.3))
+            ->compile()
+            ->getCompiled();
+
+        $this->assertSame(
+            'SELECT id FROM rt ORDER BY KNN(embeddings, 5, [0.1,0.2,0.3]) ASC',
+            $compiled
+        );
+    }
+
+    public function testOrderByKnnValidation()
+    {
+        $this->expectException(Foolz\SphinxQL\Exception\SphinxQLException::class);
+        $this->createSphinxQL()
+            ->select()
+            ->from('rt')
+            ->orderByKnn('embeddings', 0, array(0.1));
+    }
+
+    public function testResetJoins()
+    {
+        $compiled = $this->createSphinxQL()
+            ->select()
+            ->from('rt a')
+            ->join('rt b', 'a.id', '=', 'b.id')
+            ->resetJoins()
+            ->compile()
+            ->getCompiled();
+
+        $this->assertSame('SELECT * FROM rt a', $compiled);
+    }
+
+    public function testSphinxQLCapabilitiesAccess()
+    {
+        $query = $this->createSphinxQL();
+        $capabilities = $query->getCapabilities();
+
+        $this->assertInstanceOf(Foolz\SphinxQL\Capabilities::class, $capabilities);
+        $this->assertNotEmpty($capabilities->getEngine());
+        $this->assertTrue($query->supports('grouped_where'));
+    }
+
+    public function testSphinxQLRequireSupport()
+    {
+        $query = $this->createSphinxQL();
+        if ($query->supports('call_qsuggest')) {
+            $this->assertSame($query, $query->requireSupport('call_qsuggest'));
+
+            return;
+        }
+
+        $this->expectException(Foolz\SphinxQL\Exception\UnsupportedFeatureException::class);
+        $this->expectExceptionMessageMatches(
+            '/^requires feature "call_qsuggest" \(engine=[A-Z0-9_]+, version=.*\)\.$/'
+        );
+        $query->requireSupport('call_qsuggest');
+    }
+
+    public function testSphinxQLSupportsUnknownFeatureValidation()
+    {
+        $this->expectException(Foolz\SphinxQL\Exception\SphinxQLException::class);
+        $this->createSphinxQL()->supports('totally_unknown_feature');
     }
 }

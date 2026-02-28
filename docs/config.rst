@@ -3,10 +3,10 @@
 Configuration
 =============
 
-Obtaining a Connection
-----------------------
+Creating a Connection
+---------------------
 
-You can obtain a SphinxQL Connection with the `Foolz\\SphinxQL\\Drivers\\Mysqli\\Connection` class.
+Use one of the supported drivers:
 
 .. code-block:: php
 
@@ -15,33 +15,39 @@ You can obtain a SphinxQL Connection with the `Foolz\\SphinxQL\\Drivers\\Mysqli\
     use Foolz\SphinxQL\Drivers\Mysqli\Connection;
 
     $conn = new Connection();
-    $conn->setparams(array('host' => '127.0.0.1', 'port' => 9306));
+    $conn->setParams(array(
+        'host' => '127.0.0.1',
+        'port' => 9306,
+    ));
 
-.. warning::
+You can also use the PDO driver:
 
-    The existing PDO driver written is considered experimental as the behaviour changes between certain PHP releases.
+.. code-block:: php
+
+    <?php
+
+    use Foolz\SphinxQL\Drivers\Pdo\Connection;
+
+    $conn = new Connection();
+    $conn->setParams(array(
+        'host' => '127.0.0.1',
+        'port' => 9306,
+    ));
 
 Connection Parameters
 ---------------------
 
-The connection parameters provide information about the instance you wish to establish a connection with. The parameters required is set with the `setParams($array)` or `setParam($key, $value)` methods.
+``setParams()`` and ``setParam()`` accept:
 
-    .. describe:: host
+- ``host`` (string, default ``127.0.0.1``)
+- ``port`` (int, default ``9306``)
+- ``socket`` (string|null, default ``null``)
+- ``username`` (string|null, optional)
+- ``password`` (string|null, optional)
+- ``options`` (array, driver-specific client options)
 
-        :Type: string
-        :Default: 127.0.0.1
+Strict Validation Notes
+-----------------------
 
-    .. describe:: port
-
-        :Type: int
-        :Default: 9306
-
-    .. describe:: socket
-
-        :Type: string
-        :Default: null
-
-    .. describe:: options
-
-        :Type: array
-        :Default: null
+The query builder validates critical inputs at runtime in 4.0.
+Prefer explicit values over implicit coercion.

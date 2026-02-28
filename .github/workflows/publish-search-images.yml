@@ -11,6 +11,7 @@ on:
       - tests/sphinx.conf
       - tests/manticore.conf
       - tests/test_udf.c
+      - tests/s3_test_udf.c
       - tests/ms_test_udf.c
 
 permissions:

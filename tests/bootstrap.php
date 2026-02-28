@@ -1,10 +1,5 @@
 <?php
 
-// Keep MySQLi behavior stable across PHP versions in test runs.
-if (function_exists('mysqli_report') && defined('MYSQLI_REPORT_OFF')) {
-    mysqli_report(MYSQLI_REPORT_OFF);
-}
-
 // PHPUnit Backwards Compatability Fix
 if (!class_exists('\PHPUnit\Framework\TestCase')) {
     class_alias('\PHPUnit_Framework_TestCase', '\PHPUnit\Framework\TestCase');

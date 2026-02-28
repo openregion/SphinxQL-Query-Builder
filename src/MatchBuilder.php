@@ -12,21 +12,21 @@ class MatchBuilder
      *
      * @var string
      */
-    protected $last_compiled;
+    protected string $last_compiled = '';
 
     /**
      * List of match operations.
      *
      * @var array
      */
-    protected $tokens = array();
+    protected array $tokens = array();
 
     /**
      * The owning SphinxQL object; used for escaping text.
      *
      * @var SphinxQL
      */
-    protected $sphinxql;
+    protected SphinxQL $sphinxql;
 
     /**
      * @param SphinxQL $sphinxql
@@ -60,7 +60,7 @@ class MatchBuilder
      *
      * @return $this
      */
-    public function match($keywords = null)
+    public function match(string|Expression|MatchBuilder|\Closure|null $keywords = null): self
     {
         if ($keywords !== null) {
             $this->tokens[] = array('MATCH' => $keywords);
@@ -83,7 +83,7 @@ class MatchBuilder
      *
      * @return $this
      */
-    public function orMatch($keywords = null)
+    public function orMatch(string|Expression|MatchBuilder|\Closure|null $keywords = null): self
     {
         $this->tokens[] = array('OPERATOR' => '| ');
         $this->match($keywords);
@@ -105,7 +105,7 @@ class MatchBuilder
      *
      * @return $this
      */
-    public function maybe($keywords = null)
+    public function maybe(string|Expression|MatchBuilder|\Closure|null $keywords = null): self
     {
         $this->tokens[] = array('OPERATOR' => 'MAYBE ');
         $this->match($keywords);
@@ -127,7 +127,7 @@ class MatchBuilder
      *
      * @return $this
      */
-    public function not($keyword = null)
+    public function not(string|Expression|MatchBuilder|\Closure|null $keyword = null): self
     {
         $this->tokens[] = array('OPERATOR' => '-');
         $this->match($keyword);
@@ -162,7 +162,7 @@ class MatchBuilder
      *
      * @return $this
      */
-    public function field($fields, $limit = null)
+    public function field(array|string $fields, mixed $limit = null): self
     {
         if (is_string($fields)) {
             $fields = func_get_args();
@@ -197,7 +197,7 @@ class MatchBuilder
      *
      * @return $this
      */
-    public function ignoreField($fields)
+    public function ignoreField(array|string $fields): self
     {
         if (is_string($fields)) {
             $fields = func_get_args();
@@ -222,7 +222,7 @@ class MatchBuilder
      *
      * @return $this
      */
-    public function phrase($keywords)
+    public function phrase(string $keywords): self
     {
         $this->tokens[] = array('PHRASE' => $keywords);
 
@@ -240,7 +240,7 @@ class MatchBuilder
      *
      * @return $this
      */
-    public function orPhrase($keywords)
+    public function orPhrase(string $keywords): self
     {
         $this->tokens[] = array('OPERATOR' => '| ');
         $this->phrase($keywords);
@@ -260,7 +260,7 @@ class MatchBuilder
      *
      * @return $this
      */
-    public function proximity($keywords, $distance)
+    public function proximity(string $keywords, int $distance): self
     {
         $this->tokens[] = array(
             'PROXIMITY' => $distance,
@@ -285,7 +285,7 @@ class MatchBuilder
      *
      * @return $this
      */
-    public function quorum($keywords, $threshold)
+    public function quorum(string $keywords, int|float $threshold): self
     {
         $this->tokens[] = array(
             'QUORUM'   => $threshold,
@@ -309,7 +309,7 @@ class MatchBuilder
      *
      * @return $this
      */
-    public function before($keywords = null)
+    public function before(string|Expression|MatchBuilder|\Closure|null $keywords = null): self
     {
         $this->tokens[] = array('OPERATOR' => '<< ');
         $this->match($keywords);
@@ -331,7 +331,7 @@ class MatchBuilder
      *
      * @return $this
      */
-    public function exact($keyword = null)
+    public function exact(string|Expression|MatchBuilder|\Closure|null $keyword = null): self
     {
         $this->tokens[] = array('OPERATOR' => '=');
         $this->match($keyword);
@@ -354,7 +354,7 @@ class MatchBuilder
      *
      * @return $this
      */
-    public function boost($keyword, $amount = null)
+    public function boost(string|int|float $keyword, int|float|null $amount = null): self
     {
         if ($amount === null) {
             $amount = $keyword;
@@ -381,7 +381,7 @@ class MatchBuilder
      *
      * @return $this
      */
-    public function near($keywords, $distance = null)
+    public function near(string|Expression|MatchBuilder|\Closure|int $keywords, ?int $distance = null): self
     {
         $this->tokens[] = array('NEAR' => $distance ?: $keywords);
         if ($distance !== null) {
@@ -405,7 +405,7 @@ class MatchBuilder
      *
      * @return $this
      */
-    public function sentence($keywords = null)
+    public function sentence(string|Expression|MatchBuilder|\Closure|null $keywords = null): self
     {
         $this->tokens[] = array('OPERATOR' => 'SENTENCE ');
         $this->match($keywords);
@@ -427,7 +427,7 @@ class MatchBuilder
      *
      * @return $this
      */
-    public function paragraph($keywords = null)
+    public function paragraph(string|Expression|MatchBuilder|\Closure|null $keywords = null): self
     {
         $this->tokens[] = array('OPERATOR' => 'PARAGRAPH ');
         $this->match($keywords);
@@ -453,7 +453,7 @@ class MatchBuilder
      *
      * @return $this
      */
-    public function zone($zones, $keywords = null)
+    public function zone(array|string $zones, string|Expression|MatchBuilder|\Closure|null $keywords = null): self
     {
         if (is_string($zones)) {
             $zones = array($zones);
@@ -480,7 +480,7 @@ class MatchBuilder
      *
      * @return $this
      */
-    public function zonespan($zone, $keywords = null)
+    public function zonespan(string $zone, string|Expression|MatchBuilder|\Closure|null $keywords = null): self
     {
         $this->tokens[] = array('ZONESPAN' => $zone);
         $this->match($keywords);
@@ -493,7 +493,7 @@ class MatchBuilder
      *
      * @return $this
      */
-    public function compile()
+    public function compile(): self
     {
         $query = '';
         foreach ($this->tokens as $token) {
@@ -552,7 +552,7 @@ class MatchBuilder
      *
      * @return string The last compiled match expression.
      */
-    public function getCompiled()
+    public function getCompiled(): string
     {
         return $this->last_compiled;
     }

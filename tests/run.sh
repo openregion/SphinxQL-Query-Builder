@@ -1,5 +1,8 @@
 #!/bin/sh
 
+mkdir -p data
+rm -f data/rt.* data/binlog.*
+
 case $SEARCH_BUILD in
   SPHINX2)
     WORK=$HOME/search
@@ -12,15 +15,11 @@ case $SEARCH_BUILD in
       echo "Unable to find extracted SPHINX3 directory."
       exit 1
     fi
-    UDF_SRC="$WORK/src/udfexample.c"
-    if [ ! -f "$UDF_SRC" ]; then
-      UDF_SRC=$(find "$HOME/search" -path '*/src/udfexample.c' | head -n 1)
-    fi
-    if [ -z "$UDF_SRC" ] || [ ! -f "$UDF_SRC" ]; then
-      echo "Unable to find udfexample.c for SPHINX3 build."
+    if [ ! -f "$WORK/src/sphinxudf.h" ]; then
+      echo "Unable to find sphinxudf.h for SPHINX3 build."
       exit 1
     fi
-    gcc -shared -o data/test_udf.so "$UDF_SRC"
+    gcc -shared -I"$WORK/src" -o data/test_udf.so s3_test_udf.c
     "$WORK/bin/searchd" -c sphinx.conf
     ;;
   MANTICORE)

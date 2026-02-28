@@ -1,77 +1,100 @@
-SphinxQL Query Builder Helper
-=============================
+Helper API
+==========
+
+The ``Helper`` class exposes convenience wrappers for SphinxQL statements that
+do not need fluent query composition.
+
+Usage
+-----
 
 .. code-block:: php
 
-    Helper::create($conn)
-      ->showMeta();
+    <?php
 
-.. code-block:: php
+    use Foolz\SphinxQL\Helper;
 
-    Helper::create($conn)
-      ->showWarnings();
+    $helper = new Helper($conn);
+    $rows = $helper->showVariables()->execute()->getStored();
 
-.. code-block:: php
+Available Methods
+-----------------
 
-    Helper::create($conn)
-      ->showStatus();
+- ``showMeta()``
+- ``showWarnings()``
+- ``showStatus()``
+- ``showProfile()``
+- ``showPlan()``
+- ``showThreads()``
+- ``showVersion()``
+- ``showPlugins()``
+- ``showAgentStatus()``
+- ``showScroll()``
+- ``showDatabases()``
+- ``showCharacterSet()``
+- ``showCollation()``
+- ``showTables($index = null)``
+- ``showVariables()``
+- ``showCreateTable($table)``
+- ``showTableStatus($table = null)``
+- ``showTableSettings($table)``
+- ``showTableIndexes($table)``
+- ``showQueries()``
+- ``setVariable($name, $value, $global = false)``
+- ``callSnippets($data, $index, $query, array $options = array())``
+- ``callKeywords($text, $index, $hits = null)``
+- ``callSuggest($text, $index, array $options = array())``
+- ``callQSuggest($text, $index, array $options = array())``
+- ``callAutocomplete($text, $index, array $options = array())``
+- ``describe($index)``
+- ``createFunction($udfName, $returns, $soName)``
+- ``dropFunction($udfName)``
+- ``attachIndex($diskIndex, $rtIndex)``
+- ``flushRtIndex($index)``
+- ``truncateRtIndex($index)``
+- ``optimizeIndex($index)``
+- ``showIndexStatus($index)``
+- ``flushRamchunk($index)``
+- ``flushAttributes()``
+- ``flushHostnames()``
+- ``flushLogs()``
+- ``reloadPlugins()``
+- ``kill($queryId)``
+- ``getCapabilities()``
+- ``supports($feature)``
+- ``requireSupport($feature, $context = '')``
 
-.. code-block:: php
+Filtered SHOW Wrappers
+----------------------
 
-    Helper::create($conn)
-      ->showTables();
+- ``showTables($index = null)`` compiles to:
 
-.. code-block:: php
+  - ``SHOW TABLES`` when ``$index`` is ``null`` or an empty string
+  - ``SHOW TABLES LIKE <quoted index>`` when ``$index`` is a non-empty string
+- ``showTableStatus($table = null)`` compiles to:
 
-    Helper::create($conn)
-      ->showVariables();
+  - ``SHOW TABLE STATUS`` when ``$table`` is ``null``
+  - ``SHOW TABLE <table> STATUS`` when ``$table`` is a non-empty string
 
-.. code-block:: php
+Suggest-Family Option Contract
+------------------------------
 
-    Helper::create($conn)
-      ->showSessionVariables();
+For ``callSuggest()``, ``callQSuggest()``, and ``callAutocomplete()``:
 
-.. code-block:: php
+- ``$options`` must be an associative array.
+- Option keys must be non-empty strings; each option is compiled as
+  ``<quoted_value> AS <key>``.
+- Option values are quoted via the active connection driver
+  (``quote()``/``quoteArr()``), which supports scalar values, ``null``,
+  ``Expression``, and arrays.
+- Repository-tested option keys are ``limit`` (numeric) and ``fuzzy``
+  (numeric, autocomplete).
 
-    Helper::create($conn)
-      ->showGlobalVariables();
+Validation Notes
+----------------
 
-.. code-block:: php
+In 4.0, helper methods validate required identifiers and input shapes and throw
+``SphinxQLException`` on invalid arguments.
 
-    Helper::create($conn)
-      ->setVariable($variable, $value, $global = false);
-
-.. code-block:: php
-
-    Helper::create($conn)
-      ->callSnippets($data, $index, $extra = array());
-
-.. code-block:: php
-
-    Helper::create($conn)
-      ->callKeywords($text, $index, $hits = null);
-
-.. code-block:: php
-
-    Helper::create($conn)
-      ->describe($index);
-
-.. code-block:: php
-
-    Helper::create($conn)
-      ->createFunction($name, $returns, $soname);
-
-.. code-block:: php
-
-    Helper::create($conn)
-      ->dropFunction($name);
-
-.. code-block:: php
-
-    Helper::create($conn)
-      ->attachIndex($diskIndex, $rtIndex);
-
-.. code-block:: php
-
-    Helper::create($conn)
-      ->flushRtIndex($index);
+``callQSuggest()`` and ``callAutocomplete()`` are feature-gated and may throw
+``UnsupportedFeatureException`` when unsupported. ``callSuggest()`` is not
+pre-gated; use ``supports('call_suggest')`` when runtime portability is needed.

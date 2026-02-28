@@ -11,12 +11,12 @@ class MultiResultSetAdapter implements MultiResultSetAdapterInterface
     /**
      * @var bool
      */
-    protected $valid = true;
+    protected bool $valid = true;
 
     /**
      * @var PDOStatement
      */
-    protected $statement;
+    protected PDOStatement $statement;
 
     /**
      * @param PDOStatement $statement
@@ -29,7 +29,7 @@ class MultiResultSetAdapter implements MultiResultSetAdapterInterface
     /**
      * @inheritdoc
      */
-    public function getNext()
+    public function getNext(): void
     {
         if (
             !$this->valid() ||
@@ -42,7 +42,7 @@ class MultiResultSetAdapter implements MultiResultSetAdapterInterface
     /**
      * @inheritdoc
      */
-    public function current()
+    public function current(): ResultSet
     {
         return new ResultSet(new ResultSetAdapter($this->statement));
     }
@@ -50,8 +50,8 @@ class MultiResultSetAdapter implements MultiResultSetAdapterInterface
     /**
      * @inheritdoc
      */
-    public function valid()
+    public function valid(): bool
     {
-        return $this->statement && $this->valid;
+        return $this->valid;
     }
 }

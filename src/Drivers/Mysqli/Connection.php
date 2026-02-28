@@ -8,6 +8,7 @@ use Foolz\SphinxQL\Drivers\ResultSet;
 use Foolz\SphinxQL\Exception\ConnectionException;
 use Foolz\SphinxQL\Exception\DatabaseException;
 use Foolz\SphinxQL\Exception\SphinxQLException;
+use mysqli_sql_exception;
 
 /**
  * SphinxQL connection class utilizing the MySQLi extension.
@@ -20,14 +21,14 @@ class Connection extends ConnectionBase
      *
      * @var string
      */
-    protected $internal_encoding;
+    protected ?string $internal_encoding = null;
 
     /**
      * Returns the internal encoding.
      *
      * @return string current multibyte internal encoding
      */
-    public function getInternalEncoding()
+    public function getInternalEncoding(): ?string
     {
         return $this->internal_encoding;
     }
@@ -35,10 +36,12 @@ class Connection extends ConnectionBase
     /**
      * @inheritdoc
      */
-    public function connect()
+    public function connect(): bool
     {
         $data = $this->getParams();
         $conn = mysqli_init();
+        $username = array_key_exists('username', $data) ? $data['username'] : null;
+        $password = array_key_exists('password', $data) ? $data['password'] : null;
 
         if (!empty($data['options'])) {
             foreach ($data['options'] as $option => $value) {
@@ -48,9 +51,26 @@ class Connection extends ConnectionBase
 
         set_error_handler(function () {});
         try {
-            if (!$conn->real_connect($data['host'], null, null, null, (int) $data['port'], $data['socket'])) {
-                throw new ConnectionException('Connection Error: ['.$conn->connect_errno.']'.$conn->connect_error);
+            if (!$conn->real_connect($data['host'], $username, $password, null, (int) $data['port'], $data['socket'])) {
+                throw new ConnectionException(
+                    '[mysqli][connect]['.$conn->connect_errno.'] '.$conn->connect_error
+                    .' [host='.(string) $data['host'].', port='.(int) $data['port'].']'
+                );
             }
+        } catch (\TypeError $exception) {
+            throw new ConnectionException(
+                '[mysqli][connect][0] '.$exception->getMessage()
+                .' [host='.(string) $data['host'].', port='.(int) $data['port'].']',
+                0,
+                $exception
+            );
+        } catch (mysqli_sql_exception $exception) {
+            throw new ConnectionException(
+                '[mysqli][connect]['.$exception->getCode().'] '.$exception->getMessage()
+                .' [host='.(string) $data['host'].', port='.(int) $data['port'].']',
+                (int) $exception->getCode(),
+                $exception
+            );
         } finally {
             restore_error_handler();
         }
@@ -68,7 +88,7 @@ class Connection extends ConnectionBase
      * @return bool True if connected, false otherwise
      * @throws ConnectionException
      */
-    public function ping()
+    public function ping(): bool
     {
         $this->ensureConnection();
 
@@ -78,7 +98,7 @@ class Connection extends ConnectionBase
     /**
      * @inheritdoc
      */
-    public function close()
+    public function close(): self
     {
         $this->mbPop();
         $this->getConnection()->close();
@@ -89,7 +109,7 @@ class Connection extends ConnectionBase
     /**
      * @inheritdoc
      */
-    public function query($query)
+    public function query(string $query): ResultSet
     {
         $this->ensureConnection();
 
@@ -102,13 +122,19 @@ class Connection extends ConnectionBase
              * ERROR mysqli::prepare(): (08S01/1047): unknown command (code=22) - prepare() not implemented by Sphinx/Manticore
              */
             $resource = @$this->getConnection()->query($query);
+        } catch (mysqli_sql_exception $exception) {
+            throw new DatabaseException(
+                '[mysqli][query]['.$exception->getCode().'] '.$exception->getMessage().' [ '.$query.' ]',
+                (int) $exception->getCode(),
+                $exception
+            );
         } finally {
             restore_error_handler();
-        }        
+        }
 
         if ($this->getConnection()->error) {
-            throw new DatabaseException('['.$this->getConnection()->errno.'] '.
-                $this->getConnection()->error.' [ '.$query.']');
+            throw new DatabaseException('[mysqli][query]['.$this->getConnection()->errno.'] '.
+                $this->getConnection()->error.' [ '.$query.' ]');
         }
 
         return new ResultSet(new ResultSetAdapter($this, $resource));
@@ -117,7 +143,7 @@ class Connection extends ConnectionBase
     /**
      * @inheritdoc
      */
-    public function multiQuery(array $queue)
+    public function multiQuery(array $queue): MultiResultSet
     {
         $count = count($queue);
 
@@ -127,11 +153,19 @@ class Connection extends ConnectionBase
 
         $this->ensureConnection();
 
-        $this->getConnection()->multi_query(implode(';', $queue));
+        try {
+            $this->getConnection()->multi_query(implode(';', $queue));
+        } catch (mysqli_sql_exception $exception) {
+            throw new DatabaseException(
+                '[mysqli][multi_query]['.$exception->getCode().'] '.$exception->getMessage().' [ '.implode(';', $queue).' ]',
+                (int) $exception->getCode(),
+                $exception
+            );
+        }
 
         if ($this->getConnection()->error) {
-            throw new DatabaseException('['.$this->getConnection()->errno.'] '.
-                $this->getConnection()->error.' [ '.implode(';', $queue).']');
+            throw new DatabaseException('[mysqli][multi_query]['.$this->getConnection()->errno.'] '.
+                $this->getConnection()->error.' [ '.implode(';', $queue).' ]');
         }
 
         return new MultiResultSet(new MultiResultSetAdapter($this));
@@ -142,13 +176,26 @@ class Connection extends ConnectionBase
      * Based on FuelPHP's escaping function.
      * @inheritdoc
      */
-    public function escape($value)
+    public function escape(string $value): string
     {
         $this->ensureConnection();
 
-        if (($value = $this->getConnection()->real_escape_string((string) $value)) === false) {
+        try {
+            $value = $this->getConnection()->real_escape_string((string) $value);
+        } catch (mysqli_sql_exception $exception) {
+            throw new DatabaseException(
+                '[mysqli][escape]['.$exception->getCode().'] '.$exception->getMessage(),
+                (int) $exception->getCode(),
+                $exception
+            );
+        }
+
+        if ($value === false) {
             // @codeCoverageIgnoreStart
-            throw new DatabaseException($this->getConnection()->error, $this->getConnection()->errno);
+            throw new DatabaseException(
+                '[mysqli][escape]['.$this->getConnection()->errno.'] '.$this->getConnection()->error,
+                $this->getConnection()->errno
+            );
             // @codeCoverageIgnoreEnd
         }
 
@@ -158,7 +205,7 @@ class Connection extends ConnectionBase
     /**
      * Enter UTF-8 multi-byte workaround mode.
      */
-    public function mbPush()
+    public function mbPush(): self
     {
         $this->internal_encoding = mb_internal_encoding();
         mb_internal_encoding('UTF-8');
@@ -169,7 +216,7 @@ class Connection extends ConnectionBase
     /**
      * Exit UTF-8 multi-byte workaround mode.
      */
-    public function mbPop()
+    public function mbPop(): self
     {
         // TODO: add test case for #155
         if ($this->getInternalEncoding()) {

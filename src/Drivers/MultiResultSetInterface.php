@@ -12,19 +12,19 @@ interface MultiResultSetInterface extends \ArrayAccess, \Iterator, \Countable
      * @return $this
      * @throws DatabaseException
      */
-    public function store();
+    public function store(): self;
 
     /**
      * Returns the stored data as an array (results) of arrays (rows)
      *
      * @return ResultSetInterface[]|null
      */
-    public function getStored();
+    public function getStored(): ?array;
 
     /**
      * Returns the next result set, or false if there's no more results
      *
      * @return ResultSetInterface|false
      */
-    public function getNext();
+    public function getNext(): ResultSetInterface|false;
 }

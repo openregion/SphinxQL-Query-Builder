@@ -1,0 +1,89 @@
+version: 1
+updated_at: "2026-02-28"
+notes:
+  - "supported means covered by runtime tests in at least one CI lane."
+  - "conditional means feature depends on engine/runtime capability checks."
+
+builder:
+  grouped_where:
+    api: ["where", "orWhere", "whereOpen", "orWhereOpen", "whereClose"]
+    sphinx2: supported
+    sphinx3: supported
+    manticore: supported
+  grouped_having:
+    api: ["having", "orHaving", "havingOpen", "orHavingOpen", "havingClose"]
+    sphinx2: supported
+    sphinx3: supported
+    manticore: supported
+  joins:
+    api: ["join", "innerJoin", "leftJoin", "rightJoin", "crossJoin", "resetJoins"]
+    sphinx2: supported
+    sphinx3: supported
+    manticore: supported
+  order_by_knn_builder:
+    api: ["orderByKnn"]
+    sphinx2: supported
+    sphinx3: supported
+    manticore: supported
+    notes:
+      - "builder-level SQL generation is supported; backend execution support depends on engine/runtime."
+
+helper:
+  core_show:
+    api:
+      - "showMeta"
+      - "showWarnings"
+      - "showStatus"
+      - "showTables"
+      - "showVariables"
+      - "showDatabases"
+      - "showCharacterSet"
+      - "showCollation"
+    sphinx2: supported
+    sphinx3: supported
+    manticore: supported
+    notes:
+      - "showTables($index = null) compiles to SHOW TABLES when index is null/empty, or SHOW TABLES LIKE <quoted index> for non-empty strings."
+  diagnostic_show:
+    api: ["showProfile", "showPlan", "showThreads", "showPlugins", "showQueries"]
+    sphinx2: conditional
+    sphinx3: conditional
+    manticore: conditional
+  table_introspection:
+    api: ["showCreateTable", "showTableStatus", "showTableSettings", "showTableIndexes"]
+    sphinx2: conditional
+    sphinx3: conditional
+    manticore: conditional
+    notes:
+      - "showTableStatus() supports an optional filter: null => SHOW TABLE STATUS, non-empty table => SHOW TABLE <table> STATUS."
+  maintenance:
+    api:
+      - "flushRtIndex"
+      - "truncateRtIndex"
+      - "optimizeIndex"
+      - "showIndexStatus"
+      - "flushRamchunk"
+      - "flushAttributes"
+      - "flushHostnames"
+      - "flushLogs"
+      - "reloadPlugins"
+      - "kill"
+    sphinx2: conditional
+    sphinx3: conditional
+    manticore: conditional
+  suggest_family:
+    api: ["callSuggest", "callQSuggest", "callAutocomplete"]
+    sphinx2: conditional
+    sphinx3: conditional
+    manticore: conditional
+    notes:
+      - "callQSuggest/callAutocomplete are feature-gated and throw UnsupportedFeatureException when unavailable."
+      - "callSuggest options, callQSuggest options, and callAutocomplete options require non-empty string keys (compiled as '<value> AS <key>')."
+      - "Option values are quoted through the active connection driver; value types follow connection quote()/quoteArr() behavior."
+      - "Repository-tested option keys: limit (numeric) for suggest/qsuggest, fuzzy (numeric) for autocomplete."
+
+capabilities:
+  api: ["Helper.getCapabilities", "Helper.supports", "Helper.requireSupport", "SphinxQL.getCapabilities", "SphinxQL.supports"]
+  sphinx2: supported
+  sphinx3: supported
+  manticore: supported

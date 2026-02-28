@@ -19,167 +19,174 @@ class SphinxQL
      *
      * @var ConnectionInterface
      */
-    protected $connection;
+    protected ?ConnectionInterface $connection;
 
     /**
      * The last result object.
      *
      * @var array
      */
-    protected $last_result;
+    protected ResultSetInterface|MultiResultSetInterface|array|int|null $last_result = null;
 
     /**
      * The last compiled query.
      *
      * @var string
      */
-    protected $last_compiled;
+    protected ?string $last_compiled = null;
 
     /**
      * The last chosen method (select, insert, replace, update, delete).
      *
      * @var string
      */
-    protected $type;
+    protected ?string $type = null;
 
     /**
      * An SQL query that is not yet executed or "compiled"
      *
      * @var string
      */
-    protected $query;
+    protected ?string $query = null;
 
     /**
      * Array of select elements that will be comma separated.
      *
      * @var array
      */
-    protected $select = array();
+    protected array $select = array();
 
     /**
      * From in SphinxQL is the list of indexes that will be used
      *
      * @var array
      */
-    protected $from = array();
+    protected array|\Closure|SphinxQL $from = array();
 
     /**
-     * The list of where and parenthesis, must be inserted in order
+     * JOIN clauses for SELECT queries
      *
      * @var array
      */
-    protected $where = array();
+    protected array $joins = array();
+
+    /**
+     * WHERE clause token list (conditions and grouping parenthesis)
+     *
+     * @var array
+     */
+    protected array $where = array();
 
     /**
      * The list of matches for the MATCH function in SphinxQL
      *
      * @var array
      */
-    protected $match = array();
+    protected array $match = array();
 
     /**
      * GROUP BY array to be comma separated
      *
      * @var array
      */
-    protected $group_by = array();
+    protected array $group_by = array();
 
     /**
      * When not null changes 'GROUP BY' to 'GROUP N BY'
      *
      * @var null|int
      */
-    protected $group_n_by;
+    protected ?int $group_n_by = null;
 
     /**
      * ORDER BY array
      *
      * @var array
      */
-    protected $within_group_order_by = array();
+    protected array $within_group_order_by = array();
 
     /**
-     * The list of where and parenthesis, must be inserted in order
+     * HAVING clause token list (conditions and grouping parenthesis)
      *
      * @var array
      */
-    protected $having = array();
+    protected array $having = array();
 
     /**
      * ORDER BY array
      *
      * @var array
      */
-    protected $order_by = array();
+    protected array $order_by = array();
 
     /**
      * When not null it adds an offset
      *
      * @var null|int
      */
-    protected $offset;
+    protected ?int $offset = null;
 
     /**
      * When not null it adds a limit
      *
      * @var null|int
      */
-    protected $limit;
+    protected ?int $limit = null;
 
     /**
      * Value of INTO query for INSERT or REPLACE
      *
      * @var null|string
      */
-    protected $into;
+    protected ?string $into = null;
 
     /**
      * Array of columns for INSERT or REPLACE
      *
      * @var array
      */
-    protected $columns = array();
+    protected array $columns = array();
 
     /**
      * Array OF ARRAYS of values for INSERT or REPLACE
      *
      * @var array
      */
-    protected $values = array();
+    protected array $values = array();
 
     /**
      * Array arrays containing column and value for SET in UPDATE
      *
      * @var array
      */
-    protected $set = array();
+    protected array $set = array();
 
     /**
      * Array of OPTION specific to SphinxQL
      *
      * @var array
      */
-    protected $options = array();
+    protected array $options = array();
 
     /**
      * Array of FACETs
      *
      * @var Facet[]
      */
-    protected $facets = array();
+    protected array $facets = array();
 
     /**
      * The reference to the object that queued itself and created this object
      *
      * @var null|SphinxQL
      */
-    protected $queue_prev;
+    protected ?SphinxQL $queue_prev = null;
 
     /**
      * An array of escaped characters for escapeMatch()
      * @var array
      */
-    protected $escape_full_chars = array(
+    protected array $escape_full_chars = array(
         '\\' => '\\\\',
         '('  => '\(',
         ')'  => '\)',
@@ -201,7 +208,7 @@ class SphinxQL
      * An array of escaped characters for fullEscapeMatch()
      * @var array
      */
-    protected $escape_half_chars = array(
+    protected array $escape_half_chars = array(
         '\\' => '\\\\',
         '('  => '\(',
         ')'  => '\)',
@@ -227,20 +234,84 @@ class SphinxQL
     /**
      * Sets Query Type
      *
+     * @return $this
+     * @throws SphinxQLException
      */
-    public function setType(string $type)
+    public function setType(string $type): self
     {
-        return $this->type = $type;
-    }    
+        $normalizedType = strtolower(trim($type));
+        $allowedTypes = array('select', 'insert', 'replace', 'update', 'delete', 'query');
+        if (!in_array($normalizedType, $allowedTypes, true)) {
+            throw new SphinxQLException(
+                'Invalid query type "'.$type.'". Allowed types: '.implode(', ', $allowedTypes).'.'
+            );
+        }
+
+        $this->type = $normalizedType;
+
+        return $this;
+    }
 
     /**
      * Returns the currently attached connection
      *
      * @returns ConnectionInterface
      */
-    public function getConnection()
+    public function getConnection(): ?ConnectionInterface
     {
         return $this->connection;
+    }
+
+    /**
+     * Returns detected runtime capabilities for the current connection.
+     *
+     * @return Capabilities
+     * @throws SphinxQLException
+     */
+    public function getCapabilities(): Capabilities
+    {
+        if ($this->connection === null) {
+            throw new SphinxQLException('getCapabilities() requires an attached connection.');
+        }
+
+        return (new Helper($this->connection))->getCapabilities();
+    }
+
+    /**
+     * Checks whether a named feature is supported.
+     *
+     * @param string $feature
+     *
+     * @return bool
+     * @throws SphinxQLException
+     */
+    public function supports($feature): bool
+    {
+        if ($this->connection === null) {
+            throw new SphinxQLException('supports() requires an attached connection.');
+        }
+
+        return (new Helper($this->connection))->supports($feature);
+    }
+
+    /**
+     * Throws when a named feature is not supported.
+     *
+     * @param string $feature
+     * @param string $context
+     *
+     * @return self
+     * @throws SphinxQLException
+     */
+    public function requireSupport($feature, $context = ''): self
+    {
+        if ($this->connection === null) {
+            throw new SphinxQLException('requireSupport() requires an attached connection.');
+        }
+
+        (new Helper($this->connection))->requireSupport($feature, $context);
+
+        return $this;
     }
 
     /**
@@ -255,7 +326,7 @@ class SphinxQL
      * @return Expression The new Expression
      * @todo make non static
      */
-    public static function expr($string = '')
+    public static function expr($string = ''): Expression
     {
         return new Expression($string);
     }
@@ -268,7 +339,7 @@ class SphinxQL
      * @throws ConnectionException
      * @throws SphinxQLException
      */
-    public function execute()
+    public function execute(): ResultSetInterface
     {
         // pass the object so execute compiles it by itself
         return $this->last_result = $this->getConnection()->query($this->compile()->getCompiled());
@@ -282,7 +353,7 @@ class SphinxQL
      * @throws Exception\DatabaseException
      * @throws ConnectionException
      */
-    public function executeBatch()
+    public function executeBatch(): MultiResultSetInterface
     {
         if (count($this->getQueue()) == 0) {
             throw new SphinxQLException('There is no Queue present to execute.');
@@ -304,7 +375,7 @@ class SphinxQL
      *
      * @return SphinxQL A new SphinxQL object with the current object referenced
      */
-    public function enqueue(?SphinxQL $next = null)
+    public function enqueue(?SphinxQL $next = null): SphinxQL
     {
         if ($next === null) {
             $next = new static($this->getConnection());
@@ -320,7 +391,7 @@ class SphinxQL
      *
      * @return SphinxQL[] The ordered array of enqueued objects
      */
-    public function getQueue()
+    public function getQueue(): array
     {
         $queue = array();
         $curr = $this;
@@ -339,7 +410,7 @@ class SphinxQL
      *
      * @return SphinxQL|null
      */
-    public function getQueuePrev()
+    public function getQueuePrev(): ?SphinxQL
     {
         return $this->queue_prev;
     }
@@ -351,8 +422,12 @@ class SphinxQL
      *
      * @return self
      */
-    public function setQueuePrev($query)
+    public function setQueuePrev($query): self
     {
+        if (!$query instanceof self) {
+            throw new \InvalidArgumentException('setQueuePrev() expects an instance of '.self::class.'.');
+        }
+
         $this->queue_prev = $query;
 
         return $this;
@@ -363,7 +438,7 @@ class SphinxQL
      *
      * @return array The result of the last query
      */
-    public function getResult()
+    public function getResult(): ResultSetInterface|MultiResultSetInterface|array|int|null
     {
         return $this->last_result;
     }
@@ -373,7 +448,7 @@ class SphinxQL
      *
      * @return string The last compiled query
      */
-    public function getCompiled()
+    public function getCompiled(): ?string
     {
         return $this->last_compiled;
     }
@@ -383,7 +458,7 @@ class SphinxQL
      * @throws DatabaseException
      * @throws ConnectionException
      */
-    public function transactionBegin()
+    public function transactionBegin(): void
     {
         $this->getConnection()->query('BEGIN');
     }
@@ -393,7 +468,7 @@ class SphinxQL
      * @throws DatabaseException
      * @throws ConnectionException
      */
-    public function transactionCommit()
+    public function transactionCommit(): void
     {
         $this->getConnection()->query('COMMIT');
     }
@@ -403,7 +478,7 @@ class SphinxQL
      * @throws DatabaseException
      * @throws ConnectionException
      */
-    public function transactionRollback()
+    public function transactionRollback(): void
     {
         $this->getConnection()->query('ROLLBACK');
     }
@@ -416,8 +491,12 @@ class SphinxQL
      * @throws DatabaseException
      * @throws SphinxQLException
      */
-    public function compile()
+    public function compile(): self
     {
+        if ($this->type === null) {
+            throw new SphinxQLException('Unable to compile query: no query type selected.');
+        }
+
         switch ($this->type) {
             case 'select':
                 $this->compileSelect();
@@ -435,6 +514,8 @@ class SphinxQL
             case 'query':
                 $this->compileQuery();
                 break;
+            default:
+                throw new SphinxQLException('Unable to compile query: unsupported query type "'.$this->type.'".');
         }
 
         return $this;
@@ -443,7 +524,7 @@ class SphinxQL
     /**
      * @return self
      */
-    public function compileQuery()
+    public function compileQuery(): self
     {
         $this->last_compiled = $this->query;
 
@@ -458,7 +539,7 @@ class SphinxQL
      * @throws Exception\ConnectionException
      * @throws Exception\DatabaseException
      */
-    public function compileMatch()
+    public function compileMatch(): string
     {
         $query = '';
 
@@ -510,24 +591,18 @@ class SphinxQL
      * @throws ConnectionException
      * @throws DatabaseException
      */
-    public function compileWhere()
+    public function compileWhere(): string
     {
-        $query = '';
-
-        if (empty($this->match) && !empty($this->where)) {
-            $query .= 'WHERE ';
+        $compiled = $this->compileBooleanClause($this->where, 'where');
+        if ($compiled === '') {
+            return '';
         }
 
-        if (!empty($this->where)) {
-            foreach ($this->where as $key => $where) {
-                if ($key > 0 || !empty($this->match)) {
-                    $query .= 'AND ';
-                }
-                $query .= $this->compileFilterCondition($where);
-            }
+        if (empty($this->match)) {
+            return 'WHERE '.$compiled.' ';
         }
 
-        return $query;
+        return 'AND '.$compiled.' ';
     }
 
     /**
@@ -537,7 +612,7 @@ class SphinxQL
      * @throws ConnectionException
      * @throws DatabaseException
      */
-    public function compileFilterCondition($filter)
+    public function compileFilterCondition(array $filter): string
     {
         $query = '';
 
@@ -574,7 +649,7 @@ class SphinxQL
      * @throws DatabaseException
      * @throws SphinxQLException
      */
-    public function compileSelect()
+    public function compileSelect(): self
     {
         $query = '';
 
@@ -598,6 +673,10 @@ class SphinxQL
             } else {
                 $query .= 'FROM '.implode(', ', $this->from).' ';
             }
+        }
+
+        if (!empty($this->joins)) {
+            $query .= $this->compileJoins();
         }
 
         $query .= $this->compileMatch().$this->compileWhere();
@@ -629,7 +708,7 @@ class SphinxQL
         }
 
         if (!empty($this->having)) {
-            $query .= 'HAVING '.$this->compileFilterCondition($this->having);
+            $query .= 'HAVING '.$this->compileBooleanClause($this->having, 'having').' ';
         }
 
         if (!empty($this->order_by)) {
@@ -717,7 +796,7 @@ class SphinxQL
      * @throws ConnectionException
      * @throws DatabaseException
      */
-    public function compileInsert()
+    public function compileInsert(): self
     {
         if ($this->type == 'insert') {
             $query = 'INSERT ';
@@ -757,13 +836,15 @@ class SphinxQL
      * @throws ConnectionException
      * @throws DatabaseException
      */
-    public function compileUpdate()
+    public function compileUpdate(): self
     {
+        if ($this->into === null) {
+            throw new SphinxQLException('update() requires into($index) before compile() or execute().');
+        }
+
         $query = 'UPDATE ';
 
-        if ($this->into !== null) {
-            $query .= $this->into.' ';
-        }
+        $query .= $this->into.' ';
 
         if (!empty($this->set)) {
             $query .= 'SET ';
@@ -799,7 +880,7 @@ class SphinxQL
      * @throws ConnectionException
      * @throws DatabaseException
      */
-    public function compileDelete()
+    public function compileDelete(): self
     {
         $query = 'DELETE ';
 
@@ -827,7 +908,7 @@ class SphinxQL
      *
      * @return self
      */
-    public function query($sql)
+    public function query(string $sql): self
     {
         $this->type = 'query';
         $this->query = $sql;
@@ -856,7 +937,7 @@ class SphinxQL
      *
      * @return self
      */
-    public function select($columns = null)
+    public function select($columns = null): self
     {
         $this->reset();
         $this->type = 'select';
@@ -880,7 +961,7 @@ class SphinxQL
      *
      * @return self
      */
-    public function setSelect($columns = null)
+    public function setSelect($columns = null): self
     {
         if (is_array($columns)) {
             $this->select = $columns;
@@ -896,7 +977,7 @@ class SphinxQL
      *
      * @return array
      */
-    public function getSelect()
+    public function getSelect(): array
     {
         return $this->select;
     }
@@ -906,7 +987,7 @@ class SphinxQL
      *
      * @return self
      */
-    public function insert()
+    public function insert(): self
     {
         $this->reset();
         $this->type = 'insert';
@@ -919,7 +1000,7 @@ class SphinxQL
      *
      * @return self
      */
-    public function replace()
+    public function replace(): self
     {
         $this->reset();
         $this->type = 'replace';
@@ -930,15 +1011,18 @@ class SphinxQL
     /**
      * Activates the UPDATE mode
      *
-     * @param string $index The index to update into
+     * @param null|string $index The index to update into (optional, can be set later with into())
      *
      * @return self
      */
-    public function update($index)
+    public function update($index = null): self
     {
         $this->reset();
         $this->type = 'update';
-        $this->into($index);
+
+        if ($index !== null) {
+            $this->into($index);
+        }
 
         return $this;
     }
@@ -948,7 +1032,7 @@ class SphinxQL
      *
      * @return self
      */
-    public function delete()
+    public function delete(): self
     {
         $this->reset();
         $this->type = 'delete';
@@ -964,15 +1048,154 @@ class SphinxQL
      *
      * @return self
      */
-    public function from($array = null)
+    public function from($array = null): self
     {
-        if (is_string($array)) {
-            $this->from = \func_get_args();
+        if ($array === null) {
+            throw new SphinxQLException('from() requires one or more indexes, a subquery, or a closure.');
         }
 
-        if (is_array($array) || $array instanceof \Closure || $array instanceof SphinxQL) {
-            $this->from = $array;
+        if (is_string($array)) {
+            $indexes = \func_get_args();
+            foreach ($indexes as $index) {
+                if (!is_string($index) || trim($index) === '') {
+                    throw new SphinxQLException('from() index names must be non-empty strings.');
+                }
+            }
+
+            $this->from = $indexes;
+
+            return $this;
         }
+
+        if (is_array($array)) {
+            if (empty($array)) {
+                throw new SphinxQLException('from() index list cannot be empty.');
+            }
+
+            foreach ($array as $index) {
+                if (!is_string($index) || trim($index) === '') {
+                    throw new SphinxQLException('from() index names must be non-empty strings.');
+                }
+            }
+
+            $this->from = $array;
+
+            return $this;
+        }
+
+        if ($array instanceof \Closure || $array instanceof SphinxQL) {
+            $this->from = $array;
+
+            return $this;
+        }
+
+        throw new SphinxQLException('from() expects string indexes, an array of indexes, a subquery, or a closure.');
+    }
+
+    /**
+     * Adds a JOIN clause to the current SELECT query.
+     *
+     * @param string $table
+     * @param string $left
+     * @param string $operator
+     * @param string $right
+     * @param string $type
+     *
+     * @return self
+     */
+    public function join($table, $left, $operator, $right, $type = 'INNER'): self
+    {
+        if (!is_string($table) || trim($table) === '') {
+            throw new SphinxQLException('join() table must be a non-empty string.');
+        }
+        if (!is_string($left) || trim($left) === '') {
+            throw new SphinxQLException('join() left operand must be a non-empty string.');
+        }
+        if (!is_string($operator) || trim($operator) === '') {
+            throw new SphinxQLException('join() operator must be a non-empty string.');
+        }
+        if (!is_string($right) || trim($right) === '') {
+            throw new SphinxQLException('join() right operand must be a non-empty string.');
+        }
+
+        $joinType = strtoupper(trim((string) $type));
+        if (!in_array($joinType, array('INNER', 'LEFT', 'RIGHT'), true)) {
+            throw new SphinxQLException('join() type must be one of: INNER, LEFT, RIGHT.');
+        }
+
+        $this->joins[] = array(
+            'type' => $joinType,
+            'table' => $table,
+            'left' => $left,
+            'operator' => strtoupper(trim($operator)),
+            'right' => $right,
+        );
+
+        return $this;
+    }
+
+    /**
+     * Adds an INNER JOIN clause.
+     *
+     * @param string $table
+     * @param string $left
+     * @param string $operator
+     * @param string $right
+     *
+     * @return self
+     */
+    public function innerJoin($table, $left, $operator, $right): self
+    {
+        return $this->join($table, $left, $operator, $right, 'INNER');
+    }
+
+    /**
+     * Adds a LEFT JOIN clause.
+     *
+     * @param string $table
+     * @param string $left
+     * @param string $operator
+     * @param string $right
+     *
+     * @return self
+     */
+    public function leftJoin($table, $left, $operator, $right): self
+    {
+        return $this->join($table, $left, $operator, $right, 'LEFT');
+    }
+
+    /**
+     * Adds a RIGHT JOIN clause.
+     *
+     * @param string $table
+     * @param string $left
+     * @param string $operator
+     * @param string $right
+     *
+     * @return self
+     */
+    public function rightJoin($table, $left, $operator, $right): self
+    {
+        return $this->join($table, $left, $operator, $right, 'RIGHT');
+    }
+
+    /**
+     * Adds a CROSS JOIN clause.
+     *
+     * @param string $table
+     *
+     * @return self
+     */
+    public function crossJoin($table): self
+    {
+        if (!is_string($table) || trim($table) === '') {
+            throw new SphinxQLException('crossJoin() table must be a non-empty string.');
+        }
+
+        $this->joins[] = array(
+            'type' => 'CROSS',
+            'table' => $table,
+        );
 
         return $this;
     }
@@ -986,7 +1209,7 @@ class SphinxQL
      *
      * @return self
      */
-    public function match($column, $value = null, $half = false)
+    public function match($column, $value = null, $half = false): self
     {
         if ($column === '*' || (is_array($column) && in_array('*', $column))) {
             $column = array();
@@ -1024,18 +1247,72 @@ class SphinxQL
      *
      * @return self
      */
-    public function where($column, $operator, $value = null)
+    public function where($column, $operator, $value = null): self
     {
-        if ($value === null) {
-            $value = $operator;
-            $operator = '=';
-        }
-
         $this->where[] = array(
-            'column'   => $column,
-            'operator' => $operator,
-            'value'    => $value,
+            'type' => 'condition',
+            'boolean' => 'AND',
+            'condition' => $this->createFilterCondition('where', $column, $operator, $value),
         );
+
+        return $this;
+    }
+
+    /**
+     * Adds an OR WHERE condition.
+     *
+     * @param string                                      $column
+     * @param Expression|string|null|bool|array|int|float $operator
+     * @param Expression|string|null|bool|array|int|float $value
+     *
+     * @return self
+     */
+    public function orWhere($column, $operator, $value = null): self
+    {
+        $this->where[] = array(
+            'type' => 'condition',
+            'boolean' => 'OR',
+            'condition' => $this->createFilterCondition('orWhere', $column, $operator, $value),
+        );
+
+        return $this;
+    }
+
+    /**
+     * Opens a grouped WHERE clause.
+     *
+     * @param string $boolean
+     *
+     * @return self
+     */
+    public function whereOpen($boolean = 'AND'): self
+    {
+        $this->where[] = array(
+            'type' => 'open',
+            'boolean' => $this->normalizeBooleanOperator($boolean, 'whereOpen'),
+        );
+
+        return $this;
+    }
+
+    /**
+     * Opens a grouped WHERE clause joined with OR.
+     *
+     * @return self
+     */
+    public function orWhereOpen(): self
+    {
+        return $this->whereOpen('OR');
+    }
+
+    /**
+     * Closes a grouped WHERE clause.
+     *
+     * @return self
+     */
+    public function whereClose(): self
+    {
+        $this->where[] = array('type' => 'close');
 
         return $this;
     }
@@ -1048,7 +1325,7 @@ class SphinxQL
      *
      * @return self
      */
-    public function groupBy($column)
+    public function groupBy($column): self
     {
         $this->group_by[] = $column;
 
@@ -1063,8 +1340,12 @@ class SphinxQL
      *
      * @return self
      */
-    public function groupNBy($n)
+    public function groupNBy($n): self
     {
+        if (filter_var($n, FILTER_VALIDATE_INT) === false || (int) $n <= 0) {
+            throw new SphinxQLException('groupNBy() requires a positive integer.');
+        }
+
         $this->group_n_by = (int) $n;
 
         return $this;
@@ -1080,9 +1361,16 @@ class SphinxQL
      *
      * @return self
      */
-    public function withinGroupOrderBy($column, $direction = null)
+    public function withinGroupOrderBy($column, $direction = null): self
     {
-        $this->within_group_order_by[] = array('column' => $column, 'direction' => $direction);
+        if (!is_string($column) || trim($column) === '') {
+            throw new SphinxQLException('withinGroupOrderBy() column must be a non-empty string.');
+        }
+
+        $this->within_group_order_by[] = array(
+            'column' => $column,
+            'direction' => $this->normalizeDirection($direction, 'withinGroupOrderBy')
+        );
 
         return $this;
     }
@@ -1113,18 +1401,72 @@ class SphinxQL
      *
      * @return self
      */
-    public function having($column, $operator, $value = null)
+    public function having($column, $operator, $value = null): self
     {
-        if ($value === null) {
-            $value = $operator;
-            $operator = '=';
-        }
-
-        $this->having = array(
-            'column'   => $column,
-            'operator' => $operator,
-            'value'    => $value,
+        $this->having[] = array(
+            'type' => 'condition',
+            'boolean' => 'AND',
+            'condition' => $this->createFilterCondition('having', $column, $operator, $value),
         );
+
+        return $this;
+    }
+
+    /**
+     * Adds an OR HAVING condition.
+     *
+     * @param string                                      $column
+     * @param Expression|string|null|bool|array|int|float $operator
+     * @param Expression|string|null|bool|array|int|float $value
+     *
+     * @return self
+     */
+    public function orHaving($column, $operator, $value = null): self
+    {
+        $this->having[] = array(
+            'type' => 'condition',
+            'boolean' => 'OR',
+            'condition' => $this->createFilterCondition('orHaving', $column, $operator, $value),
+        );
+
+        return $this;
+    }
+
+    /**
+     * Opens a grouped HAVING clause.
+     *
+     * @param string $boolean
+     *
+     * @return self
+     */
+    public function havingOpen($boolean = 'AND'): self
+    {
+        $this->having[] = array(
+            'type' => 'open',
+            'boolean' => $this->normalizeBooleanOperator($boolean, 'havingOpen'),
+        );
+
+        return $this;
+    }
+
+    /**
+     * Opens a grouped HAVING clause joined with OR.
+     *
+     * @return self
+     */
+    public function orHavingOpen(): self
+    {
+        return $this->havingOpen('OR');
+    }
+
+    /**
+     * Closes a grouped HAVING clause.
+     *
+     * @return self
+     */
+    public function havingClose(): self
+    {
+        $this->having[] = array('type' => 'close');
 
         return $this;
     }
@@ -1138,9 +1480,51 @@ class SphinxQL
      *
      * @return self
      */
-    public function orderBy($column, $direction = null)
+    public function orderBy($column, $direction = null): self
     {
-        $this->order_by[] = array('column' => $column, 'direction' => $direction);
+        if (!is_string($column) || trim($column) === '') {
+            throw new SphinxQLException('orderBy() column must be a non-empty string.');
+        }
+
+        $this->order_by[] = array(
+            'column' => $column,
+            'direction' => $this->normalizeDirection($direction, 'orderBy')
+        );
+
+        return $this;
+    }
+
+    /**
+     * Adds ORDER BY KNN(...) clause expression.
+     *
+     * @param string      $field
+     * @param int|string  $k
+     * @param array       $vector
+     * @param string|null $direction
+     *
+     * @return self
+     */
+    public function orderByKnn($field, $k, array $vector, $direction = 'ASC'): self
+    {
+        if (!is_string($field) || trim($field) === '') {
+            throw new SphinxQLException('orderByKnn() field must be a non-empty string.');
+        }
+        if (filter_var($k, FILTER_VALIDATE_INT) === false || (int) $k <= 0) {
+            throw new SphinxQLException('orderByKnn() k must be a positive integer.');
+        }
+        if (empty($vector)) {
+            throw new SphinxQLException('orderByKnn() vector must be a non-empty array.');
+        }
+
+        $encodedVector = json_encode(array_values($vector));
+        if ($encodedVector === false) {
+            throw new SphinxQLException('orderByKnn() vector could not be JSON encoded.');
+        }
+
+        $this->order_by[] = array(
+            'column' => 'KNN('.$field.', '.((int) $k).', '.$encodedVector.')',
+            'direction' => $this->normalizeDirection($direction, 'orderByKnn')
+        );
 
         return $this;
     }
@@ -1154,12 +1538,23 @@ class SphinxQL
      *
      * @return self
      */
-    public function limit($offset, $limit = null)
+    public function limit($offset, $limit = null): self
     {
         if ($limit === null) {
+            if (filter_var($offset, FILTER_VALIDATE_INT) === false || (int) $offset < 0) {
+                throw new SphinxQLException('limit() requires a non-negative integer.');
+            }
+
             $this->limit = (int) $offset;
 
             return $this;
+        }
+
+        if (filter_var($offset, FILTER_VALIDATE_INT) === false || (int) $offset < 0) {
+            throw new SphinxQLException('limit() offset must be a non-negative integer.');
+        }
+        if (filter_var($limit, FILTER_VALIDATE_INT) === false || (int) $limit < 0) {
+            throw new SphinxQLException('limit() limit must be a non-negative integer.');
         }
 
         $this->offset($offset);
@@ -1175,8 +1570,12 @@ class SphinxQL
      *
      * @return self
      */
-    public function offset($offset)
+    public function offset($offset): self
     {
+        if (filter_var($offset, FILTER_VALIDATE_INT) === false || (int) $offset < 0) {
+            throw new SphinxQLException('offset() requires a non-negative integer.');
+        }
+
         $this->offset = (int) $offset;
 
         return $this;
@@ -1191,8 +1590,12 @@ class SphinxQL
      *
      * @return self
      */
-    public function option($name, $value)
+    public function option($name, $value): self
     {
+        if (!is_string($name) || trim($name) === '') {
+            throw new SphinxQLException('option() name must be a non-empty string.');
+        }
+
         $this->options[] = array('name' => $name, 'value' => $value);
 
         return $this;
@@ -1206,8 +1609,12 @@ class SphinxQL
      *
      * @return self
      */
-    public function into($index)
+    public function into($index): self
     {
+        if (!is_string($index) || trim($index) === '') {
+            throw new SphinxQLException('into() index must be a non-empty string.');
+        }
+
         $this->into = $index;
 
         return $this;
@@ -1222,12 +1629,29 @@ class SphinxQL
      *
      * @return self
      */
-    public function columns($array = array())
+    public function columns($array = array()): self
     {
         if (is_array($array)) {
+            if (empty($array)) {
+                throw new SphinxQLException('columns() requires at least one column.');
+            }
+
+            foreach ($array as $column) {
+                if (!is_string($column) || trim($column) === '') {
+                    throw new SphinxQLException('columns() values must be non-empty strings.');
+                }
+            }
+
             $this->columns = $array;
         } else {
-            $this->columns = \func_get_args();
+            $columns = \func_get_args();
+            foreach ($columns as $column) {
+                if (!is_string($column) || trim($column) === '') {
+                    throw new SphinxQLException('columns() values must be non-empty strings.');
+                }
+            }
+
+            $this->columns = $columns;
         }
 
         return $this;
@@ -1242,12 +1666,19 @@ class SphinxQL
      *
      * @return self
      */
-    public function values($array)
+    public function values($array): self
     {
         if (is_array($array)) {
+            if (empty($array)) {
+                throw new SphinxQLException('values() requires at least one value.');
+            }
             $this->values[] = $array;
         } else {
-            $this->values[] = \func_get_args();
+            $values = \func_get_args();
+            if (empty($values)) {
+                throw new SphinxQLException('values() requires at least one value.');
+            }
+            $this->values[] = $values;
         }
 
         return $this;
@@ -1262,8 +1693,12 @@ class SphinxQL
      *
      * @return self
      */
-    public function value($column, $value)
+    public function value($column, $value): self
     {
+        if (!is_string($column) || trim($column) === '') {
+            throw new SphinxQLException('value() column must be a non-empty string.');
+        }
+
         if ($this->type === 'insert' || $this->type === 'replace') {
             $this->columns[] = $column;
             $this->values[0][] = $value;
@@ -1282,8 +1717,12 @@ class SphinxQL
      *
      * @return self
      */
-    public function set($array)
+    public function set($array): self
     {
+        if (!is_array($array) || empty($array)) {
+            throw new SphinxQLException('set() requires a non-empty associative array.');
+        }
+
         if ($this->columns === array_keys($array)) {
             $this->values($array);
         } else {
@@ -1303,8 +1742,12 @@ class SphinxQL
      *
      * @return self
      */
-    public function facet($facet)
+    public function facet($facet): self
     {
+        if (!$facet instanceof Facet) {
+            throw new SphinxQLException('facet() expects an instance of '.Facet::class.'.');
+        }
+
         $this->facets[] = $facet;
 
         return $this;
@@ -1317,7 +1760,7 @@ class SphinxQL
      *
      * @return self
      */
-    public function setFullEscapeChars($array = array())
+    public function setFullEscapeChars($array = array()): self
     {
         if (!empty($array)) {
             $this->escape_full_chars = $this->compileEscapeChars($array);
@@ -1333,7 +1776,7 @@ class SphinxQL
      *
      * @return self
      */
-    public function setHalfEscapeChars($array = array())
+    public function setHalfEscapeChars($array = array()): self
     {
         if (!empty($array)) {
             $this->escape_half_chars = $this->compileEscapeChars($array);
@@ -1349,7 +1792,7 @@ class SphinxQL
      *
      * @return array An array of the characters and it's escaped counterpart
      */
-    public function compileEscapeChars($array = array())
+    public function compileEscapeChars($array = array()): array
     {
         $result = array();
         foreach ($array as $character) {
@@ -1366,7 +1809,7 @@ class SphinxQL
      *
      * @return string The escaped string
      */
-    public function escapeMatch($string)
+    public function escapeMatch($string): string
     {
         if (is_null($string)) {
             return '';
@@ -1388,7 +1831,7 @@ class SphinxQL
      *
      * @return string The escaped string
      */
-    public function halfEscapeMatch($string)
+    public function halfEscapeMatch($string): string
     {
         if ($string instanceof Expression) {
             return $string->value();
@@ -1416,15 +1859,214 @@ class SphinxQL
     }
 
     /**
+     * @param string                                      $method
+     * @param string                                      $column
+     * @param Expression|string|null|bool|array|int|float $operator
+     * @param Expression|string|null|bool|array|int|float $value
+     *
+     * @return array
+     * @throws SphinxQLException
+     */
+    private function createFilterCondition($method, $column, $operator, $value = null): array
+    {
+        if ($value === null) {
+            $value = $operator;
+            $operator = '=';
+        }
+
+        if (!is_string($column) || trim($column) === '') {
+            throw new SphinxQLException($method.'() column must be a non-empty string.');
+        }
+
+        if (!is_string($operator) || trim($operator) === '') {
+            throw new SphinxQLException($method.'() operator must be a non-empty string.');
+        }
+
+        $normalizedOperator = strtoupper(trim($operator));
+        if (in_array($normalizedOperator, array('IN', 'NOT IN'), true)) {
+            if (!is_array($value) || count($value) === 0) {
+                throw new SphinxQLException($method.'() operator '.$normalizedOperator.' requires a non-empty array value.');
+            }
+        }
+
+        if ($normalizedOperator === 'BETWEEN') {
+            if (!is_array($value) || count($value) !== 2) {
+                throw new SphinxQLException($method.'() operator BETWEEN requires an array with exactly 2 values.');
+            }
+        }
+
+        return array(
+            'column' => $column,
+            'operator' => $normalizedOperator,
+            'value' => $value,
+        );
+    }
+
+    /**
+     * @param string|null $boolean
+     * @param string      $method
+     *
+     * @return string
+     * @throws SphinxQLException
+     */
+    private function normalizeBooleanOperator($boolean, $method): string
+    {
+        if ($boolean === null) {
+            return 'AND';
+        }
+
+        if (!is_string($boolean) || trim($boolean) === '') {
+            throw new SphinxQLException($method.'() boolean must be one of: AND, OR.');
+        }
+
+        $normalized = strtoupper(trim($boolean));
+        if (!in_array($normalized, array('AND', 'OR'), true)) {
+            throw new SphinxQLException($method.'() boolean must be one of: AND, OR.');
+        }
+
+        return $normalized;
+    }
+
+    /**
+     * @param array  $tokens
+     * @param string $context
+     *
+     * @return string
+     * @throws ConnectionException
+     * @throws DatabaseException
+     * @throws SphinxQLException
+     */
+    private function compileBooleanClause(array $tokens, $context): string
+    {
+        if (empty($tokens)) {
+            return '';
+        }
+
+        $query = '';
+        $openGroups = 0;
+        $prevType = null;
+        $hasCondition = false;
+
+        foreach ($tokens as $token) {
+            if (!isset($token['type'])) {
+                // Legacy compatibility with pre-tokenized conditions.
+                $token = array(
+                    'type' => 'condition',
+                    'boolean' => 'AND',
+                    'condition' => $token,
+                );
+            }
+
+            if ($token['type'] === 'open') {
+                $boolean = isset($token['boolean']) ? $this->normalizeBooleanOperator($token['boolean'], $context.'Open') : 'AND';
+                if ($prevType === 'condition' || $prevType === 'close') {
+                    $query .= $boolean.' ';
+                } elseif ($prevType === null && $boolean === 'OR') {
+                    throw new SphinxQLException('Cannot start '.$context.' clause with OR group.');
+                }
+
+                $query .= '( ';
+                $openGroups++;
+                $prevType = 'open';
+                continue;
+            }
+
+            if ($token['type'] === 'close') {
+                if ($openGroups <= 0) {
+                    throw new SphinxQLException('Unbalanced '.$context.' clause: unexpected closing parenthesis.');
+                }
+                if ($prevType === 'open') {
+                    throw new SphinxQLException('Empty parenthesis group is not allowed in '.$context.' clause.');
+                }
+
+                $query .= ') ';
+                $openGroups--;
+                $prevType = 'close';
+                continue;
+            }
+
+            if ($token['type'] !== 'condition' || !isset($token['condition'])) {
+                throw new SphinxQLException('Invalid '.$context.' token.');
+            }
+
+            $boolean = isset($token['boolean']) ? $this->normalizeBooleanOperator($token['boolean'], $context) : 'AND';
+            if ($prevType === 'condition' || $prevType === 'close') {
+                $query .= $boolean.' ';
+            } elseif ($prevType === null && $boolean === 'OR') {
+                throw new SphinxQLException('Cannot start '.$context.' clause with OR.');
+            }
+
+            $query .= trim($this->compileFilterCondition($token['condition'])).' ';
+            $hasCondition = true;
+            $prevType = 'condition';
+        }
+
+        if ($openGroups !== 0) {
+            throw new SphinxQLException('Unbalanced '.$context.' clause: missing closing parenthesis.');
+        }
+
+        if (!$hasCondition) {
+            throw new SphinxQLException('Empty '.$context.' clause is not allowed.');
+        }
+
+        return trim($query);
+    }
+
+    /**
+     * @return string
+     */
+    private function compileJoins(): string
+    {
+        $compiled = '';
+
+        foreach ($this->joins as $join) {
+            if ($join['type'] === 'CROSS') {
+                $compiled .= 'CROSS JOIN '.$join['table'].' ';
+                continue;
+            }
+
+            $compiled .= $join['type'].' JOIN '.$join['table'].' ON '.$join['left'].' '.$join['operator'].' '.$join['right'].' ';
+        }
+
+        return $compiled;
+    }
+
+    /**
+     * @param string|null $direction
+     * @param string      $method
+     *
+     * @return string|null
+     * @throws SphinxQLException
+     */
+    private function normalizeDirection($direction, $method): ?string
+    {
+        if ($direction === null) {
+            return null;
+        }
+
+        if (!is_string($direction) || trim($direction) === '') {
+            throw new SphinxQLException($method.'() direction must be one of: ASC, DESC, or null.');
+        }
+
+        $normalized = strtoupper(trim($direction));
+        if (!in_array($normalized, array('ASC', 'DESC'), true)) {
+            throw new SphinxQLException($method.'() direction must be one of: ASC, DESC, or null.');
+        }
+
+        return $normalized;
+    }
+
+    /**
      * Clears the existing query build for new query when using the same SphinxQL instance.
      *
      * @return self
      */
-    public function reset()
+    public function reset(): self
     {
         $this->query = null;
         $this->select = array();
         $this->from = array();
+        $this->joins = array();
         $this->where = array();
         $this->match = array();
         $this->group_by = array();
@@ -1446,7 +2088,7 @@ class SphinxQL
     /**
      * @return self
      */
-    public function resetWhere()
+    public function resetWhere(): self
     {
         $this->where = array();
 
@@ -1456,7 +2098,17 @@ class SphinxQL
     /**
      * @return self
      */
-    public function resetMatch()
+    public function resetJoins(): self
+    {
+        $this->joins = array();
+
+        return $this;
+    }
+
+    /**
+     * @return self
+     */
+    public function resetMatch(): self
     {
         $this->match = array();
 
@@ -1466,7 +2118,7 @@ class SphinxQL
     /**
      * @return self
      */
-    public function resetGroupBy()
+    public function resetGroupBy(): self
     {
         $this->group_by = array();
         $this->group_n_by = null;
@@ -1477,7 +2129,7 @@ class SphinxQL
     /**
      * @return self
      */
-    public function resetWithinGroupOrderBy()
+    public function resetWithinGroupOrderBy(): self
     {
         $this->within_group_order_by = array();
 
@@ -1487,7 +2139,7 @@ class SphinxQL
     /**
      * @return self
      */
-    public function resetFacets()
+    public function resetFacets(): self
     {
         $this->facets = array();
 
@@ -1497,7 +2149,7 @@ class SphinxQL
     /**
      * @return self
      */
-    public function resetHaving()
+    public function resetHaving(): self
     {
         $this->having = array();
 
@@ -1507,7 +2159,7 @@ class SphinxQL
     /**
      * @return self
      */
-    public function resetOrderBy()
+    public function resetOrderBy(): self
     {
         $this->order_by = array();
 
@@ -1517,7 +2169,7 @@ class SphinxQL
     /**
      * @return self
      */
-    public function resetOptions()
+    public function resetOptions(): self
     {
         $this->options = array();
 
