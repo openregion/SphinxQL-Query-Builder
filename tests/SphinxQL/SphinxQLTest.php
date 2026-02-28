@@ -99,7 +99,12 @@ class SphinxQLTest extends \PHPUnit\Framework\TestCase
         $this->createSphinxQL()->transactionBegin();
         $this->createSphinxQL()->transactionCommit();
 
-        $this->assertTrue(true);
+        $variables = Helper::pairsToAssoc(
+            (new Helper(self::$conn))->showVariables()->execute()->getStored()
+        );
+
+        $this->assertArrayHasKey('autocommit', $variables);
+        $this->assertSame(1, (int) $variables['autocommit']);
     }
 
     public function testQuery()

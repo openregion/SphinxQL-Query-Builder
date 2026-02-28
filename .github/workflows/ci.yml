@@ -131,9 +131,8 @@ jobs:
       - name: Prepare autoload
         run: composer dump-autoload
 
-      - name: Run PHPStan (non-blocking)
+      - name: Run PHPStan
         if: env.COVERAGE_LANE == 'true'
-        continue-on-error: true
         run: |
           mkdir -p static-analysis
           ./vendor/bin/phpstan analyse --configuration phpstan.neon.dist --memory-limit=1G --no-progress --error-format=raw > static-analysis/phpstan.txt
