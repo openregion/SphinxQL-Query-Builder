@@ -32,7 +32,7 @@ Available Methods
 - ``showDatabases()``
 - ``showCharacterSet()``
 - ``showCollation()``
-- ``showTables($index)``
+- ``showTables($index = null)``
 - ``showVariables()``
 - ``showCreateTable($table)``
 - ``showTableStatus($table = null)``
@@ -66,7 +66,10 @@ Available Methods
 Filtered SHOW Wrappers
 ----------------------
 
-- ``showTables($index)`` compiles to ``SHOW TABLES LIKE <quoted index>``.
+- ``showTables($index = null)`` compiles to:
+
+  - ``SHOW TABLES`` when ``$index`` is ``null`` or an empty string
+  - ``SHOW TABLES LIKE <quoted index>`` when ``$index`` is a non-empty string
 - ``showTableStatus($table = null)`` compiles to:
 
   - ``SHOW TABLE STATUS`` when ``$table`` is ``null``

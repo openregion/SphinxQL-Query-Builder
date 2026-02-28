@@ -122,6 +122,13 @@ class ConnectionTest extends \PHPUnit\Framework\TestCase
         $this->assertNotNull($this->connection->getConnection());
     }
 
+    public function testCredentialsParamValidation()
+    {
+        $this->expectException(Foolz\SphinxQL\Exception\SphinxQLException::class);
+        $this->expectExceptionMessage('setParam("username") expects null or string.');
+        $this->connection->setParam('username', array('invalid'));
+    }
+
     public function testConnectThrowsException()
     {
         $this->expectException(Foolz\SphinxQL\Exception\ConnectionException::class);

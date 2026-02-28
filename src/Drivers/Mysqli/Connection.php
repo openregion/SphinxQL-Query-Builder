@@ -21,14 +21,14 @@ class Connection extends ConnectionBase
      *
      * @var string
      */
-    protected $internal_encoding;
+    protected ?string $internal_encoding = null;
 
     /**
      * Returns the internal encoding.
      *
      * @return string current multibyte internal encoding
      */
-    public function getInternalEncoding()
+    public function getInternalEncoding(): ?string
     {
         return $this->internal_encoding;
     }
@@ -36,7 +36,7 @@ class Connection extends ConnectionBase
     /**
      * @inheritdoc
      */
-    public function connect()
+    public function connect(): bool
     {
         $data = $this->getParams();
         $conn = mysqli_init();
@@ -57,6 +57,13 @@ class Connection extends ConnectionBase
                     .' [host='.(string) $data['host'].', port='.(int) $data['port'].']'
                 );
             }
+        } catch (\TypeError $exception) {
+            throw new ConnectionException(
+                '[mysqli][connect][0] '.$exception->getMessage()
+                .' [host='.(string) $data['host'].', port='.(int) $data['port'].']',
+                0,
+                $exception
+            );
         } catch (mysqli_sql_exception $exception) {
             throw new ConnectionException(
                 '[mysqli][connect]['.$exception->getCode().'] '.$exception->getMessage()
@@ -81,7 +88,7 @@ class Connection extends ConnectionBase
      * @return bool True if connected, false otherwise
      * @throws ConnectionException
      */
-    public function ping()
+    public function ping(): bool
     {
         $this->ensureConnection();
 
@@ -91,7 +98,7 @@ class Connection extends ConnectionBase
     /**
      * @inheritdoc
      */
-    public function close()
+    public function close(): self
     {
         $this->mbPop();
         $this->getConnection()->close();
@@ -102,7 +109,7 @@ class Connection extends ConnectionBase
     /**
      * @inheritdoc
      */
-    public function query($query)
+    public function query(string $query): ResultSet
     {
         $this->ensureConnection();
 
@@ -136,7 +143,7 @@ class Connection extends ConnectionBase
     /**
      * @inheritdoc
      */
-    public function multiQuery(array $queue)
+    public function multiQuery(array $queue): MultiResultSet
     {
         $count = count($queue);
 
@@ -169,7 +176,7 @@ class Connection extends ConnectionBase
      * Based on FuelPHP's escaping function.
      * @inheritdoc
      */
-    public function escape($value)
+    public function escape(string $value): string
     {
         $this->ensureConnection();
 
@@ -198,7 +205,7 @@ class Connection extends ConnectionBase
     /**
      * Enter UTF-8 multi-byte workaround mode.
      */
-    public function mbPush()
+    public function mbPush(): self
     {
         $this->internal_encoding = mb_internal_encoding();
         mb_internal_encoding('UTF-8');
@@ -209,7 +216,7 @@ class Connection extends ConnectionBase
     /**
      * Exit UTF-8 multi-byte workaround mode.
      */
-    public function mbPop()
+    public function mbPop(): self
     {
         // TODO: add test case for #155
         if ($this->getInternalEncoding()) {

@@ -73,6 +73,9 @@ The builder supports grouped boolean filters for ``WHERE`` and ``HAVING``:
 - ``orHaving()``
 - ``havingOpen()`` / ``orHavingOpen()`` / ``havingClose()``
 
+Repeated ``having()`` calls are additive and compile as ``AND`` conditions unless
+you explicitly use ``orHaving()`` / grouped clauses.
+
 JOIN and KNN Ordering
 ---------------------
 
@@ -100,7 +103,7 @@ The same capability model is used by ``Helper`` wrappers:
 
 - filtered ``SHOW`` wrappers:
 
-  - ``showTables($index)`` => ``SHOW TABLES LIKE <quoted index>``
+  - ``showTables($index = null)`` => ``SHOW TABLES`` (when ``null`` or empty) or ``SHOW TABLES LIKE <quoted index>``
   - ``showTableStatus($table = null)`` => ``SHOW TABLE STATUS`` or ``SHOW TABLE <table> STATUS``
 
 - suggest-family option contract (``callSuggest()``, ``callQSuggest()``,

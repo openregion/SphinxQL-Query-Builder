@@ -56,6 +56,13 @@ class HelperTest extends \PHPUnit\Framework\TestCase
         );
     }
 
+    public function testShowTablesCompileVariants()
+    {
+        $this->assertSame('SHOW TABLES', $this->createHelper()->showTables()->compile()->getCompiled());
+        $this->assertSame('SHOW TABLES', $this->createHelper()->showTables('')->compile()->getCompiled());
+        $this->assertSame("SHOW TABLES LIKE 'rt'", $this->createHelper()->showTables('rt')->compile()->getCompiled());
+    }
+
     public function testDescribe()
     {
         $describe = $this->createHelper()->describe('rt')->execute()->getStored();
@@ -467,7 +474,8 @@ class HelperTest extends \PHPUnit\Framework\TestCase
     public function testHelperRequiresNonEmptyIdentifiers()
     {
         $this->expectException(Foolz\SphinxQL\Exception\SphinxQLException::class);
-        $this->createHelper()->showTables('');
+        $this->expectExceptionMessage('showTables() index must be null or a string.');
+        $this->createHelper()->showTables(array());
     }
 
     public function testSetVariableValidation()
@@ -554,14 +562,17 @@ class HelperTest extends \PHPUnit\Framework\TestCase
 
     public function testCapabilitiesAndSupports()
     {
-        $caps = $this->createHelper()->getCapabilities();
+        $helper = $this->createHelper();
+        $caps = $helper->getCapabilities();
 
         $this->assertInstanceOf(Foolz\SphinxQL\Capabilities::class, $caps);
         $this->assertNotEmpty($caps->getEngine());
-        $this->assertTrue($this->createHelper()->supports('grouped_where'));
-        $this->assertIsBool($this->createHelper()->supports('show_profile'));
-        $this->assertIsBool($this->createHelper()->supports('show_character_set'));
-        $this->assertIsBool($this->createHelper()->supports('show_collation'));
+        $this->assertTrue($helper->supports('grouped_where'));
+        $this->assertIsBool($helper->supports('show_profile'));
+        $this->assertIsBool($helper->supports('show_character_set'));
+        $this->assertIsBool($helper->supports('show_collation'));
+        $this->assertSame($helper->supports('buddy'), $helper->supports('call_qsuggest'));
+        $this->assertSame($helper->supports('buddy'), $helper->supports('call_autocomplete'));
         $this->assertSame($caps->isManticore(), $caps->getEngine() === 'MANTICORE');
         $this->assertSame($caps->isSphinx2(), $caps->getEngine() === 'SPHINX2');
         $this->assertSame($caps->isSphinx3(), $caps->getEngine() === 'SPHINX3');

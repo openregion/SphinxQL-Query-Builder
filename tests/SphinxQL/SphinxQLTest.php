@@ -450,6 +450,22 @@ class SphinxQLTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
+     * @covers \Foolz\SphinxQL\SphinxQL::compileUpdate
+     * @covers \Foolz\SphinxQL\SphinxQL::update
+     */
+    public function testUpdateWithoutIntoThrows()
+    {
+        $this->expectException(Foolz\SphinxQL\Exception\SphinxQLException::class);
+        $this->expectExceptionMessage('update() requires into($index) before compile() or execute().');
+
+        $this->createSphinxQL()
+            ->update()
+            ->set(array('gid' => 777))
+            ->where('id', '=', 11)
+            ->compile();
+    }
+
+    /**
      * @covers \Foolz\SphinxQL\SphinxQL::compileWhere
      * @covers \Foolz\SphinxQL\SphinxQL::from
      * @covers \Foolz\SphinxQL\SphinxQL::compileFilterCondition

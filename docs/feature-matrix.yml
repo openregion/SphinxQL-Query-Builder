@@ -1,5 +1,5 @@
 version: 1
-updated_at: "2026-02-27"
+updated_at: "2026-02-28"
 notes:
   - "supported means covered by runtime tests in at least one CI lane."
   - "conditional means feature depends on engine/runtime capability checks."
@@ -43,7 +43,7 @@ helper:
     sphinx3: supported
     manticore: supported
     notes:
-      - "showTables($index) compiles to SHOW TABLES LIKE <quoted index>; index must be a non-empty string."
+      - "showTables($index = null) compiles to SHOW TABLES when index is null/empty, or SHOW TABLES LIKE <quoted index> for non-empty strings."
   diagnostic_show:
     api: ["showProfile", "showPlan", "showThreads", "showPlugins", "showQueries"]
     sphinx2: conditional

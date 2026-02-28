@@ -8,8 +8,6 @@ on:
       - README.md
       - .github/workflows/docs.yml
   push:
-    branches:
-      - master
     paths:
       - docs/**
       - README.md

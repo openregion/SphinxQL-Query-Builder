@@ -11,12 +11,12 @@ class MultiResultSetAdapter implements MultiResultSetAdapterInterface
     /**
      * @var bool
      */
-    protected $valid = true;
+    protected bool $valid = true;
 
     /**
      * @var Connection
      */
-    protected $connection;
+    protected Connection $connection;
 
     /**
      * @param Connection $connection
@@ -30,7 +30,7 @@ class MultiResultSetAdapter implements MultiResultSetAdapterInterface
      * @inheritdoc
      * @throws ConnectionException
      */
-    public function getNext()
+    public function getNext(): void
     {
         if (
             !$this->valid() ||
@@ -46,7 +46,7 @@ class MultiResultSetAdapter implements MultiResultSetAdapterInterface
      * @inheritdoc
      * @throws ConnectionException
      */
-    public function current()
+    public function current(): ResultSet
     {
         $adapter = new ResultSetAdapter($this->connection, $this->connection->getConnection()->store_result());
         return new ResultSet($adapter);
@@ -56,8 +56,8 @@ class MultiResultSetAdapter implements MultiResultSetAdapterInterface
      * @inheritdoc
      * @throws ConnectionException
      */
-    public function valid()
+    public function valid(): bool
     {
-        return $this->connection->getConnection()->errno == 0 && $this->valid;
+        return $this->connection->getConnection()->errno === 0 && $this->valid;
     }
 }

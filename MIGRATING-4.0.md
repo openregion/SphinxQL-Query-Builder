@@ -25,6 +25,7 @@ The following now throw on invalid input:
 - `groupNBy()` non-positive values
 - `where()` / `having()` invalid filter value shape for `IN`/`NOT IN`/`BETWEEN`
 - `into()`, `columns()`, `values()`, `value()`, `set()` invalid/empty input
+- `update()->compile()` / `update()->execute()` without `into($index)`
 - `setQueuePrev()` non-`SphinxQL` argument
 
 ### Facet strict validation
@@ -38,7 +39,8 @@ The following now throw on invalid input:
 
 Helper methods now validate required identifiers and argument shapes:
 
-- `showTables()`, `describe()`, `showIndexStatus()`, `flushRtIndex()`,
+- `showTables()` accepts `null`/empty for unfiltered `SHOW TABLES`, and validates non-string filters
+- `describe()`, `showIndexStatus()`, `flushRtIndex()`,
   `truncateRtIndex()`, `optimizeIndex()`, `flushRamchunk()`, etc.
 - `setVariable()` validates variable names and array values
 - `callSnippets()` and `callKeywords()` validate required arguments

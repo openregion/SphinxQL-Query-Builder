@@ -10,34 +10,34 @@ class Capabilities
     /**
      * @var string
      */
-    private $engine;
+    private string $engine;
 
     /**
      * @var string
      */
-    private $version;
+    private string $version;
 
     /**
      * @var array<string,bool>
      */
-    private $features;
+    private array $features;
 
     /**
      * @param string            $engine
      * @param string            $version
      * @param array<string,bool> $features
      */
-    public function __construct($engine, $version, array $features)
+    public function __construct(string $engine, string $version, array $features)
     {
-        $this->engine = strtoupper((string) $engine);
-        $this->version = (string) $version;
+        $this->engine = strtoupper($engine);
+        $this->version = $version;
         $this->features = $features;
     }
 
     /**
      * @return string
      */
-    public function getEngine()
+    public function getEngine(): string
     {
         return $this->engine;
     }
@@ -45,7 +45,7 @@ class Capabilities
     /**
      * @return string
      */
-    public function getVersion()
+    public function getVersion(): string
     {
         return $this->version;
     }
@@ -53,7 +53,7 @@ class Capabilities
     /**
      * @return array<string,bool>
      */
-    public function getFeatures()
+    public function getFeatures(): array
     {
         return $this->features;
     }
@@ -61,7 +61,7 @@ class Capabilities
     /**
      * @return bool
      */
-    public function isManticore()
+    public function isManticore(): bool
     {
         return $this->engine === 'MANTICORE';
     }
@@ -69,7 +69,7 @@ class Capabilities
     /**
      * @return bool
      */
-    public function isSphinx2()
+    public function isSphinx2(): bool
     {
         return $this->engine === 'SPHINX2';
     }
@@ -77,7 +77,7 @@ class Capabilities
     /**
      * @return bool
      */
-    public function isSphinx3()
+    public function isSphinx3(): bool
     {
         return $this->engine === 'SPHINX3';
     }
@@ -87,7 +87,7 @@ class Capabilities
      *
      * @return bool
      */
-    public function supports($feature)
+    public function supports(string $feature): bool
     {
         return !empty($this->features[$feature]);
     }
@@ -95,7 +95,7 @@ class Capabilities
     /**
      * @return array<string,mixed>
      */
-    public function toArray()
+    public function toArray(): array
     {
         return array(
             'engine' => $this->engine,

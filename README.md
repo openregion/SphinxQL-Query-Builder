@@ -277,8 +277,12 @@ Will return an array with an `INT` as first member, the number of rows deleted.
     $sq->where('column', 'BETWEEN', array('value1', 'value2'));
 	```
 
-	You can compose grouped boolean filters with:
-	`orWhere()`, `whereOpen()`, `orWhereOpen()`, and `whereClose()`.
+		You can compose grouped boolean filters with:
+		`orWhere()`, `whereOpen()`, `orWhereOpen()`, and `whereClose()`.
+		The same grouped API exists for `HAVING` via `having()`, `orHaving()`,
+		`havingOpen()`, `orHavingOpen()`, and `havingClose()`.
+		Repeated `having()` calls are additive (`AND`) unless you explicitly use
+		`orHaving()` or grouped clauses.
 
 #### MATCH
 
@@ -526,7 +530,7 @@ $result = (new SphinxQL($this->conn))
 * `(new Helper($conn))->showDatabases() => 'SHOW DATABASES'`
 * `(new Helper($conn))->showCharacterSet() => 'SHOW CHARACTER SET'`
 * `(new Helper($conn))->showCollation() => 'SHOW COLLATION'`
-* `(new Helper($conn))->showTables($index) => 'SHOW TABLES LIKE <quoted index>'`
+* `(new Helper($conn))->showTables($index = null) => 'SHOW TABLES' (null/empty) or 'SHOW TABLES LIKE <quoted index>'`
 * `(new Helper($conn))->showVariables() => 'SHOW VARIABLES'`
 * `(new Helper($conn))->showCreateTable($table)`
 * `(new Helper($conn))->showTableStatus($table = null) => 'SHOW TABLE STATUS' or 'SHOW TABLE <table> STATUS'`

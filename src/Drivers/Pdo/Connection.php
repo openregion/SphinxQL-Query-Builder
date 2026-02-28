@@ -16,7 +16,7 @@ class Connection extends ConnectionBase
     /**
      * @inheritdoc
      */
-    public function query($query)
+    public function query(string $query): ResultSet
     {
         $this->ensureConnection();
 
@@ -38,7 +38,7 @@ class Connection extends ConnectionBase
     /**
      * @inheritdoc
      */
-    public function connect()
+    public function connect(): bool
     {
         $params = $this->getParams();
         $username = array_key_exists('username', $params) ? $params['username'] : null;
@@ -61,6 +61,12 @@ class Connection extends ConnectionBase
 
         try {
             $con = new PDO($dsn, $username, $password);
+        } catch (\TypeError $exception) {
+            throw new ConnectionException(
+                '[pdo][connect][0] '.$exception->getMessage().' [dsn='.$dsn.']',
+                0,
+                $exception
+            );
         } catch (PDOException $exception) {
             throw new ConnectionException(
                 '[pdo][connect]['.$exception->getCode().'] '.$exception->getMessage().' [dsn='.$dsn.']',
@@ -79,7 +85,7 @@ class Connection extends ConnectionBase
      * @return bool
      * @throws ConnectionException
      */
-    public function ping()
+    public function ping(): bool
     {
         $this->ensureConnection();
 
@@ -89,7 +95,7 @@ class Connection extends ConnectionBase
     /**
      * @inheritdoc
      */
-    public function multiQuery(array $queue)
+    public function multiQuery(array $queue): MultiResultSet
     {
         $this->ensureConnection();
 
@@ -113,7 +119,7 @@ class Connection extends ConnectionBase
     /**
      * @inheritdoc
      */
-    public function escape($value)
+    public function escape(string $value): string
     {
         $this->ensureConnection();
 

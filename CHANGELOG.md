@@ -1,7 +1,6 @@
 #### 4.0.0
 * Dropped support for PHP 8.1 and lower (minimum PHP is now 8.2)
 * Updated CI PHP matrix to 8.2 and 8.3
-* Restored runtime-level driver normalization for PDO/MySQLi scalar fetch values
 * Normalized MySQLi driver exception handling for modern PHP `mysqli_sql_exception` behavior
 * Hardened runtime validation for `SphinxQL`, `Facet`, `Helper`, and `Percolate` input contracts (fail-fast exceptions for invalid query-shape input)
 * Standardized driver exception message prefixes for better diagnostics (`[mysqli][...]`, `[pdo][...]`)
@@ -16,10 +15,14 @@
 * Added and stabilized Sphinx 3 compatibility coverage while preserving Sphinx 2 and Manticore test behavior
 * Added support for optional connection credentials (`username`/`password`) in both PDO and MySQLi drivers (closes #208)
 * Added optional-index `update($index = null)` flow for fluent `->update()->into($index)` usage (closes #184)
+* Added explicit `update()->compile()/execute()` guard when no target index is set via `into($index)` (prevents invalid `UPDATE` SQL emission)
+* Restored `showTables($index = null)` compatibility (`SHOW TABLES` for null/empty, `SHOW TABLES LIKE ...` for non-empty) and removed hardcoded `rt` assumptions from runtime capability probes
+* Aligned Buddy capability flags so `callQSuggest()`/`callAutocomplete()` are gated by detected Buddy availability
 * Added MVA insert/update array example in README (closes #178)
 * Corrected escaping docs to reference connection-level helpers and clarified `quoteIdentifier()` availability (closes #203)
 * Added a root `LICENSE` file (closes #171)
 * Migrated CI to GitHub Actions-only validation with strict composer metadata checks
+* Hardened GitHub Actions reliability with SQL-readiness checks, full-history checkout for changed-line artifacts, and digest-pinned Buddy integration runtime image
 * Updated documentation and added a dedicated `MIGRATING-4.0.md` guide
 
 #### 3.0.2

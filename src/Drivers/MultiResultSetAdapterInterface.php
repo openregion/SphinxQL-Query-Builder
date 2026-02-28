@@ -7,15 +7,15 @@ interface MultiResultSetAdapterInterface
     /**
      * Advances to the next rowset
      */
-    public function getNext();
+    public function getNext(): void;
 
     /**
      * @return ResultSetInterface
      */
-    public function current();
+    public function current(): ResultSetInterface;
 
     /**
      * @return bool
      */
-    public function valid();
+    public function valid(): bool;
 }

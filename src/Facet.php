@@ -16,49 +16,49 @@ class Facet
      *
      * @var ConnectionInterface
      */
-    protected $connection;
+    protected ?ConnectionInterface $connection;
 
     /**
      * An SQL query that is not yet executed or "compiled"
      *
      * @var string
      */
-    protected $query;
+    protected string $query = '';
 
     /**
      * Array of select elements that will be comma separated.
      *
      * @var array
      */
-    protected $facet = array();
+    protected array $facet = array();
 
     /**
      * BY array to be comma separated
      *
      * @var array
      */
-    protected $by = array();
+    protected string $by = '';
 
     /**
      * ORDER BY array
      *
      * @var array
      */
-    protected $order_by = array();
+    protected array $order_by = array();
 
     /**
      * When not null it adds an offset
      *
      * @var null|int
      */
-    protected $offset;
+    protected ?int $offset = null;
 
     /**
      * When not null it adds a limit
      *
      * @var null|int
      */
-    protected $limit;
+    protected ?int $limit = null;
 
     /**
      * @param ConnectionInterface|null $connection
@@ -73,7 +73,7 @@ class Facet
      *
      * @returns ConnectionInterface|null
      */
-    public function getConnection()
+    public function getConnection(): ?ConnectionInterface
     {
         return $this->connection;
     }
@@ -85,7 +85,7 @@ class Facet
      *
      * @return Facet
      */
-    public function setConnection(?ConnectionInterface $connection = null)
+    public function setConnection(?ConnectionInterface $connection = null): self
     {
         $this->connection = $connection;
 
@@ -112,7 +112,7 @@ class Facet
      *
      * @return Facet
      */
-    public function facet($columns = null)
+    public function facet(array|string|null $columns = null): self
     {
         if ($columns === null) {
             throw new SphinxQLException('facet() requires at least one column or function.');
@@ -160,7 +160,7 @@ class Facet
      *
      * @return Facet
      */
-    public function facetFunction($function, $params = null)
+    public function facetFunction(string $function, array|string|null $params = null): self
     {
         if (!is_string($function) || trim($function) === '') {
             throw new SphinxQLException('facetFunction() function name must be a non-empty string.');
@@ -186,7 +186,7 @@ class Facet
      *
      * @return Facet
      */
-    public function by($column)
+    public function by(string $column): self
     {
         if (!is_string($column) || trim($column) === '') {
             throw new SphinxQLException('by() column must be a non-empty string.');
@@ -206,7 +206,7 @@ class Facet
      *
      * @return Facet
      */
-    public function orderBy($column, $direction = null)
+    public function orderBy(string $column, ?string $direction = null): self
     {
         if (!is_string($column) || trim($column) === '') {
             throw new SphinxQLException('orderBy() column must be a non-empty string.');
@@ -234,7 +234,7 @@ class Facet
      *
      * @return Facet
      */
-    public function orderByFunction($function, $params = null, $direction = null)
+    public function orderByFunction(string $function, array|string|null $params = null, ?string $direction = null): self
     {
         if (!is_string($function) || trim($function) === '') {
             throw new SphinxQLException('orderByFunction() function name must be a non-empty string.');
@@ -264,7 +264,7 @@ class Facet
      *
      * @return Facet
      */
-    public function limit($offset, $limit = null)
+    public function limit(int|string $offset, int|string|null $limit = null): self
     {
         if ($limit === null) {
             if (filter_var($offset, FILTER_VALIDATE_INT) === false || (int) $offset < 0) {
@@ -296,7 +296,7 @@ class Facet
      *
      * @return Facet
      */
-    public function offset($offset)
+    public function offset(int|string $offset): self
     {
         if (filter_var($offset, FILTER_VALIDATE_INT) === false || (int) $offset < 0) {
             throw new SphinxQLException('offset() requires a non-negative integer.');
@@ -313,7 +313,7 @@ class Facet
      * @return Facet
      * @throws SphinxQLException In case no column in facet
      */
-    public function compileFacet()
+    public function compileFacet(): self
     {
         $query = 'FACET ';
 
@@ -379,7 +379,7 @@ class Facet
      * @return string
      * @throws SphinxQLException
      */
-    public function getFacet()
+    public function getFacet(): string
     {
         return $this->compileFacet()->query;
     }
@@ -391,7 +391,7 @@ class Facet
      * @return string|null
      * @throws SphinxQLException
      */
-    private function normalizeDirection($direction, $method)
+    private function normalizeDirection(?string $direction, string $method): ?string
     {
         if ($direction === null) {
             return null;

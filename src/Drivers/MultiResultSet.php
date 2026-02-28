@@ -9,32 +9,32 @@ class MultiResultSet implements MultiResultSetInterface
     /**
      * @var null|array
      */
-    protected $stored;
+    protected ?array $stored = null;
 
     /**
      * @var int
      */
-    protected $cursor = 0;
+    protected int $cursor = 0;
 
     /**
      * @var int
      */
-    protected $next_cursor = 0;
+    protected int $next_cursor = 0;
 
     /**
      * @var ResultSetInterface|null
      */
-    protected $rowSet;
+    protected ResultSetInterface|false|null $rowSet = null;
 
     /**
      * @var MultiResultSetAdapterInterface
      */
-    protected $adapter;
+    protected MultiResultSetAdapterInterface $adapter;
 
     /**
      * @var bool
      */
-    protected $valid = true;
+    protected bool $valid = true;
 
     /**
      * @param MultiResultSetAdapterInterface $adapter
@@ -48,7 +48,7 @@ class MultiResultSet implements MultiResultSetInterface
      * @inheritdoc
      * @throws DatabaseException
      */
-    public function getStored()
+    public function getStored(): ?array
     {
         $this->store();
 
@@ -59,22 +59,24 @@ class MultiResultSet implements MultiResultSetInterface
      * @inheritdoc
      * @throws DatabaseException
      */
-    #[\ReturnTypeWillChange]
-    public function offsetExists($offset)
+    public function offsetExists(mixed $offset): bool
     {
         $this->store();
 
-        return $this->storedValid($offset);
+        return is_int($offset) && $this->storedValid($offset);
     }
 
     /**
      * @inheritdoc
      * @throws DatabaseException
      */
-    #[\ReturnTypeWillChange]
-    public function offsetGet($offset)
+    public function offsetGet(mixed $offset): mixed
     {
         $this->store();
+
+        if (!is_int($offset) || !$this->storedValid($offset)) {
+            return null;
+        }
 
         return $this->stored[$offset];
     }
@@ -83,8 +85,7 @@ class MultiResultSet implements MultiResultSetInterface
      * @inheritdoc
      * @codeCoverageIgnore
      */
-    #[\ReturnTypeWillChange]
-    public function offsetSet($offset, $value)
+    public function offsetSet(mixed $offset, mixed $value): void
     {
         throw new \BadMethodCallException('Not implemented');
     }
@@ -93,8 +94,7 @@ class MultiResultSet implements MultiResultSetInterface
      * @inheritdoc
      * @codeCoverageIgnore
      */
-    #[\ReturnTypeWillChange]
-    public function offsetUnset($offset)
+    public function offsetUnset(mixed $offset): void
     {
         throw new \BadMethodCallException('Not implemented');
     }
@@ -102,8 +102,7 @@ class MultiResultSet implements MultiResultSetInterface
     /**
      * @inheritdoc
      */
-    #[\ReturnTypeWillChange]
-    public function next()
+    public function next(): void
     {
         $this->rowSet = $this->getNext();
     }
@@ -111,8 +110,7 @@ class MultiResultSet implements MultiResultSetInterface
     /**
      * @inheritdoc
      */
-    #[\ReturnTypeWillChange]
-    public function key()
+    public function key(): int
     {
         return (int)$this->cursor;
     }
@@ -120,8 +118,7 @@ class MultiResultSet implements MultiResultSetInterface
     /**
      * @inheritdoc
      */
-    #[\ReturnTypeWillChange]
-    public function rewind()
+    public function rewind(): void
     {
         // we actually can't roll this back unless it was stored first
         $this->cursor = 0;
@@ -133,8 +130,7 @@ class MultiResultSet implements MultiResultSetInterface
      * @inheritdoc
      * @throws DatabaseException
      */
-    #[\ReturnTypeWillChange]
-    public function count()
+    public function count(): int
     {
         $this->store();
 
@@ -144,8 +140,7 @@ class MultiResultSet implements MultiResultSetInterface
     /**
      * @inheritdoc
      */
-    #[\ReturnTypeWillChange]
-    public function valid()
+    public function valid(): bool
     {
         if ($this->stored !== null) {
             return $this->storedValid();
@@ -157,8 +152,7 @@ class MultiResultSet implements MultiResultSetInterface
     /**
      * @inheritdoc
      */
-    #[\ReturnTypeWillChange]
-    public function current()
+    public function current(): mixed
     {
         $rowSet = $this->rowSet;
         unset($this->rowSet);
@@ -171,17 +165,17 @@ class MultiResultSet implements MultiResultSetInterface
      *
      * @return bool
      */
-    protected function storedValid($cursor = null)
+    protected function storedValid(?int $cursor = null): bool
     {
         $cursor = (!is_null($cursor) ? $cursor : $this->cursor);
 
-        return $cursor >= 0 && $cursor < count($this->stored);
+        return $cursor >= 0 && $this->stored !== null && $cursor < count($this->stored);
     }
 
     /**
      * @inheritdoc
      */
-    public function getNext()
+    public function getNext(): ResultSetInterface|false
     {
         $this->cursor = $this->next_cursor;
 
@@ -203,7 +197,7 @@ class MultiResultSet implements MultiResultSetInterface
     /**
      * @inheritdoc
      */
-    public function store()
+    public function store(): self
     {
         if ($this->stored !== null) {
             return $this;

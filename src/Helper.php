@@ -15,17 +15,22 @@ class Helper
     /**
      * @var ConnectionInterface
      */
-    protected $connection;
+    protected ConnectionInterface $connection;
 
     /**
      * @var Capabilities|null
      */
-    protected $capabilities;
+    protected ?Capabilities $capabilities = null;
 
     /**
      * @var array<string,bool>
      */
-    protected $feature_support_cache = array();
+    protected array $feature_support_cache = array();
+
+    /**
+     * @var null|array<int,string>
+     */
+    protected ?array $probe_tables_cache = null;
 
     /**
      * @param ConnectionInterface $connection
@@ -40,7 +45,7 @@ class Helper
      *
      * @return SphinxQL
      */
-    protected function getSphinxQL()
+    protected function getSphinxQL(): SphinxQL
     {
         return new SphinxQL($this->connection);
     }
@@ -52,7 +57,7 @@ class Helper
      *
      * @return SphinxQL A SphinxQL object ready to be ->execute();
      */
-    protected function query($sql)
+    protected function query(string $sql): SphinxQL
     {
         return $this->getSphinxQL()->query($sql);
     }
@@ -65,7 +70,7 @@ class Helper
      * @return array Associative array with Variable_name as key and Value as value
      * @todo make non static
      */
-    public static function pairsToAssoc($result)
+    public static function pairsToAssoc(array $result): array
     {
         $ordered = array();
 
@@ -81,7 +86,7 @@ class Helper
      *
      * @return SphinxQL A SphinxQL object ready to be ->execute();
      */
-    public function showMeta()
+    public function showMeta(): SphinxQL
     {
         return $this->query('SHOW META');
     }
@@ -91,7 +96,7 @@ class Helper
      *
      * @return SphinxQL A SphinxQL object ready to be ->execute();
      */
-    public function showWarnings()
+    public function showWarnings(): SphinxQL
     {
         return $this->query('SHOW WARNINGS');
     }
@@ -101,7 +106,7 @@ class Helper
      *
      * @return SphinxQL A SphinxQL object ready to be ->execute();
      */
-    public function showStatus()
+    public function showStatus(): SphinxQL
     {
         return $this->query('SHOW STATUS');
     }
@@ -111,7 +116,7 @@ class Helper
      *
      * @return SphinxQL
      */
-    public function showProfile()
+    public function showProfile(): SphinxQL
     {
         return $this->query('SHOW PROFILE');
     }
@@ -121,7 +126,7 @@ class Helper
      *
      * @return SphinxQL
      */
-    public function showPlan()
+    public function showPlan(): SphinxQL
     {
         return $this->query('SHOW PLAN');
     }
@@ -131,7 +136,7 @@ class Helper
      *
      * @return SphinxQL
      */
-    public function showThreads()
+    public function showThreads(): SphinxQL
     {
         return $this->query('SHOW THREADS');
     }
@@ -141,7 +146,7 @@ class Helper
      *
      * @return SphinxQL
      */
-    public function showVersion()
+    public function showVersion(): SphinxQL
     {
         return $this->query('SHOW VERSION');
     }
@@ -151,7 +156,7 @@ class Helper
      *
      * @return SphinxQL
      */
-    public function showPlugins()
+    public function showPlugins(): SphinxQL
     {
         return $this->query('SHOW PLUGINS');
     }
@@ -161,7 +166,7 @@ class Helper
      *
      * @return SphinxQL
      */
-    public function showAgentStatus()
+    public function showAgentStatus(): SphinxQL
     {
         return $this->query('SHOW AGENT STATUS');
     }
@@ -171,7 +176,7 @@ class Helper
      *
      * @return SphinxQL
      */
-    public function showScroll()
+    public function showScroll(): SphinxQL
     {
         return $this->query('SHOW SCROLL');
     }
@@ -181,7 +186,7 @@ class Helper
      *
      * @return SphinxQL
      */
-    public function showDatabases()
+    public function showDatabases(): SphinxQL
     {
         return $this->query('SHOW DATABASES');
     }
@@ -191,7 +196,7 @@ class Helper
      *
      * @return SphinxQL
      */
-    public function showCharacterSet()
+    public function showCharacterSet(): SphinxQL
     {
         return $this->query('SHOW CHARACTER SET');
     }
@@ -201,7 +206,7 @@ class Helper
      *
      * @return SphinxQL
      */
-    public function showCollation()
+    public function showCollation(): SphinxQL
     {
         return $this->query('SHOW COLLATION');
     }
@@ -213,9 +218,19 @@ class Helper
      * @throws Exception\ConnectionException
      * @throws Exception\DatabaseException
      */
-    public function showTables( $index )
+    public function showTables($index = null): SphinxQL
     {
-        $this->assertNonEmptyString($index, 'showTables() index');
+        if ($index === null) {
+            return $this->query('SHOW TABLES');
+        }
+
+        if (!is_string($index)) {
+            throw new SphinxQLException('showTables() index must be null or a string.');
+        }
+
+        if (trim($index) === '') {
+            return $this->query('SHOW TABLES');
+        }
 
         return $this->query('SHOW TABLES LIKE '.$this->connection->quote($index));
     }
@@ -225,7 +240,7 @@ class Helper
      *
      * @return SphinxQL A SphinxQL object ready to be ->execute();
      */
-    public function showVariables()
+    public function showVariables(): SphinxQL
     {
         return $this->query('SHOW VARIABLES');
     }
@@ -235,7 +250,7 @@ class Helper
      *
      * @return Capabilities
      */
-    public function getCapabilities()
+    public function getCapabilities(): Capabilities
     {
         if ($this->capabilities !== null) {
             return $this->capabilities;
@@ -243,6 +258,7 @@ class Helper
 
         $version = $this->detectVersionString();
         $engine = $this->detectEngine($version);
+        $buddy = ($engine === 'MANTICORE' && $this->supportsCommand('SHOW VERSION'));
 
         $features = array(
             // Builder-level features are available in this library regardless of backend.
@@ -255,9 +271,9 @@ class Helper
             'manticore' => ($engine === 'MANTICORE'),
             'sphinx2' => ($engine === 'SPHINX2'),
             'sphinx3' => ($engine === 'SPHINX3'),
-            'buddy' => ($engine === 'MANTICORE' && $this->supportsCommand('SHOW VERSION')),
-            'call_qsuggest' => ($engine === 'MANTICORE'),
-            'call_autocomplete' => ($engine === 'MANTICORE'),
+            'buddy' => $buddy,
+            'call_qsuggest' => $buddy,
+            'call_autocomplete' => $buddy,
         );
 
         $this->feature_support_cache = $features;
@@ -274,7 +290,7 @@ class Helper
      * @return bool
      * @throws SphinxQLException
      */
-    public function supports($feature)
+    public function supports($feature): bool
     {
         if (!is_string($feature) || trim($feature) === '') {
             throw new SphinxQLException('supports() feature must be a non-empty string.');
@@ -321,13 +337,16 @@ class Helper
                 'show_queries' => 'SHOW QUERIES',
                 'show_character_set' => 'SHOW CHARACTER SET',
                 'show_collation' => 'SHOW COLLATION',
-                'show_table_settings' => 'SHOW TABLE rt SETTINGS',
-                'show_table_indexes' => 'SHOW TABLE rt INDEXES',
-                'call_suggest' => "CALL SUGGEST('teh', 'rt')",
             );
 
             if (array_key_exists($normalized, $probes)) {
                 $this->feature_support_cache[$normalized] = $this->supportsCommand($probes[$normalized]);
+            } elseif ($normalized === 'show_table_settings') {
+                $this->feature_support_cache[$normalized] = $this->supportsTableProbe('SHOW TABLE %s SETTINGS');
+            } elseif ($normalized === 'show_table_indexes') {
+                $this->feature_support_cache[$normalized] = $this->supportsTableProbe('SHOW TABLE %s INDEXES');
+            } elseif ($normalized === 'call_suggest') {
+                $this->feature_support_cache[$normalized] = $this->supportsTableProbe("CALL SUGGEST('teh', '%s')");
             } else {
                 $this->feature_support_cache[$normalized] = false;
             }
@@ -351,7 +370,7 @@ class Helper
      * @return self
      * @throws UnsupportedFeatureException
      */
-    public function requireSupport($feature, $context = '')
+    public function requireSupport($feature, $context = ''): self
     {
         if (!$this->supports($feature)) {
             $caps = $this->getCapabilities();
@@ -371,7 +390,7 @@ class Helper
      *
      * @return SphinxQL
      */
-    public function showCreateTable($table)
+    public function showCreateTable($table): SphinxQL
     {
         $this->assertNonEmptyString($table, 'showCreateTable() table');
 
@@ -385,7 +404,7 @@ class Helper
      *
      * @return SphinxQL
      */
-    public function showTableStatus($table = null)
+    public function showTableStatus($table = null): SphinxQL
     {
         if ($table === null) {
             return $this->query('SHOW TABLE STATUS');
@@ -404,7 +423,7 @@ class Helper
      *
      * @return SphinxQL
      */
-    public function showTableStatusLike($table, $pattern)
+    public function showTableStatusLike($table, $pattern): SphinxQL
     {
         $this->assertNonEmptyString($table, 'showTableStatusLike() table');
         $this->assertNonEmptyString($pattern, 'showTableStatusLike() pattern');
@@ -419,7 +438,7 @@ class Helper
      *
      * @return SphinxQL
      */
-    public function showTableSettings($table)
+    public function showTableSettings($table): SphinxQL
     {
         $this->assertNonEmptyString($table, 'showTableSettings() table');
 
@@ -434,7 +453,7 @@ class Helper
      *
      * @return SphinxQL
      */
-    public function showTableSettingsLike($table, $pattern)
+    public function showTableSettingsLike($table, $pattern): SphinxQL
     {
         $this->assertNonEmptyString($table, 'showTableSettingsLike() table');
         $this->assertNonEmptyString($pattern, 'showTableSettingsLike() pattern');
@@ -449,7 +468,7 @@ class Helper
      *
      * @return SphinxQL
      */
-    public function showTableIndexes($table)
+    public function showTableIndexes($table): SphinxQL
     {
         $this->assertNonEmptyString($table, 'showTableIndexes() table');
 
@@ -464,7 +483,7 @@ class Helper
      *
      * @return SphinxQL
      */
-    public function showTableIndexesLike($table, $pattern)
+    public function showTableIndexesLike($table, $pattern): SphinxQL
     {
         $this->assertNonEmptyString($table, 'showTableIndexesLike() table');
         $this->assertNonEmptyString($pattern, 'showTableIndexesLike() pattern');
@@ -477,7 +496,7 @@ class Helper
      *
      * @return SphinxQL
      */
-    public function showQueries()
+    public function showQueries(): SphinxQL
     {
         return $this->query('SHOW QUERIES');
     }
@@ -493,7 +512,7 @@ class Helper
      * @throws Exception\ConnectionException
      * @throws Exception\DatabaseException
      */
-    public function setVariable($name, $value, $global = false)
+    public function setVariable($name, $value, $global = false): SphinxQL
     {
         if (!is_bool($global)) {
             throw new SphinxQLException('setVariable() global flag must be boolean.');
@@ -544,7 +563,7 @@ class Helper
      * @throws Exception\ConnectionException
      * @throws Exception\DatabaseException
      */
-    public function callSnippets($data, $index, $query, $options = array())
+    public function callSnippets($data, $index, $query, $options = array()): SphinxQL
     {
         if (!is_array($data) && !is_string($data)) {
             throw new SphinxQLException('callSnippets() data must be a string or array of strings.');
@@ -598,7 +617,7 @@ class Helper
      * @throws Exception\ConnectionException
      * @throws Exception\DatabaseException
      */
-    public function callKeywords($text, $index, $hits = null)
+    public function callKeywords($text, $index, $hits = null): SphinxQL
     {
         $this->assertNonEmptyString($text, 'callKeywords() text');
         $this->assertNonEmptyString($index, 'callKeywords() index');
@@ -623,7 +642,7 @@ class Helper
      *
      * @return SphinxQL
      */
-    public function callQSuggest($text, $index, array $options = array())
+    public function callQSuggest($text, $index, array $options = array()): SphinxQL
     {
         $this->requireSupport('call_qsuggest', 'callQSuggest()');
         $this->assertNonEmptyString($text, 'callQSuggest() text');
@@ -645,7 +664,7 @@ class Helper
      *
      * @return SphinxQL
      */
-    public function callSuggest($text, $index, array $options = array())
+    public function callSuggest($text, $index, array $options = array()): SphinxQL
     {
         $this->assertNonEmptyString($text, 'callSuggest() text');
         $this->assertNonEmptyString($index, 'callSuggest() index');
@@ -666,7 +685,7 @@ class Helper
      *
      * @return SphinxQL
      */
-    public function callAutocomplete($text, $index, array $options = array())
+    public function callAutocomplete($text, $index, array $options = array()): SphinxQL
     {
         $this->requireSupport('call_autocomplete', 'callAutocomplete()');
         $this->assertNonEmptyString($text, 'callAutocomplete() text');
@@ -686,7 +705,7 @@ class Helper
      *
      * @return SphinxQL A SphinxQL object ready to be ->execute();
      */
-    public function describe($index)
+    public function describe($index): SphinxQL
     {
         $this->assertNonEmptyString($index, 'describe() index');
 
@@ -704,7 +723,7 @@ class Helper
      * @throws Exception\ConnectionException
      * @throws Exception\DatabaseException
      */
-    public function createFunction($udf_name, $returns, $so_name)
+    public function createFunction($udf_name, $returns, $so_name): SphinxQL
     {
         $this->assertNonEmptyString($udf_name, 'createFunction() udf_name');
         $this->assertNonEmptyString($returns, 'createFunction() returns');
@@ -726,7 +745,7 @@ class Helper
      *
      * @return SphinxQL A SphinxQL object ready to be ->execute();
      */
-    public function dropFunction($udf_name)
+    public function dropFunction($udf_name): SphinxQL
     {
         $this->assertNonEmptyString($udf_name, 'dropFunction() udf_name');
 
@@ -741,7 +760,7 @@ class Helper
      *
      * @return SphinxQL A SphinxQL object ready to be ->execute();
      */
-    public function attachIndex($disk_index, $rt_index)
+    public function attachIndex($disk_index, $rt_index): SphinxQL
     {
         $this->assertNonEmptyString($disk_index, 'attachIndex() disk_index');
         $this->assertNonEmptyString($rt_index, 'attachIndex() rt_index');
@@ -756,7 +775,7 @@ class Helper
      *
      * @return SphinxQL A SphinxQL object ready to be ->execute();
      */
-    public function flushRtIndex($index)
+    public function flushRtIndex($index): SphinxQL
     {
         $this->assertNonEmptyString($index, 'flushRtIndex() index');
 
@@ -770,7 +789,7 @@ class Helper
      *
      * @return SphinxQL A SphinxQL object ready to be ->execute();
      */
-    public function truncateRtIndex($index)
+    public function truncateRtIndex($index): SphinxQL
     {
         $this->assertNonEmptyString($index, 'truncateRtIndex() index');
 
@@ -784,7 +803,7 @@ class Helper
      *
      * @return SphinxQL A SphinxQL object ready to be ->execute();
      */
-    public function optimizeIndex($index)
+    public function optimizeIndex($index): SphinxQL
     {
         $this->assertNonEmptyString($index, 'optimizeIndex() index');
 
@@ -798,7 +817,7 @@ class Helper
      *
      * @return SphinxQL A SphinxQL object ready to be ->execute();
      */
-    public function showIndexStatus($index)
+    public function showIndexStatus($index): SphinxQL
     {
         $this->assertNonEmptyString($index, 'showIndexStatus() index');
 
@@ -813,7 +832,7 @@ class Helper
      *
      * @return SphinxQL
      */
-    public function showIndexStatusLike($index, $pattern)
+    public function showIndexStatusLike($index, $pattern): SphinxQL
     {
         $this->assertNonEmptyString($index, 'showIndexStatusLike() index');
         $this->assertNonEmptyString($pattern, 'showIndexStatusLike() pattern');
@@ -828,7 +847,7 @@ class Helper
      *
      * @return SphinxQL A SphinxQL object ready to be ->execute();
      */
-    public function flushRamchunk($index)
+    public function flushRamchunk($index): SphinxQL
     {
         $this->assertNonEmptyString($index, 'flushRamchunk() index');
 
@@ -840,7 +859,7 @@ class Helper
      *
      * @return SphinxQL
      */
-    public function flushAttributes()
+    public function flushAttributes(): SphinxQL
     {
         return $this->query('FLUSH ATTRIBUTES');
     }
@@ -850,7 +869,7 @@ class Helper
      *
      * @return SphinxQL
      */
-    public function flushHostnames()
+    public function flushHostnames(): SphinxQL
     {
         return $this->query('FLUSH HOSTNAMES');
     }
@@ -860,7 +879,7 @@ class Helper
      *
      * @return SphinxQL
      */
-    public function flushLogs()
+    public function flushLogs(): SphinxQL
     {
         return $this->query('FLUSH LOGS');
     }
@@ -870,7 +889,7 @@ class Helper
      *
      * @return SphinxQL
      */
-    public function reloadPlugins()
+    public function reloadPlugins(): SphinxQL
     {
         return $this->query('RELOAD PLUGINS');
     }
@@ -882,7 +901,7 @@ class Helper
      *
      * @return SphinxQL
      */
-    public function kill($queryId)
+    public function kill($queryId): SphinxQL
     {
         if (filter_var($queryId, FILTER_VALIDATE_INT) === false || (int) $queryId <= 0) {
             throw new SphinxQLException('kill() queryId must be a positive integer.');
@@ -897,7 +916,7 @@ class Helper
      *
      * @throws SphinxQLException
      */
-    private function assertNonEmptyString($value, $field)
+    private function assertNonEmptyString($value, $field): void
     {
         if (!is_string($value) || trim($value) === '') {
             throw new SphinxQLException($field.' must be a non-empty string.');
@@ -911,7 +930,7 @@ class Helper
      *
      * @return array
      */
-    private function normalizeCallOptions($methodName, $callName, array $options)
+    private function normalizeCallOptions($methodName, $callName, array $options): array
     {
         $schema = $this->getCallOptionSchema($callName);
 
@@ -980,7 +999,7 @@ class Helper
      *
      * @return array<string,array<string,mixed>>
      */
-    private function getCallOptionSchema($callName)
+    private function getCallOptionSchema($callName): array
     {
         if ($callName === 'SUGGEST' || $callName === 'QSUGGEST') {
             return array(
@@ -1021,7 +1040,7 @@ class Helper
      *
      * @return int
      */
-    private function normalizeBooleanOption($methodName, $option, $value)
+    private function normalizeBooleanOption($methodName, $option, $value): int
     {
         if (is_bool($value)) {
             return $value ? 1 : 0;
@@ -1045,7 +1064,7 @@ class Helper
      *
      * @return int
      */
-    private function normalizeIntegerOption($methodName, $option, $value, $min = null, $max = null)
+    private function normalizeIntegerOption($methodName, $option, $value, $min = null, $max = null): int
     {
         $normalized = filter_var($value, FILTER_VALIDATE_INT);
         if ($normalized === false) {
@@ -1071,7 +1090,7 @@ class Helper
      *
      * @return string
      */
-    private function normalizeStringOption($methodName, $option, $value, $allowEmpty = false)
+    private function normalizeStringOption($methodName, $option, $value, $allowEmpty = false): string
     {
         if (!is_string($value)) {
             throw new SphinxQLException($methodName.' option "'.$option.'" must be a string.');
@@ -1092,7 +1111,7 @@ class Helper
      *
      * @return string
      */
-    private function normalizeEnumStringOption($methodName, $option, $value, array $allowed)
+    private function normalizeEnumStringOption($methodName, $option, $value, array $allowed): string
     {
         if (!is_string($value) || trim($value) === '') {
             throw new SphinxQLException($methodName.' option "'.$option.'" must be a non-empty string.');
@@ -1116,7 +1135,7 @@ class Helper
      * @return string
      * @throws SphinxQLException
      */
-    private function buildCallWithOptions($callName, array $requiredArgs, array $options = array())
+    private function buildCallWithOptions($callName, array $requiredArgs, array $options = array()): string
     {
         if (!is_array($options)) {
             throw new SphinxQLException($callName.' options must be an associative array.');
@@ -1139,7 +1158,7 @@ class Helper
     /**
      * @return string
      */
-    private function detectVersionString()
+    private function detectVersionString(): string
     {
         try {
             $rows = $this->connection->query('SELECT VERSION()')->getStored();
@@ -1156,7 +1175,7 @@ class Helper
      *
      * @return string
      */
-    private function detectEngine($version)
+    private function detectEngine($version): string
     {
         $versionLower = strtolower((string) $version);
 
@@ -1178,7 +1197,7 @@ class Helper
      *
      * @return string
      */
-    private function normalizeFeatureName($feature)
+    private function normalizeFeatureName($feature): string
     {
         $normalized = strtolower(trim($feature));
         $normalized = str_replace(array('-', ' '), '_', $normalized);
@@ -1191,7 +1210,7 @@ class Helper
      *
      * @return bool
      */
-    private function supportsCommand($sqlProbe)
+    private function supportsCommand($sqlProbe): bool
     {
         try {
             $this->connection->query($sqlProbe)->getStored();
@@ -1200,5 +1219,75 @@ class Helper
         } catch (\Exception $exception) {
             return false;
         }
+    }
+
+    /**
+     * @param string $sqlProbeTemplate Template with a single `%s` table placeholder.
+     *
+     * @return bool
+     */
+    private function supportsTableProbe($sqlProbeTemplate): bool
+    {
+        foreach ($this->getProbeTables() as $table) {
+            if ($this->supportsCommand(sprintf($sqlProbeTemplate, $table))) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * @return array<int,string>
+     */
+    private function getProbeTables(): array
+    {
+        if ($this->probe_tables_cache !== null) {
+            return $this->probe_tables_cache;
+        }
+
+        $tables = array('rt');
+
+        try {
+            $rows = $this->connection->query('SHOW TABLES')->getStored();
+            if (is_array($rows)) {
+                foreach ($rows as $row) {
+                    $table = $this->extractProbeTableName($row);
+                    if ($table !== null) {
+                        $tables[] = $table;
+                    }
+                }
+            }
+        } catch (\Exception $exception) {
+            // Fall back to the default probe table.
+        }
+
+        $this->probe_tables_cache = array_values(array_unique($tables));
+
+        return $this->probe_tables_cache;
+    }
+
+    /**
+     * @param mixed $row
+     *
+     * @return null|string
+     */
+    private function extractProbeTableName($row): ?string
+    {
+        if (!is_array($row) || empty($row)) {
+            return null;
+        }
+
+        if (array_key_exists('Index', $row) && is_string($row['Index']) && trim($row['Index']) !== '') {
+            return $row['Index'];
+        }
+
+        foreach ($row as $value) {
+            if (is_string($value) && trim($value) !== '') {
+                return $value;
+            }
+        }
+
+        return null;
     }
 }

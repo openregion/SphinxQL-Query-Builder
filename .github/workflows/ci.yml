@@ -32,6 +32,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Setup PHP
         if: env.COVERAGE_LANE != 'true'
@@ -101,13 +103,22 @@ jobs:
         run: |
           n=0
           while [ "$n" -lt 60 ]; do
-            if (echo > /dev/tcp/127.0.0.1/9307) >/dev/null 2>&1; then
+            if php -r '
+              try {
+                $pdo = new PDO("mysql:host=127.0.0.1;port=9307", "", "");
+                $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+                $pdo->query("SHOW TABLES");
+                exit(0);
+              } catch (Throwable $exception) {
+                exit(1);
+              }
+            ' >/dev/null 2>&1; then
               exit 0
             fi
             n=$((n + 1))
             sleep 1
           done
-          echo "searchd did not become ready on 127.0.0.1:9307"
+          echo "searchd did not become SQL-ready on 127.0.0.1:9307"
           docker logs searchd || true
           exit 1
 
@@ -147,36 +158,25 @@ jobs:
 
           if [ "${{ github.event_name }}" = "pull_request" ]; then
             BASE_SHA="${{ github.event.pull_request.base.sha }}"
-            BASE_REF="${{ github.event.pull_request.base.ref }}"
             BASE_LABEL="PR base (${BASE_SHA})"
-            git fetch --no-tags --depth=1 origin "${BASE_REF}" || true
-
-            if ! git cat-file -e "${BASE_SHA}^{commit}" 2>/dev/null; then
-              if git cat-file -e "origin/${BASE_REF}^{commit}" 2>/dev/null; then
-                BASE_SHA="origin/${BASE_REF}"
-                BASE_LABEL="PR base ref (${BASE_SHA})"
-              else
-                BASE_SHA="$(git rev-parse HEAD~1)"
-                BASE_LABEL="fallback (HEAD~1)"
-              fi
-            fi
           else
             BASE_SHA="${{ github.event.before }}"
+            BASE_LABEL="push before (${BASE_SHA})"
+          fi
+
+          if [ -z "${BASE_SHA}" ] \
+            || [ "${BASE_SHA}" = "0000000000000000000000000000000000000000" ] \
+            || ! git cat-file -e "${BASE_SHA}^{commit}" 2>/dev/null; then
             DEFAULT_BRANCH="${{ github.event.repository.default_branch }}"
-            if [ -z "${BASE_SHA}" ] \
-              || [ "${BASE_SHA}" = "0000000000000000000000000000000000000000" ] \
-              || ! git cat-file -e "${BASE_SHA}^{commit}" 2>/dev/null; then
-              git fetch --no-tags --depth=2 origin "${DEFAULT_BRANCH}" || true
-              if git cat-file -e "origin/${DEFAULT_BRANCH}~1^{commit}" 2>/dev/null; then
-                BASE_SHA="origin/${DEFAULT_BRANCH}~1"
-                BASE_LABEL="fallback (${BASE_SHA})"
-              else
-                BASE_SHA="$(git rev-parse HEAD~1)"
-                BASE_LABEL="fallback (HEAD~1)"
-              fi
+            if git show-ref --verify --quiet "refs/remotes/origin/${DEFAULT_BRANCH}"; then
+              BASE_SHA="$(git merge-base "origin/${DEFAULT_BRANCH}" HEAD)"
+              BASE_LABEL="merge-base (origin/${DEFAULT_BRANCH})"
+            elif git cat-file -e "HEAD~1^{commit}" 2>/dev/null; then
+              BASE_SHA="$(git rev-parse HEAD~1)"
+              BASE_LABEL="fallback (HEAD~1)"
             else
-              BASE_LABEL="push before (${BASE_SHA})"
-              git fetch --no-tags --depth=1 origin "${BASE_SHA}" || true
+              BASE_SHA="$(git rev-parse HEAD)"
+              BASE_LABEL="fallback (HEAD)"
             fi
           fi
 
