@@ -10,7 +10,7 @@ Building a Facet
 
     <?php
 
-    use Foolz\SphinxQL\Facet;
+    use OpenRegion\SphinxQL\Facet;
 
     $facet = (new Facet($conn))
         ->facet(['gid'])
@@ -33,8 +33,8 @@ FACET is returned as an extra result set, so use ``executeBatch()``.
 
     <?php
 
-    use Foolz\SphinxQL\Facet;
-    use Foolz\SphinxQL\SphinxQL;
+    use OpenRegion\SphinxQL\Facet;
+    use OpenRegion\SphinxQL\SphinxQL;
 
     $batch = (new SphinxQL($conn))
         ->select()

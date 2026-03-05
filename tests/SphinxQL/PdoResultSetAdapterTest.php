@@ -1,6 +1,6 @@
 <?php
 
-use Foolz\SphinxQL\Drivers\Pdo\ResultSetAdapter;
+use OpenRegion\SphinxQL\Drivers\Pdo\ResultSetAdapter;
 
 class PdoResultSetAdapterTest extends \PHPUnit\Framework\TestCase
 {

@@ -10,7 +10,7 @@ Basic Batch
 
     <?php
 
-    use Foolz\SphinxQL\SphinxQL;
+    use OpenRegion\SphinxQL\SphinxQL;
 
     $batch = (new SphinxQL($conn))
         ->select()
@@ -33,8 +33,8 @@ Mixing Helper Calls in Batch
 
     <?php
 
-    use Foolz\SphinxQL\Helper;
-    use Foolz\SphinxQL\SphinxQL;
+    use OpenRegion\SphinxQL\Helper;
+    use OpenRegion\SphinxQL\SphinxQL;
 
     $result = (new SphinxQL($conn))
         ->select()

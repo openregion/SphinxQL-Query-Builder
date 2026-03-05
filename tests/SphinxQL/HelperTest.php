@@ -200,7 +200,7 @@ class HelperTest extends \PHPUnit\Framework\TestCase
         );
         $this->createHelper()->dropFunction('my_udf')->execute();
 
-        $this->expectException(Foolz\SphinxQL\Exception\DatabaseException::class);
+        $this->expectException(OpenRegion\SphinxQL\Exception\DatabaseException::class);
         $this->conn->query('SELECT MY_UDF()');
     }
 
@@ -473,77 +473,77 @@ class HelperTest extends \PHPUnit\Framework\TestCase
 
     public function testHelperRequiresNonEmptyIdentifiers()
     {
-        $this->expectException(Foolz\SphinxQL\Exception\SphinxQLException::class);
+        $this->expectException(OpenRegion\SphinxQL\Exception\SphinxQLException::class);
         $this->expectExceptionMessage('showTables() index must be null or a string.');
         $this->createHelper()->showTables(array());
     }
 
     public function testSetVariableValidation()
     {
-        $this->expectException(Foolz\SphinxQL\Exception\SphinxQLException::class);
+        $this->expectException(OpenRegion\SphinxQL\Exception\SphinxQLException::class);
         $this->createHelper()->setVariable('invalid-name', 1)->compile();
     }
 
     public function testCallSnippetsValidation()
     {
-        $this->expectException(Foolz\SphinxQL\Exception\SphinxQLException::class);
+        $this->expectException(OpenRegion\SphinxQL\Exception\SphinxQLException::class);
         $this->createHelper()->callSnippets('', 'rt', 'is');
     }
 
     public function testCallKeywordsValidation()
     {
-        $this->expectException(Foolz\SphinxQL\Exception\SphinxQLException::class);
+        $this->expectException(OpenRegion\SphinxQL\Exception\SphinxQLException::class);
         $this->createHelper()->callKeywords('test case', 'rt', 2);
     }
 
     public function testCreateFunctionValidation()
     {
-        $this->expectException(Foolz\SphinxQL\Exception\SphinxQLException::class);
+        $this->expectException(OpenRegion\SphinxQL\Exception\SphinxQLException::class);
         $this->createHelper()->createFunction('my_udf', 'INVALID', 'test_udf.so');
     }
 
     public function testNewHelperValidation()
     {
-        $this->expectException(Foolz\SphinxQL\Exception\SphinxQLException::class);
+        $this->expectException(OpenRegion\SphinxQL\Exception\SphinxQLException::class);
         $this->createHelper()->showCreateTable('');
     }
 
     public function testKillValidation()
     {
-        $this->expectException(Foolz\SphinxQL\Exception\SphinxQLException::class);
+        $this->expectException(OpenRegion\SphinxQL\Exception\SphinxQLException::class);
         $this->createHelper()->kill(0);
     }
 
     public function testSuggestOptionValidation()
     {
-        $this->expectException(Foolz\SphinxQL\Exception\SphinxQLException::class);
+        $this->expectException(OpenRegion\SphinxQL\Exception\SphinxQLException::class);
         $this->createHelper()->callSuggest('teh', 'rt', array('' => 1));
     }
 
     public function testSuggestUnknownOptionValidation()
     {
-        $this->expectException(Foolz\SphinxQL\Exception\SphinxQLException::class);
+        $this->expectException(OpenRegion\SphinxQL\Exception\SphinxQLException::class);
         $this->expectExceptionMessage('unknown option "unknown_key"');
         $this->createHelper()->callSuggest('teh', 'rt', array('unknown_key' => 1));
     }
 
     public function testSuggestOptionTypeValidation()
     {
-        $this->expectException(Foolz\SphinxQL\Exception\SphinxQLException::class);
+        $this->expectException(OpenRegion\SphinxQL\Exception\SphinxQLException::class);
         $this->expectExceptionMessage('option "result_stats" must be boolean');
         $this->createHelper()->callSuggest('teh', 'rt', array('result_stats' => 2));
     }
 
     public function testSuggestOptionEnumValidation()
     {
-        $this->expectException(Foolz\SphinxQL\Exception\SphinxQLException::class);
+        $this->expectException(OpenRegion\SphinxQL\Exception\SphinxQLException::class);
         $this->expectExceptionMessage('option "search_mode" must be one of: phrase, words.');
         $this->createHelper()->callSuggest('teh', 'rt', array('search_mode' => 'invalid'));
     }
 
     public function testSuggestOptionRangeValidation()
     {
-        $this->expectException(Foolz\SphinxQL\Exception\SphinxQLException::class);
+        $this->expectException(OpenRegion\SphinxQL\Exception\SphinxQLException::class);
         $this->expectExceptionMessage('option "limit" must be >= 0.');
         $this->createHelper()->callSuggest('teh', 'rt', array('limit' => -1));
     }
@@ -555,7 +555,7 @@ class HelperTest extends \PHPUnit\Framework\TestCase
             $this->markTestSkipped('CALL AUTOCOMPLETE is not supported by this engine.');
         }
 
-        $this->expectException(Foolz\SphinxQL\Exception\SphinxQLException::class);
+        $this->expectException(OpenRegion\SphinxQL\Exception\SphinxQLException::class);
         $this->expectExceptionMessage('options "fuzzy" and "fuzziness" cannot be used together');
         $helper->callAutocomplete('te', 'rt', array('fuzzy' => 1, 'fuzziness' => 2));
     }
@@ -565,7 +565,7 @@ class HelperTest extends \PHPUnit\Framework\TestCase
         $helper = $this->createHelper();
         $caps = $helper->getCapabilities();
 
-        $this->assertInstanceOf(Foolz\SphinxQL\Capabilities::class, $caps);
+        $this->assertInstanceOf(OpenRegion\SphinxQL\Capabilities::class, $caps);
         $this->assertNotEmpty($caps->getEngine());
         $this->assertTrue($helper->supports('grouped_where'));
         $this->assertIsBool($helper->supports('show_profile'));
@@ -580,7 +580,7 @@ class HelperTest extends \PHPUnit\Framework\TestCase
 
     public function testSupportsUnknownFeatureValidation()
     {
-        $this->expectException(Foolz\SphinxQL\Exception\SphinxQLException::class);
+        $this->expectException(OpenRegion\SphinxQL\Exception\SphinxQLException::class);
         $this->createHelper()->supports('definitely_not_a_real_feature');
     }
 
@@ -593,7 +593,7 @@ class HelperTest extends \PHPUnit\Framework\TestCase
             return;
         }
 
-        $this->expectException(Foolz\SphinxQL\Exception\UnsupportedFeatureException::class);
+        $this->expectException(OpenRegion\SphinxQL\Exception\UnsupportedFeatureException::class);
         $this->expectExceptionMessageMatches(
             '/^testRequireSupportValidation\(\) requires feature "call_qsuggest" \(engine=[A-Z0-9_]+, version=.*\)\.$/'
         );
@@ -653,7 +653,7 @@ class HelperTest extends \PHPUnit\Framework\TestCase
     public function testQSuggestExecutionWhenBuddySupported()
     {
         if (!$this->createHelper()->supports('call_qsuggest')) {
-            $this->expectException(Foolz\SphinxQL\Exception\UnsupportedFeatureException::class);
+            $this->expectException(OpenRegion\SphinxQL\Exception\UnsupportedFeatureException::class);
             $this->expectExceptionMessageMatches(
                 '/^callQSuggest\(\) requires feature "call_qsuggest" \(engine=[A-Z0-9_]+, version=.*\)\.$/'
             );
@@ -673,7 +673,7 @@ class HelperTest extends \PHPUnit\Framework\TestCase
     public function testAutocompleteExecutionWhenBuddySupported()
     {
         if (!$this->createHelper()->supports('call_autocomplete')) {
-            $this->expectException(Foolz\SphinxQL\Exception\UnsupportedFeatureException::class);
+            $this->expectException(OpenRegion\SphinxQL\Exception\UnsupportedFeatureException::class);
             $this->expectExceptionMessageMatches(
                 '/^callAutocomplete\(\) requires feature "call_autocomplete" \(engine=[A-Z0-9_]+, version=.*\)\.$/'
             );

@@ -14,8 +14,8 @@ It is designed for teams that want:
 
 Supported drivers:
 
-- ``Foolz\\SphinxQL\\Drivers\\Mysqli\\Connection``
-- ``Foolz\\SphinxQL\\Drivers\\Pdo\\Connection``
+- ``OpenRegion\\SphinxQL\\Drivers\\Mysqli\\Connection``
+- ``OpenRegion\\SphinxQL\\Drivers\\Pdo\\Connection``
 
 Quick Example
 -------------
@@ -24,8 +24,8 @@ Quick Example
 
     <?php
 
-    use Foolz\SphinxQL\Drivers\Mysqli\Connection;
-    use Foolz\SphinxQL\SphinxQL;
+    use OpenRegion\SphinxQL\Drivers\Mysqli\Connection;
+    use OpenRegion\SphinxQL\SphinxQL;
 
     $conn = new Connection();
     $conn->setParams([
@@ -52,7 +52,7 @@ Compiling queries before execution is useful for debugging and tests.
 
     <?php
 
-    use Foolz\SphinxQL\SphinxQL;
+    use OpenRegion\SphinxQL\SphinxQL;
 
     $sql = (new SphinxQL($conn))
         ->select('a.id')

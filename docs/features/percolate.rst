@@ -10,7 +10,7 @@ Store Queries in a Percolate Index
 
     <?php
 
-    use Foolz\SphinxQL\Percolate;
+    use OpenRegion\SphinxQL\Percolate;
 
     $pq = (new Percolate($conn))
         ->insert('@subject orange')
@@ -33,7 +33,7 @@ Run ``CALL PQ``
 
     <?php
 
-    use Foolz\SphinxQL\Percolate;
+    use OpenRegion\SphinxQL\Percolate;
 
     $rows = (new Percolate($conn))
         ->callPQ()

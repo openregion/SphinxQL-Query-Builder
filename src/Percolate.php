@@ -317,7 +317,7 @@ class Percolate
      * @throws Exception\DatabaseException
      * @throws SphinxQLException
      */
-    public function execute(): \Foolz\SphinxQL\Drivers\ResultSetInterface
+    public function execute(): \OpenRegion\SphinxQL\Drivers\ResultSetInterface
     {
 
         if ($this->type == 'insert') {

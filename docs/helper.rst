@@ -7,7 +7,7 @@ Helper API
 
     <?php
 
-    use Foolz\SphinxQL\Helper;
+    use OpenRegion\SphinxQL\Helper;
 
     $helper = new Helper($conn);
     $rows = $helper->showVariables()->execute()->getStored();

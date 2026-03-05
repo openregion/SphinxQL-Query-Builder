@@ -13,7 +13,7 @@ Key Behavioral Changes
 ----------------------
 
 4.0 introduces stricter runtime validation. Invalid query-shape input now throws
-``Foolz\\SphinxQL\\Exception\\SphinxQLException`` instead of being coerced.
+``OpenRegion\\SphinxQL\\Exception\\SphinxQLException`` instead of being coerced.
 
 Builder validation highlights:
 

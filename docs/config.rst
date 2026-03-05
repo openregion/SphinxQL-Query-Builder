@@ -29,7 +29,7 @@ PDO driver:
 
     <?php
 
-    use Foolz\SphinxQL\Drivers\Pdo\Connection;
+    use OpenRegion\SphinxQL\Drivers\Pdo\Connection;
 
     $conn = new Connection();
     $conn->setParams([
@@ -76,7 +76,7 @@ For raw SQL fragments, use ``SphinxQL::expr()``.
 
     <?php
 
-    use Foolz\SphinxQL\SphinxQL;
+    use OpenRegion\SphinxQL\SphinxQL;
 
     $sql = (new SphinxQL($conn))
         ->select()
