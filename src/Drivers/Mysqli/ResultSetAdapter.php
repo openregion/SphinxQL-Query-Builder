@@ -1,9 +1,9 @@
 <?php
 
-namespace Foolz\SphinxQL\Drivers\Mysqli;
+namespace OpenRegion\SphinxQL\Drivers\Mysqli;
 
-use Foolz\SphinxQL\Drivers\ResultSetAdapterInterface;
-use Foolz\SphinxQL\Exception\ConnectionException;
+use OpenRegion\SphinxQL\Drivers\ResultSetAdapterInterface;
+use OpenRegion\SphinxQL\Exception\ConnectionException;
 use mysqli_result;
 
 class ResultSetAdapter implements ResultSetAdapterInterface

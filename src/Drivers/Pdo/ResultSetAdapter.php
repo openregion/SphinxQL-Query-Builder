@@ -1,8 +1,8 @@
 <?php
 
-namespace Foolz\SphinxQL\Drivers\Pdo;
+namespace OpenRegion\SphinxQL\Drivers\Pdo;
 
-use Foolz\SphinxQL\Drivers\ResultSetAdapterInterface;
+use OpenRegion\SphinxQL\Drivers\ResultSetAdapterInterface;
 use PDO;
 use PDOStatement;
 

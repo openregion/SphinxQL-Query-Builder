@@ -1,10 +1,10 @@
 <?php
 
-namespace Foolz\SphinxQL;
+namespace OpenRegion\SphinxQL;
 
-use Foolz\SphinxQL\Drivers\ConnectionInterface;
-use Foolz\SphinxQL\Exception\SphinxQLException;
-use Foolz\SphinxQL\Exception\UnsupportedFeatureException;
+use OpenRegion\SphinxQL\Drivers\ConnectionInterface;
+use OpenRegion\SphinxQL\Exception\SphinxQLException;
+use OpenRegion\SphinxQL\Exception\UnsupportedFeatureException;
 
 /**
  * SQL queries that don't require "query building"

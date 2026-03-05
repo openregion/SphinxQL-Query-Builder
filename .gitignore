@@ -1,7 +1,17 @@
-composer.lock
+# ide
+.idea/
+.vscode/
+
+# mac
+.DS_Store
+
+# composer
+/auth.json
+/vendor/
+/composer.lock
+
 tests/searchd.log
 tests/searchd.pid
 tests/data/rt.*
 tests/data/test_udf.so
-vendor/
 .phpstan/

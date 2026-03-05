@@ -1,13 +1,13 @@
 <?php
 
-namespace Foolz\SphinxQL\Drivers\Mysqli;
+namespace OpenRegion\SphinxQL\Drivers\Mysqli;
 
-use Foolz\SphinxQL\Drivers\ConnectionBase;
-use Foolz\SphinxQL\Drivers\MultiResultSet;
-use Foolz\SphinxQL\Drivers\ResultSet;
-use Foolz\SphinxQL\Exception\ConnectionException;
-use Foolz\SphinxQL\Exception\DatabaseException;
-use Foolz\SphinxQL\Exception\SphinxQLException;
+use OpenRegion\SphinxQL\Drivers\ConnectionBase;
+use OpenRegion\SphinxQL\Drivers\MultiResultSet;
+use OpenRegion\SphinxQL\Drivers\ResultSet;
+use OpenRegion\SphinxQL\Exception\ConnectionException;
+use OpenRegion\SphinxQL\Exception\DatabaseException;
+use OpenRegion\SphinxQL\Exception\SphinxQLException;
 use mysqli_sql_exception;
 
 /**

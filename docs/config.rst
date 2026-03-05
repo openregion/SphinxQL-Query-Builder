@@ -6,13 +6,13 @@ Configuration
 Driver Setup
 ------------
 
-MySQLi driver:
+You can obtain a SphinxQL Connection with the `OpenRegion\\SphinxQL\\Drivers\\Mysqli\\Connection` class.
 
 .. code-block:: php
 
     <?php
 
-    use Foolz\SphinxQL\Drivers\Mysqli\Connection;
+    use OpenRegion\SphinxQL\Drivers\Mysqli\Connection;
 
     $conn = new Connection();
     $conn->setParams([

@@ -8,8 +8,8 @@ Creating a Builder
 
     <?php
 
-    use Foolz\SphinxQL\Drivers\Mysqli\Connection;
-    use Foolz\SphinxQL\SphinxQL;
+    use OpenRegion\SphinxQL\Drivers\Mysqli\Connection;
+    use OpenRegion\SphinxQL\SphinxQL;
 
     $conn = new Connection();
     $conn->setParams(['host' => '127.0.0.1', 'port' => 9306]);
@@ -29,6 +29,7 @@ Supported Query Types
 SELECT
 ------
 
+The `OpenRegion\\SphinxQL\\SphinxQL` class supports building the following queries: `SELECT`, `INSERT`, `UPDATE`, and `DELETE`. Which sort of query being generated depends on the methods called.
 Basic select:
 
 .. code-block:: php

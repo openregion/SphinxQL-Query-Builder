@@ -1,11 +1,11 @@
 <?php
 
-use Foolz\SphinxQL\Expression;
-use Foolz\SphinxQL\Facet;
-use Foolz\SphinxQL\Helper;
-use Foolz\SphinxQL\MatchBuilder;
-use Foolz\SphinxQL\SphinxQL;
-use Foolz\SphinxQL\Tests\TestUtil;
+use OpenRegion\SphinxQL\Expression;
+use OpenRegion\SphinxQL\Facet;
+use OpenRegion\SphinxQL\Helper;
+use OpenRegion\SphinxQL\MatchBuilder;
+use OpenRegion\SphinxQL\SphinxQL;
+use OpenRegion\SphinxQL\Tests\TestUtil;
 
 class SphinxQLTest extends \PHPUnit\Framework\TestCase
 {
@@ -88,9 +88,9 @@ class SphinxQLTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * @covers \Foolz\SphinxQL\SphinxQL::transactionBegin
-     * @covers \Foolz\SphinxQL\SphinxQL::transactionCommit
-     * @covers \Foolz\SphinxQL\SphinxQL::transactionRollback
+     * @covers \OpenRegion\SphinxQL\SphinxQL::transactionBegin
+     * @covers \OpenRegion\SphinxQL\SphinxQL::transactionCommit
+     * @covers \OpenRegion\SphinxQL\SphinxQL::transactionRollback
      */
     public function testTransactions()
     {
@@ -147,15 +147,15 @@ class SphinxQLTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * @covers \Foolz\SphinxQL\SphinxQL::compile
-     * @covers \Foolz\SphinxQL\SphinxQL::compileInsert
-     * @covers \Foolz\SphinxQL\SphinxQL::compileSelect
-     * @covers \Foolz\SphinxQL\SphinxQL::insert
-     * @covers \Foolz\SphinxQL\SphinxQL::set
-     * @covers \Foolz\SphinxQL\SphinxQL::value
-     * @covers \Foolz\SphinxQL\SphinxQL::columns
-     * @covers \Foolz\SphinxQL\SphinxQL::values
-     * @covers \Foolz\SphinxQL\SphinxQL::into
+     * @covers \OpenRegion\SphinxQL\SphinxQL::compile
+     * @covers \OpenRegion\SphinxQL\SphinxQL::compileInsert
+     * @covers \OpenRegion\SphinxQL\SphinxQL::compileSelect
+     * @covers \OpenRegion\SphinxQL\SphinxQL::insert
+     * @covers \OpenRegion\SphinxQL\SphinxQL::set
+     * @covers \OpenRegion\SphinxQL\SphinxQL::value
+     * @covers \OpenRegion\SphinxQL\SphinxQL::columns
+     * @covers \OpenRegion\SphinxQL\SphinxQL::values
+     * @covers \OpenRegion\SphinxQL\SphinxQL::into
      */
     public function testInsert()
     {
@@ -271,15 +271,15 @@ class SphinxQLTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * @covers \Foolz\SphinxQL\SphinxQL::compile
-     * @covers \Foolz\SphinxQL\SphinxQL::compileInsert
-     * @covers \Foolz\SphinxQL\SphinxQL::compileSelect
-     * @covers \Foolz\SphinxQL\SphinxQL::replace
-     * @covers \Foolz\SphinxQL\SphinxQL::set
-     * @covers \Foolz\SphinxQL\SphinxQL::value
-     * @covers \Foolz\SphinxQL\SphinxQL::columns
-     * @covers \Foolz\SphinxQL\SphinxQL::values
-     * @covers \Foolz\SphinxQL\SphinxQL::into
+     * @covers \OpenRegion\SphinxQL\SphinxQL::compile
+     * @covers \OpenRegion\SphinxQL\SphinxQL::compileInsert
+     * @covers \OpenRegion\SphinxQL\SphinxQL::compileSelect
+     * @covers \OpenRegion\SphinxQL\SphinxQL::replace
+     * @covers \OpenRegion\SphinxQL\SphinxQL::set
+     * @covers \OpenRegion\SphinxQL\SphinxQL::value
+     * @covers \OpenRegion\SphinxQL\SphinxQL::columns
+     * @covers \OpenRegion\SphinxQL\SphinxQL::values
+     * @covers \OpenRegion\SphinxQL\SphinxQL::into
      */
     public function testReplace()
     {
@@ -347,12 +347,12 @@ class SphinxQLTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * @covers \Foolz\SphinxQL\SphinxQL::compile
-     * @covers \Foolz\SphinxQL\SphinxQL::compileUpdate
-     * @covers \Foolz\SphinxQL\SphinxQL::compileSelect
-     * @covers \Foolz\SphinxQL\SphinxQL::into
-     * @covers \Foolz\SphinxQL\SphinxQL::update
-     * @covers \Foolz\SphinxQL\SphinxQL::value
+     * @covers \OpenRegion\SphinxQL\SphinxQL::compile
+     * @covers \OpenRegion\SphinxQL\SphinxQL::compileUpdate
+     * @covers \OpenRegion\SphinxQL\SphinxQL::compileSelect
+     * @covers \OpenRegion\SphinxQL\SphinxQL::into
+     * @covers \OpenRegion\SphinxQL\SphinxQL::update
+     * @covers \OpenRegion\SphinxQL\SphinxQL::value
      */
     public function testUpdate()
     {
@@ -436,10 +436,10 @@ class SphinxQLTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * @covers \Foolz\SphinxQL\SphinxQL::compile
-     * @covers \Foolz\SphinxQL\SphinxQL::compileUpdate
-     * @covers \Foolz\SphinxQL\SphinxQL::update
-     * @covers \Foolz\SphinxQL\SphinxQL::into
+     * @covers \OpenRegion\SphinxQL\SphinxQL::compile
+     * @covers \OpenRegion\SphinxQL\SphinxQL::compileUpdate
+     * @covers \OpenRegion\SphinxQL\SphinxQL::update
+     * @covers \OpenRegion\SphinxQL\SphinxQL::into
      */
     public function testUpdateWithLateInto()
     {
@@ -455,12 +455,12 @@ class SphinxQLTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * @covers \Foolz\SphinxQL\SphinxQL::compileUpdate
-     * @covers \Foolz\SphinxQL\SphinxQL::update
+     * @covers \OpenRegion\SphinxQL\SphinxQL::compileUpdate
+     * @covers \OpenRegion\SphinxQL\SphinxQL::update
      */
     public function testUpdateWithoutIntoThrows()
     {
-        $this->expectException(Foolz\SphinxQL\Exception\SphinxQLException::class);
+        $this->expectException(OpenRegion\SphinxQL\Exception\SphinxQLException::class);
         $this->expectExceptionMessage('update() requires into($index) before compile() or execute().');
 
         $this->createSphinxQL()
@@ -471,9 +471,9 @@ class SphinxQLTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * @covers \Foolz\SphinxQL\SphinxQL::compileWhere
-     * @covers \Foolz\SphinxQL\SphinxQL::from
-     * @covers \Foolz\SphinxQL\SphinxQL::compileFilterCondition
+     * @covers \OpenRegion\SphinxQL\SphinxQL::compileWhere
+     * @covers \OpenRegion\SphinxQL\SphinxQL::from
+     * @covers \OpenRegion\SphinxQL\SphinxQL::compileFilterCondition
      */
     public function testWhere()
     {
@@ -553,9 +553,9 @@ class SphinxQLTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * @covers \Foolz\SphinxQL\SphinxQL::match
-     * @covers \Foolz\SphinxQL\SphinxQL::compileMatch
-     * @covers \Foolz\SphinxQL\SphinxQL::halfEscapeMatch
+     * @covers \OpenRegion\SphinxQL\SphinxQL::match
+     * @covers \OpenRegion\SphinxQL\SphinxQL::compileMatch
+     * @covers \OpenRegion\SphinxQL\SphinxQL::halfEscapeMatch
      */
     public function testMatch()
     {
@@ -671,9 +671,9 @@ class SphinxQLTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-    * @covers \Foolz\SphinxQL\SphinxQL::setFullEscapeChars
-    * @covers \Foolz\SphinxQL\SphinxQL::setHalfEscapeChars
-    * @covers \Foolz\SphinxQL\SphinxQL::compileEscapeChars
+    * @covers \OpenRegion\SphinxQL\SphinxQL::setFullEscapeChars
+    * @covers \OpenRegion\SphinxQL\SphinxQL::setHalfEscapeChars
+    * @covers \OpenRegion\SphinxQL\SphinxQL::compileEscapeChars
     */
     public function testEscapeChars()
     {
@@ -909,9 +909,9 @@ class SphinxQLTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * @covers \Foolz\SphinxQL\SphinxQL::compile
-     * @covers \Foolz\SphinxQL\SphinxQL::compileDelete
-     * @covers \Foolz\SphinxQL\SphinxQL::delete
+     * @covers \OpenRegion\SphinxQL\SphinxQL::compile
+     * @covers \OpenRegion\SphinxQL\SphinxQL::compileDelete
+     * @covers \OpenRegion\SphinxQL\SphinxQL::delete
      */
     public function testDelete()
     {
@@ -929,11 +929,11 @@ class SphinxQLTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * @covers \Foolz\SphinxQL\SphinxQL::executeBatch
-     * @covers \Foolz\SphinxQL\SphinxQL::enqueue
-     * @covers \Foolz\SphinxQL\SphinxQL::getQueue
-     * @covers \Foolz\SphinxQL\SphinxQL::getQueuePrev
-     * @covers \Foolz\SphinxQL\SphinxQL::setQueuePrev
+     * @covers \OpenRegion\SphinxQL\SphinxQL::executeBatch
+     * @covers \OpenRegion\SphinxQL\SphinxQL::enqueue
+     * @covers \OpenRegion\SphinxQL\SphinxQL::getQueue
+     * @covers \OpenRegion\SphinxQL\SphinxQL::getQueuePrev
+     * @covers \OpenRegion\SphinxQL\SphinxQL::setQueuePrev
      */
     public function testQueue()
     {
@@ -958,7 +958,7 @@ class SphinxQLTest extends \PHPUnit\Framework\TestCase
 
     public function testEmptyQueue()
     {
-        $this->expectException(Foolz\SphinxQL\Exception\SphinxQLException::class);
+        $this->expectException(OpenRegion\SphinxQL\Exception\SphinxQLException::class);
         $this->expectExceptionMessage("There is no Queue present to execute.");
         $this->createSphinxQL()
             ->executeBatch()
@@ -966,14 +966,14 @@ class SphinxQLTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * @covers \Foolz\SphinxQL\SphinxQL::resetWhere
-     * @covers \Foolz\SphinxQL\SphinxQL::resetMatch
-     * @covers \Foolz\SphinxQL\SphinxQL::resetGroupBy
-     * @covers \Foolz\SphinxQL\SphinxQL::resetWithinGroupOrderBy
-     * @covers \Foolz\SphinxQL\SphinxQL::resetOptions
-     * @covers \Foolz\SphinxQL\SphinxQL::resetFacets
-     * @covers \Foolz\SphinxQL\SphinxQL::resetHaving
-     * @covers \Foolz\SphinxQL\SphinxQL::resetOrderBy
+     * @covers \OpenRegion\SphinxQL\SphinxQL::resetWhere
+     * @covers \OpenRegion\SphinxQL\SphinxQL::resetMatch
+     * @covers \OpenRegion\SphinxQL\SphinxQL::resetGroupBy
+     * @covers \OpenRegion\SphinxQL\SphinxQL::resetWithinGroupOrderBy
+     * @covers \OpenRegion\SphinxQL\SphinxQL::resetOptions
+     * @covers \OpenRegion\SphinxQL\SphinxQL::resetFacets
+     * @covers \OpenRegion\SphinxQL\SphinxQL::resetHaving
+     * @covers \OpenRegion\SphinxQL\SphinxQL::resetOrderBy
      */
     public function testResetMethods()
     {
@@ -1005,7 +1005,7 @@ class SphinxQLTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * @covers \Foolz\SphinxQL\SphinxQL::select
+     * @covers \OpenRegion\SphinxQL\SphinxQL::select
      */
     public function testSelect()
     {
@@ -1102,7 +1102,7 @@ class SphinxQLTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * @covers \Foolz\SphinxQL\SphinxQL::setSelect
+     * @covers \OpenRegion\SphinxQL\SphinxQL::setSelect
      */
     public function testSetSelect()
     {
@@ -1141,7 +1141,7 @@ class SphinxQLTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * @covers \Foolz\SphinxQL\SphinxQL::getSelect
+     * @covers \OpenRegion\SphinxQL\SphinxQL::getSelect
      */
     public function testGetSelect()
     {
@@ -1152,8 +1152,8 @@ class SphinxQLTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * @covers \Foolz\SphinxQL\SphinxQL::facet
-     * @covers \Foolz\SphinxQL\SphinxQL::compileSelect
+     * @covers \OpenRegion\SphinxQL\SphinxQL::facet
+     * @covers \OpenRegion\SphinxQL\SphinxQL::compileSelect
      */
     public function testFacet()
     {
@@ -1224,7 +1224,7 @@ class SphinxQLTest extends \PHPUnit\Framework\TestCase
 
     public function testCompileWithoutTypeThrowsException()
     {
-        $this->expectException(Foolz\SphinxQL\Exception\SphinxQLException::class);
+        $this->expectException(OpenRegion\SphinxQL\Exception\SphinxQLException::class);
         (new SphinxQL(self::$conn))->compile();
     }
 
@@ -1234,25 +1234,25 @@ class SphinxQLTest extends \PHPUnit\Framework\TestCase
         $result = $query->setType('select');
         $this->assertSame($query, $result);
 
-        $this->expectException(Foolz\SphinxQL\Exception\SphinxQLException::class);
+        $this->expectException(OpenRegion\SphinxQL\Exception\SphinxQLException::class);
         $query->setType('invalid_type');
     }
 
     public function testFromValidation()
     {
-        $this->expectException(Foolz\SphinxQL\Exception\SphinxQLException::class);
+        $this->expectException(OpenRegion\SphinxQL\Exception\SphinxQLException::class);
         $this->createSphinxQL()->select()->from();
     }
 
     public function testWhereValidation()
     {
-        $this->expectException(Foolz\SphinxQL\Exception\SphinxQLException::class);
+        $this->expectException(OpenRegion\SphinxQL\Exception\SphinxQLException::class);
         $this->createSphinxQL()->select()->from('rt')->where('gid', 'IN', array());
     }
 
     public function testHavingValidation()
     {
-        $this->expectException(Foolz\SphinxQL\Exception\SphinxQLException::class);
+        $this->expectException(OpenRegion\SphinxQL\Exception\SphinxQLException::class);
         $this->createSphinxQL()
             ->select()
             ->from('rt')
@@ -1262,31 +1262,31 @@ class SphinxQLTest extends \PHPUnit\Framework\TestCase
 
     public function testOrderDirectionValidation()
     {
-        $this->expectException(Foolz\SphinxQL\Exception\SphinxQLException::class);
+        $this->expectException(OpenRegion\SphinxQL\Exception\SphinxQLException::class);
         $this->createSphinxQL()->select()->from('rt')->orderBy('id', 'sideways');
     }
 
     public function testWithinGroupOrderDirectionValidation()
     {
-        $this->expectException(Foolz\SphinxQL\Exception\SphinxQLException::class);
+        $this->expectException(OpenRegion\SphinxQL\Exception\SphinxQLException::class);
         $this->createSphinxQL()->select()->from('rt')->withinGroupOrderBy('id', 'sideways');
     }
 
     public function testLimitOffsetValidation()
     {
-        $this->expectException(Foolz\SphinxQL\Exception\SphinxQLException::class);
+        $this->expectException(OpenRegion\SphinxQL\Exception\SphinxQLException::class);
         $this->createSphinxQL()->select()->from('rt')->limit(-1);
     }
 
     public function testGroupNByValidation()
     {
-        $this->expectException(Foolz\SphinxQL\Exception\SphinxQLException::class);
+        $this->expectException(OpenRegion\SphinxQL\Exception\SphinxQLException::class);
         $this->createSphinxQL()->select()->from('rt')->groupNBy(0);
     }
 
     public function testFacetTypeValidation()
     {
-        $this->expectException(Foolz\SphinxQL\Exception\SphinxQLException::class);
+        $this->expectException(OpenRegion\SphinxQL\Exception\SphinxQLException::class);
         $this->createSphinxQL()->select()->from('rt')->facet('gid');
     }
 
@@ -1337,7 +1337,7 @@ class SphinxQLTest extends \PHPUnit\Framework\TestCase
 
     public function testWhereGroupingValidation()
     {
-        $this->expectException(Foolz\SphinxQL\Exception\SphinxQLException::class);
+        $this->expectException(OpenRegion\SphinxQL\Exception\SphinxQLException::class);
         $this->createSphinxQL()
             ->select()
             ->from('rt')
@@ -1378,7 +1378,7 @@ class SphinxQLTest extends \PHPUnit\Framework\TestCase
 
     public function testJoinValidation()
     {
-        $this->expectException(Foolz\SphinxQL\Exception\SphinxQLException::class);
+        $this->expectException(OpenRegion\SphinxQL\Exception\SphinxQLException::class);
         $this->createSphinxQL()
             ->select()
             ->from('rt')
@@ -1402,7 +1402,7 @@ class SphinxQLTest extends \PHPUnit\Framework\TestCase
 
     public function testOrderByKnnValidation()
     {
-        $this->expectException(Foolz\SphinxQL\Exception\SphinxQLException::class);
+        $this->expectException(OpenRegion\SphinxQL\Exception\SphinxQLException::class);
         $this->createSphinxQL()
             ->select()
             ->from('rt')
@@ -1427,7 +1427,7 @@ class SphinxQLTest extends \PHPUnit\Framework\TestCase
         $query = $this->createSphinxQL();
         $capabilities = $query->getCapabilities();
 
-        $this->assertInstanceOf(Foolz\SphinxQL\Capabilities::class, $capabilities);
+        $this->assertInstanceOf(OpenRegion\SphinxQL\Capabilities::class, $capabilities);
         $this->assertNotEmpty($capabilities->getEngine());
         $this->assertTrue($query->supports('grouped_where'));
     }
@@ -1441,7 +1441,7 @@ class SphinxQLTest extends \PHPUnit\Framework\TestCase
             return;
         }
 
-        $this->expectException(Foolz\SphinxQL\Exception\UnsupportedFeatureException::class);
+        $this->expectException(OpenRegion\SphinxQL\Exception\UnsupportedFeatureException::class);
         $this->expectExceptionMessageMatches(
             '/^requires feature "call_qsuggest" \(engine=[A-Z0-9_]+, version=.*\)\.$/'
         );
@@ -1450,7 +1450,7 @@ class SphinxQLTest extends \PHPUnit\Framework\TestCase
 
     public function testSphinxQLSupportsUnknownFeatureValidation()
     {
-        $this->expectException(Foolz\SphinxQL\Exception\SphinxQLException::class);
+        $this->expectException(OpenRegion\SphinxQL\Exception\SphinxQLException::class);
         $this->createSphinxQL()->supports('totally_unknown_feature');
     }
 }

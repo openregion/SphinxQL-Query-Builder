@@ -1,10 +1,10 @@
 <?php
 
-namespace Foolz\SphinxQL\Drivers;
+namespace OpenRegion\SphinxQL\Drivers;
 
-use Foolz\SphinxQL\Exception\ConnectionException;
-use Foolz\SphinxQL\Exception\SphinxQLException;
-use Foolz\SphinxQL\Expression;
+use OpenRegion\SphinxQL\Exception\ConnectionException;
+use OpenRegion\SphinxQL\Exception\SphinxQLException;
+use OpenRegion\SphinxQL\Expression;
 use mysqli;
 use PDO;
 

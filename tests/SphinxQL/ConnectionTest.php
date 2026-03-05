@@ -1,8 +1,8 @@
 <?php
 
-use Foolz\SphinxQL\Drivers\ConnectionInterface;
-use Foolz\SphinxQL\Expression;
-use Foolz\SphinxQL\Tests\TestUtil;
+use OpenRegion\SphinxQL\Drivers\ConnectionInterface;
+use OpenRegion\SphinxQL\Expression;
+use OpenRegion\SphinxQL\Tests\TestUtil;
 
 class ConnectionTest extends \PHPUnit\Framework\TestCase
 {
@@ -99,7 +99,7 @@ class ConnectionTest extends \PHPUnit\Framework\TestCase
 
     public function testGetConnectionThrowsException()
     {
-        $this->expectException(Foolz\SphinxQL\Exception\ConnectionException::class);
+        $this->expectException(OpenRegion\SphinxQL\Exception\ConnectionException::class);
         $this->connection->getConnection();
     }
 
@@ -124,14 +124,14 @@ class ConnectionTest extends \PHPUnit\Framework\TestCase
 
     public function testCredentialsParamValidation()
     {
-        $this->expectException(Foolz\SphinxQL\Exception\SphinxQLException::class);
+        $this->expectException(OpenRegion\SphinxQL\Exception\SphinxQLException::class);
         $this->expectExceptionMessage('setParam("username") expects null or string.');
         $this->connection->setParam('username', array('invalid'));
     }
 
     public function testConnectThrowsException()
     {
-        $this->expectException(Foolz\SphinxQL\Exception\ConnectionException::class);
+        $this->expectException(OpenRegion\SphinxQL\Exception\ConnectionException::class);
         $this->connection->setParam('port', 9308);
         $this->connection->connect();
     }
@@ -144,7 +144,7 @@ class ConnectionTest extends \PHPUnit\Framework\TestCase
 
     public function testClose()
     {
-        $this->expectException(Foolz\SphinxQL\Exception\ConnectionException::class);
+        $this->expectException(OpenRegion\SphinxQL\Exception\ConnectionException::class);
         $encoding = mb_internal_encoding();
         $this->connection->connect();
 
@@ -181,7 +181,7 @@ class ConnectionTest extends \PHPUnit\Framework\TestCase
 
     public function testEmptyMultiQuery()
     {
-        $this->expectException(Foolz\SphinxQL\Exception\SphinxQLException::class);
+        $this->expectException(OpenRegion\SphinxQL\Exception\SphinxQLException::class);
         $this->expectExceptionMessage('The Queue is empty.');
         $this->connection->connect();
         $this->connection->multiQuery(array());
@@ -189,14 +189,14 @@ class ConnectionTest extends \PHPUnit\Framework\TestCase
 
     public function testMultiQueryThrowsException()
     {
-        $this->expectException(Foolz\SphinxQL\Exception\DatabaseException::class);
+        $this->expectException(OpenRegion\SphinxQL\Exception\DatabaseException::class);
         $this->expectExceptionMessage($GLOBALS['driver'] === 'Pdo' ? '[pdo][multi_query]' : '[mysqli][multi_query]');
         $this->connection->multiQuery(array('SHOW METAL'));
     }
 
     public function testQueryThrowsException()
     {
-        $this->expectException(Foolz\SphinxQL\Exception\DatabaseException::class);
+        $this->expectException(OpenRegion\SphinxQL\Exception\DatabaseException::class);
         $this->expectExceptionMessage($GLOBALS['driver'] === 'Pdo' ? '[pdo][query]' : '[mysqli][query]');
         $this->connection->query('SHOW METAL');
     }
@@ -209,7 +209,7 @@ class ConnectionTest extends \PHPUnit\Framework\TestCase
 
     public function testEscapeThrowsException()
     {
-        $this->expectException(Foolz\SphinxQL\Exception\ConnectionException::class);
+        $this->expectException(OpenRegion\SphinxQL\Exception\ConnectionException::class);
         // or we get the wrong error popping up
         $this->connection->setParam('port', 9308);
         $this->connection->connect();

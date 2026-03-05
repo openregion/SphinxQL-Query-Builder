@@ -1,9 +1,9 @@
 <?php
 
-namespace Foolz\SphinxQL\Drivers\Pdo;
+namespace OpenRegion\SphinxQL\Drivers\Pdo;
 
-use Foolz\SphinxQL\Drivers\MultiResultSetAdapterInterface;
-use Foolz\SphinxQL\Drivers\ResultSet;
+use OpenRegion\SphinxQL\Drivers\MultiResultSetAdapterInterface;
+use OpenRegion\SphinxQL\Drivers\ResultSet;
 use PDOStatement;
 
 class MultiResultSetAdapter implements MultiResultSetAdapterInterface

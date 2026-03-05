@@ -1,10 +1,10 @@
 <?php
 
-namespace Foolz\SphinxQL\Drivers\Mysqli;
+namespace OpenRegion\SphinxQL\Drivers\Mysqli;
 
-use Foolz\SphinxQL\Drivers\MultiResultSetAdapterInterface;
-use Foolz\SphinxQL\Drivers\ResultSet;
-use Foolz\SphinxQL\Exception\ConnectionException;
+use OpenRegion\SphinxQL\Drivers\MultiResultSetAdapterInterface;
+use OpenRegion\SphinxQL\Drivers\ResultSet;
+use OpenRegion\SphinxQL\Exception\ConnectionException;
 
 class MultiResultSetAdapter implements MultiResultSetAdapterInterface
 {
