@@ -130,6 +130,16 @@ class HelperProbeConnection implements ConnectionInterface
 
         return $quoted;
     }
+
+    public function quoteIdentifier(string $identifier): string
+    {
+        return '';
+    }
+
+    public function quoteIdentifierArray(array $array = []): array
+    {
+        return [];
+    }
 }
 
 class HelperProbeResultSet implements \OpenRegion\SphinxQL\Drivers\ResultSetInterface

@@ -1,4 +1,4 @@
-#### 4.0.0
+#### 5.0.0
 * Changed namespace from `Foolz\SphinxQL` to `OpenRegion\SphinxQL`
 * Added `quoteIdentifier` and `quoteIdentifierArray`
 * Fixed readme
