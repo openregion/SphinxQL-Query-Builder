@@ -3,12 +3,12 @@
     "type": "library",
     "description": "A PHP query builder for SphinxQL and ManticoreQL with MySQLi and PDO drivers.",
     "keywords": ["database", "sphinxql", "sphinx", "search", "SQL", "query builder"],
-    "homepage": "https://github.com/FoolCode/SphinxQL-Query-Builder",
+    "homepage": "https://github.com/openregion/SphinxQL-Query-Builder",
     "license": "Apache-2.0",
     "support": {
-        "issues": "https://github.com/FoolCode/SphinxQL-Query-Builder/issues",
-        "source": "https://github.com/FoolCode/SphinxQL-Query-Builder",
-        "docs": "https://github.com/FoolCode/SphinxQL-Query-Builder/tree/master/docs"
+        "issues": "https://github.com/openregion/SphinxQL-Query-Builder/issues",
+        "source": "https://github.com/openregion/SphinxQL-Query-Builder",
+        "docs": "https://github.com/openregion/SphinxQL-Query-Builder/tree/master/docs"
     },
     "authors": [
         {"name": "foolz", "email": "support@foolz.us"},

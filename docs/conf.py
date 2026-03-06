@@ -30,7 +30,7 @@ html_title = "SphinxQL Query Builder Documentation"
 html_static_path = ["_static"]
 html_css_files = ["custom.css"]
 html_theme_options = {
-    "source_repository": "https://github.com/FoolCode/SphinxQL-Query-Builder/",
+    "source_repository": "https://github.com/openregion/SphinxQL-Query-Builder/",
     "source_branch": "master",
     "source_directory": "docs/",
     "navigation_with_keys": True,

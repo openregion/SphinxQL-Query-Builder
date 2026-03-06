@@ -28,7 +28,7 @@
 * Added a root `LICENSE` file (closes #171)
 * Migrated CI to GitHub Actions-only validation with strict composer metadata checks
 * Hardened GitHub Actions reliability with SQL-readiness checks, full-history checkout for changed-line artifacts, and digest-pinned Buddy integration runtime image
-* Updated documentation and added a dedicated `MIGRATING-4.0.md` guide
+* Updated documentation and added a dedicated `MIGRATING-5.0.md` guide
 
 #### 3.0.2
 * Dropped support for PHP 7.3 and lower
