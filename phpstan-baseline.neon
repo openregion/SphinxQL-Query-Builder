@@ -2459,3 +2459,73 @@ parameters:
 			message: "#^Method OpenRegion\\\\SphinxQL\\\\Tests\\\\TestUtil\\:\\:pickColumns\\(\\) return type has no value type specified in iterable type array\\.$#"
 			count: 1
 			path: tests/SphinxQL/TestUtil.php
+
+		-
+			message: "#^Method OpenRegion\\\\SphinxQL\\\\Drivers\\\\ConnectionBase\\:\\:quoteIdentifierArray\\(\\) has parameter $array with no value type specified in iterable type array\\.$#"
+			count: 1
+			path: src/Drivers/ConnectionBase.php
+
+		-
+			message: "#^Method OpenRegion\\\\SphinxQL\\\\Drivers\\\\ConnectionBase\\:\\:quoteIdentifierArray(\\) return type has no value type specified in iterable type array\\.$#"
+			count: 1
+			path: src/Drivers/ConnectionBase.php
+
+		-
+			message: "#^Method OpenRegion\\\\SphinxQL\\\\Drivers\\\\ConnectionInterface\\:\\:quoteIdentifierArray(\\) has parameter $array with no value type specified in iterable type array\\.$#"
+			count: 1
+			path: src/Drivers/ConnectionInterface.php
+
+		-
+			message: "#^Method OpenRegion\\\\SphinxQL\\\\Drivers\\\\ConnectionInterface\\:\\:quoteIdentifierArray(\\) return type has no value type specified in iterable type array\\.$#"
+			count: 1
+			path: src/Drivers/ConnectionInterface.php
+
+		-
+			message: "#^PHPDoc tag @return with type int\\|OpenRegion\\\\SphinxQL\\\\Expression\\|string is not subtype of native type float\\|int\\|string\\.$#"
+			count: 1
+			path: src/Drivers/ConnectionInterface.php
+
+		-
+			message: "#^Parameter \\#1 \\$value of method OpenRegion\\\\SphinxQL\\\\Drivers\\\\ConnectionInterface\\:\\:quote(\\) expects array\\|bool\\|float\\|int\\|OpenRegion\\\\SphinxQL\\\\Expression\\|string\\|null, mixed given\\.$#"
+			count: 1
+			path: src/Helper.php
+
+		-
+			message: "#^Parameter \\#1 \\$value of method OpenRegion\\\\SphinxQL\\\\Drivers\\\\ConnectionInterface\\:\\:quote(\\) expects array\\|bool\\|float\\|int\\|OpenRegion\\\\SphinxQL\\\\Expression\\|string\\|null, mixed given\\.$#"
+			count: 1
+			path: src/Helper.php
+
+		-
+			message: "#^PHPDoc tag @param for parameter \\$keywords with type Closure\\|OpenRegion\\\\SphinxQL\\\\Match\\|string is not subtype of native type Closure\\|int\\|OpenRegion\\\\SphinxQL\\\\Expression\\|OpenRegion\\\\SphinxQL\\\\MatchBuilder\\|string\\.$#"
+			count: 1
+			path: src/MatchBuilder.php
+
+		-
+			message: "#^Parameter \\#1 $keywords of method OpenRegion\\\\SphinxQL\\\\MatchBuilder\\:\\:match(\\) expects Closure\\|OpenRegion\\\\SphinxQL\\\\Expression\\|OpenRegion\\\\SphinxQL\\\\MatchBuilder\\|string\\|null, Closure\\|int\\|OpenRegion\\\\SphinxQL\\\\Expression\\|OpenRegion\\\\SphinxQL\\\\MatchBuilder\\|string given\\.$#"
+			count: 1
+			path: src/MatchBuilder.php
+
+		-
+			message: "#^Cannot call method quoteIdentifierArray(\\) on OpenRegion\\\\SphinxQL\\\\Drivers\\\\ConnectionInterface\\|null\\.$#"
+			count: 1
+			path: src/SphinxQL.php
+
+		-
+			message: "#^Cannot call method quoteIdentifier(\\) on OpenRegion\\\\SphinxQL\\\\Drivers\\\\ConnectionInterface\\|null\\.$#"
+			count: 3
+			path: src/SphinxQL.php
+
+		-
+			message: "#^Method HelperProbeConnection\\:\\:quoteIdentifierArray(\\) has parameter $array with no value type specified in iterable type array\\.$#"
+			count: 1
+			path: tests/SphinxQL/HelperCapabilityProbeTest.php
+
+		-
+			message: "#^Method HelperProbeConnection\\:\\:quoteIdentifierArray(\\) return type has no value type specified in iterable type array\\.$#"
+			count: 1
+			path: tests/SphinxQL/HelperCapabilityProbeTest.php
+
+		-
+			message: "#^Cannot call method getStored(\\) on array\\|int\\|OpenRegion\\\\SphinxQL\\\\Drivers\\\\MultiResultSetInterface\\|OpenRegion\\\\SphinxQL\\\\Drivers\\\\ResultSetInterface\\|null\\.$#"
+			count: 1
+			path: tests/SphinxQL/SphinxQLTest.php
