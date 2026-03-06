@@ -2501,7 +2501,7 @@ parameters:
 			path: src/MatchBuilder.php
 
 		-
-			message: "#^Parameter \\#1 $keywords of method OpenRegion\\\\SphinxQL\\\\MatchBuilder\\:\\:match\\(\\) expects Closure\\|OpenRegion\\\\SphinxQL\\\\Expression\\|OpenRegion\\\\SphinxQL\\\\MatchBuilder\\|string\\|null, Closure\\|int\\|OpenRegion\\\\SphinxQL\\\\Expression\\|OpenRegion\\\\SphinxQL\\\\MatchBuilder\\|string given\\.$#"
+			message: "#^Parameter \\#1 \\$keywords of method OpenRegion\\\\SphinxQL\\\\MatchBuilder\\:\\:match\\(\\) expects Closure\\|OpenRegion\\\\SphinxQL\\\\Expression\\|OpenRegion\\\\SphinxQL\\\\MatchBuilder\\|string\\|null, Closure\\|int\\|OpenRegion\\\\SphinxQL\\\\Expression\\|OpenRegion\\\\SphinxQL\\\\MatchBuilder\\|string given\\.$#"
 			count: 1
 			path: src/MatchBuilder.php
 
