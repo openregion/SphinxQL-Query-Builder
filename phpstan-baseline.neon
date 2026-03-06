@@ -2461,7 +2461,7 @@ parameters:
 			path: tests/SphinxQL/TestUtil.php
 
 		-
-			message: "#^Method OpenRegion\\\\SphinxQL\\\\Drivers\\\\ConnectionBase\\:\\:quoteIdentifierArray\\(\\) has parameter $array with no value type specified in iterable type array\\.$#"
+			message: "#^Method OpenRegion\\\\SphinxQL\\\\Drivers\\\\ConnectionBase\\:\\:quoteIdentifierArray\\(\\) has parameter \\$array with no value type specified in iterable type array\\.$#"
 			count: 1
 			path: src/Drivers/ConnectionBase.php
 
@@ -2471,7 +2471,7 @@ parameters:
 			path: src/Drivers/ConnectionBase.php
 
 		-
-			message: "#^Method OpenRegion\\\\SphinxQL\\\\Drivers\\\\ConnectionInterface\\:\\:quoteIdentifierArray\\(\\) has parameter $array with no value type specified in iterable type array\\.$#"
+			message: "#^Method OpenRegion\\\\SphinxQL\\\\Drivers\\\\ConnectionInterface\\:\\:quoteIdentifierArray\\(\\) has parameter \\$array with no value type specified in iterable type array\\.$#"
 			count: 1
 			path: src/Drivers/ConnectionInterface.php
 
@@ -2516,7 +2516,7 @@ parameters:
 			path: src/SphinxQL.php
 
 		-
-			message: "#^Method HelperProbeConnection\\:\\:quoteIdentifierArray\\(\\) has parameter $array with no value type specified in iterable type array\\.$#"
+			message: "#^Method HelperProbeConnection\\:\\:quoteIdentifierArray\\(\\) has parameter \\$array with no value type specified in iterable type array\\.$#"
 			count: 1
 			path: tests/SphinxQL/HelperCapabilityProbeTest.php
 
