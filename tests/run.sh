@@ -1,5 +1,8 @@
 #!/bin/sh
 
+mkdir -p data
+rm -f data/rt.* data/binlog.*
+
 case $SEARCH_BUILD in
   SPHINX2)
     WORK=$HOME/search
@@ -7,9 +10,17 @@ case $SEARCH_BUILD in
     /usr/local/sphinx/bin/searchd -c sphinx.conf
     ;;
   SPHINX3)
-    WORK=$HOME/search/sphinx-3.0.3
-    gcc -shared -o data/test_udf.so $HOME/src/udfexample.c
-    $HOME/search/sphinx-3.0.3/bin/searchd -c sphinx.conf
+    WORK=$(find "$HOME/search" -maxdepth 1 -type d -name 'sphinx-3.*' | head -n 1)
+    if [ -z "$WORK" ] || [ ! -d "$WORK" ]; then
+      echo "Unable to find extracted SPHINX3 directory."
+      exit 1
+    fi
+    if [ ! -f "$WORK/src/sphinxudf.h" ]; then
+      echo "Unable to find sphinxudf.h for SPHINX3 build."
+      exit 1
+    fi
+    gcc -shared -I"$WORK/src" -o data/test_udf.so s3_test_udf.c
+    "$WORK/bin/searchd" -c sphinx.conf
     ;;
   MANTICORE)
     WORK=$HOME/search

@@ -148,4 +148,48 @@ class FacetTest  extends \PHPUnit\Framework\TestCase
 
         $this->assertEquals('FACET gid, title ORDER BY COUNT(*) DESC LIMIT 5, 5', $facet);
     }
+
+    public function testFacetRequiresColumns()
+    {
+        $this->expectException(OpenRegion\SphinxQL\Exception\SphinxQLException::class);
+        $this->createFacet()->facet();
+    }
+
+    public function testFacetRejectsInvalidDirection()
+    {
+        $this->expectException(OpenRegion\SphinxQL\Exception\SphinxQLException::class);
+        $this->createFacet()
+            ->facet(array('gid'))
+            ->orderBy('gid', 'sideways');
+    }
+
+    public function testFacetRejectsInvalidOrderByFunctionDirection()
+    {
+        $this->expectException(OpenRegion\SphinxQL\Exception\SphinxQLException::class);
+        $this->createFacet()
+            ->facet(array('gid'))
+            ->orderByFunction('COUNT', '*', 'sideways');
+    }
+
+    public function testFacetRejectsInvalidLimitAndOffset()
+    {
+        $this->expectException(OpenRegion\SphinxQL\Exception\SphinxQLException::class);
+        $this->createFacet()
+            ->facet(array('gid'))
+            ->limit(-1);
+    }
+
+    public function testFacetRejectsInvalidOffset()
+    {
+        $this->expectException(OpenRegion\SphinxQL\Exception\SphinxQLException::class);
+        $this->createFacet()
+            ->facet(array('gid'))
+            ->offset(-1);
+    }
+
+    public function testFacetFunctionRequiresParameters()
+    {
+        $this->expectException(OpenRegion\SphinxQL\Exception\SphinxQLException::class);
+        $this->createFacet()->facetFunction('COUNT');
+    }
 }

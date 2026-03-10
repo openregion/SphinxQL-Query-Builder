@@ -13,14 +13,14 @@ class Expression
      *
      * @var string
      */
-    protected $string;
+    protected string $string;
 
     /**
      * The constructor accepts the expression as string
      *
      * @param string $string The content to prevent being quoted
      */
-    public function __construct($string = '')
+    public function __construct(string $string = '')
     {
         $this->string = $string;
     }
@@ -30,9 +30,9 @@ class Expression
      *
      * @return string The unaltered content of the expression
      */
-    public function value()
+    public function value(): string
     {
-        return (string) $this->string;
+        return $this->string;
     }
 
     /**
@@ -40,7 +40,7 @@ class Expression
      *
      * @return string The unaltered content of the expression
      */
-    public function __toString()
+    public function __toString(): string
     {
         return $this->value();
     }

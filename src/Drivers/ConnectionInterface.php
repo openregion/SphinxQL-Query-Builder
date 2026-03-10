@@ -18,7 +18,7 @@ interface ConnectionInterface
      * @throws DatabaseException If the executed query produced an error
      * @throws ConnectionException
      */
-    public function query($query);
+    public function query(string $query): ResultSetInterface;
 
     /**
      * Performs multiple queries on the Sphinx server.
@@ -30,7 +30,7 @@ interface ConnectionInterface
      * @throws SphinxQLException In case the array passed is empty
      * @throws ConnectionException
      */
-    public function multiQuery(array $queue);
+    public function multiQuery(array $queue): MultiResultSetInterface;
 
     /**
      * Escapes the input
@@ -41,7 +41,7 @@ interface ConnectionInterface
      * @throws DatabaseException If an error was encountered during server-side escape
      * @throws ConnectionException
      */
-    public function escape($value);
+    public function escape(string $value): string;
 
     /**
      * Adds backtick quotes to the identifier.
@@ -73,7 +73,7 @@ interface ConnectionInterface
      * @throws DatabaseException
      * @throws ConnectionException
      */
-    public function quote($value);
+    public function quote(Expression|string|null|bool|array|int|float $value): string|int|float;
 
     /**
      * Calls $this->quote() on every element of the array passed.
@@ -84,5 +84,5 @@ interface ConnectionInterface
      * @throws DatabaseException
      * @throws ConnectionException
      */
-    public function quoteArr(array $array = array());
+    public function quoteArr(array $array = array()): array;
 }

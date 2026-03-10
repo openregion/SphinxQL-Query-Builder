@@ -40,50 +40,50 @@ class Percolate
     /**
      * @var ConnectionInterface
      */
-    protected $connection;
+    protected ConnectionInterface $connection;
 
     /**
      * Documents for CALL PQ
      *
      * @var array|string
      */
-    protected $documents;
+    protected array|string|null $documents = null;
 
     /**
      * Index name
      *
      * @var string
      */
-    protected $index;
+    protected ?string $index = null;
 
     /**
      * Insert query
      *
      * @var string
      */
-    protected $query;
+    protected ?string $query = null;
 
     /**
      * Options for CALL PQ
      * @var array
      */
-    protected $options = [self::OPTION_DOCS_JSON => 1];
+    protected array $options = array(self::OPTION_DOCS_JSON => 1);
 
     /**
      * @var string
      */
-    protected $filters = '';
+    protected string $filters = '';
 
     /**
      * Query type (call | insert)
      *
      * @var string
      */
-    protected $type = 'call';
+    protected string $type = 'call';
 
     /** INSERT STATEMENT  **/
 
-    protected $tags = [];
+    protected string $tags = '';
 
     /**
      * Throw exceptions flag.
@@ -91,11 +91,11 @@ class Percolate
      *
      * @var int
      */
-    protected $throwExceptions = 0;
+    protected int $throwExceptions = 0;
     /**
      * @var array
      */
-    protected $escapeChars = [
+    protected array $escapeChars = array(
         '\\' => '\\\\',
         '-' => '\\-',
         '~' => '\\~',
@@ -104,10 +104,10 @@ class Percolate
         "'" => "\\'",
         '/' => '\\/',
         '!' => '\\!'
-    ];
+    );
 
     /** @var SphinxQL */
-    protected $sphinxQL;
+    protected SphinxQL $sphinxQL;
 
     /**
      * CALL PQ option constants
@@ -131,15 +131,15 @@ class Percolate
     /**
      * Clear all fields after execute
      */
-    private function clear()
+    private function clear(): void
     {
         $this->documents = null;
         $this->index = null;
         $this->query = null;
-        $this->options = [self::OPTION_DOCS_JSON => 1];
+        $this->options = array(self::OPTION_DOCS_JSON => 1);
         $this->type = 'call';
         $this->filters = '';
-        $this->tags = [];
+        $this->tags = '';
     }
 
     /**
@@ -151,9 +151,9 @@ class Percolate
      * @return $this
      * @throws SphinxQLException
      */
-    public function from($index)
+    public function from($index): self
     {
-        if (empty($index)) {
+        if (!is_string($index) || trim($index) === '') {
             throw new SphinxQLException('Index can\'t be empty');
         }
 
@@ -170,9 +170,9 @@ class Percolate
      * @return $this
      * @throws SphinxQLException
      */
-    public function into($index)
+    public function into($index): self
     {
-        if (empty($index)) {
+        if (!is_string($index) || trim($index) === '') {
             throw new SphinxQLException('Index can\'t be empty');
         }
         $this->index = trim($index);
@@ -186,8 +186,12 @@ class Percolate
      *
      * @return string mixed
      */
-    protected function escapeString($query)
+    protected function escapeString(string $query): string
     {
+        if (!is_string($query)) {
+            throw new SphinxQLException('Expected string value.');
+        }
+
         return str_replace(
             array_keys($this->escapeChars),
             array_values($this->escapeChars),
@@ -199,11 +203,17 @@ class Percolate
      * @param $query
      * @return mixed
      */
-    protected function clearString($query)
+    protected function clearString(string $query): string
     {
+        if (!is_string($query)) {
+            throw new SphinxQLException('Expected string value.');
+        }
+
+        $replaceMap = array_merge($this->escapeChars, ['@' => '']);
+
         return str_replace(
-            array_keys(array_merge($this->escapeChars, ['@' => ''])),
-            ['', '', '', '', '', '', '', '', '', ''],
+            array_keys($replaceMap),
+            array_fill(0, count($replaceMap), ''),
             $query);
     }
 
@@ -214,12 +224,23 @@ class Percolate
      *
      * @return $this
      */
-    public function tags($tags)
+    public function tags($tags): self
     {
         if (is_array($tags)) {
+            if (count($tags) === 0) {
+                throw new SphinxQLException('Tags can\'t be empty');
+            }
+            foreach ($tags as $tag) {
+                if (!is_string($tag)) {
+                    throw new SphinxQLException('Tags array must contain strings only');
+                }
+            }
             $tags = array_map([$this, 'escapeString'], $tags);
             $tags = implode(',', $tags);
         } else {
+            if (!is_string($tags) || trim($tags) === '') {
+                throw new SphinxQLException('Tags can\'t be empty');
+            }
             $tags = $this->escapeString($tags);
         }
         $this->tags = $tags;
@@ -234,8 +255,11 @@ class Percolate
      *
      * @throws SphinxQLException
      */
-    public function filter($filter)
+    public function filter($filter): self
     {
+        if (!is_string($filter) || trim($filter) === '') {
+            throw new SphinxQLException('Filter can\'t be empty');
+        }
         $this->filters = $this->clearString($filter);
         return $this;
     }
@@ -249,11 +273,11 @@ class Percolate
      * @return $this
      * @throws SphinxQLException
      */
-    public function insert($query, $noEscape = false)
+    public function insert($query, $noEscape = false): self
     {
         $this->clear();
 
-        if (empty($query)) {
+        if (!is_string($query) || trim($query) === '') {
             throw new SphinxQLException('Query can\'t be empty');
         }
         if (!$noEscape) {
@@ -270,7 +294,7 @@ class Percolate
      *
      * @return array
      */
-    private function generateInsert()
+    private function generateInsert(): array
     {
         $insertArray = ['query' => $this->query];
 
@@ -293,7 +317,7 @@ class Percolate
      * @throws Exception\DatabaseException
      * @throws SphinxQLException
      */
-    public function execute()
+    public function execute(): \OpenRegion\SphinxQL\Drivers\ResultSetInterface
     {
 
         if ($this->type == 'insert') {
@@ -319,7 +343,7 @@ class Percolate
      * @return $this
      * @throws SphinxQLException
      */
-    private function setOption($key, $value)
+    private function setOption(string $key, int|string|bool $value): self
     {
         $value = intval($value);
         if (!in_array($key, [
@@ -350,9 +374,18 @@ class Percolate
      * @return $this
      * @throws SphinxQLException
      */
-    public function documents($documents)
+    public function documents($documents): self
     {
         if (empty($documents)) {
+            throw new SphinxQLException('Document can\'t be empty');
+        }
+        if (!is_string($documents) && !is_array($documents)) {
+            throw new SphinxQLException('Documents must be string or array');
+        }
+        if (is_string($documents) && trim($documents) === '') {
+            throw new SphinxQLException('Document can\'t be empty');
+        }
+        if (is_array($documents) && count($documents) === 0) {
             throw new SphinxQLException('Document can\'t be empty');
         }
         $this->documents = $documents;
@@ -367,7 +400,7 @@ class Percolate
      * @return $this
      * @throws SphinxQLException
      */
-    public function options(array $options)
+    public function options(array $options): self
     {
         foreach ($options as $option => $value) {
             $this->setOption($option, $value);
@@ -381,7 +414,7 @@ class Percolate
      *
      * @return string string
      */
-    protected function getOptions()
+    protected function getOptions(): string
     {
         $options = '';
         if (!empty($this->options)) {
@@ -398,7 +431,7 @@ class Percolate
      * @param array $arr
      * @return bool
      */
-    private function isAssocArray(array $arr)
+    private function isAssocArray(array $arr): bool
     {
         if (array() === $arr) {
             return false;
@@ -431,7 +464,7 @@ class Percolate
      * @return string
      * @throws SphinxQLException
      */
-    protected function getDocuments()
+    protected function getDocuments(): string
     {
         if (!empty($this->documents)) {
 
@@ -453,6 +486,13 @@ class Percolate
             }
 
             if (is_array($this->documents)) {
+                if (!array_key_exists(0, $this->documents)) {
+                    if ($this->isAssocArray($this->documents)) {
+                        $this->options[self::OPTION_DOCS_JSON] = 1;
+                        return $this->quoteString(json_encode($this->documents));
+                    }
+                    throw new SphinxQLException('Documents array must be associate');
+                }
 
                 // If input is phpArray with json like
                 // ->documents(['{"body": "body of doc 1", "title": "title of doc 1"}',
@@ -517,7 +557,7 @@ class Percolate
      *
      * @return $this
      */
-    public function callPQ()
+    public function callPQ(): self
     {
         $this->clear();
         $this->type = 'call';
@@ -534,7 +574,7 @@ class Percolate
      *
      * @return bool|string
      */
-    private function prepareFromJson($data)
+    private function prepareFromJson(array|string $data): string|false
     {
         if (is_array($data)) {
             if (is_array($data[0])) {
@@ -570,7 +610,7 @@ class Percolate
      * @param array $array
      * @return string
      */
-    private function convertArrayForQuery(array $array)
+    private function convertArrayForQuery(array $array): string
     {
         $documents = [];
         foreach ($array as $document) {
@@ -587,7 +627,7 @@ class Percolate
      * @param string $string
      * @return string
      */
-    private function quoteString($string)
+    private function quoteString(string $string): string
     {
         return '\'' . $string . '\'';
     }
@@ -598,7 +638,7 @@ class Percolate
      *
      * @return string
      */
-    public function getLastQuery()
+    public function getLastQuery(): ?string
     {
         return $this->sphinxQL->getCompiled();
     }

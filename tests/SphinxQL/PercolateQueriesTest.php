@@ -43,12 +43,19 @@ class PercolateQueriesTest extends \PHPUnit\Framework\TestCase
         }
 
         $percolate = new Percolate(self::$conn);
-        $percolate
+        $percolate = $percolate
             ->insert($query)
-            ->into($index)
-            ->tags($tags)
-            ->filter($filter)
-            ->execute();
+            ->into($index);
+
+        if ($tags !== null) {
+            $percolate->tags($tags);
+        }
+
+        if ($filter !== null) {
+            $percolate->filter($filter);
+        }
+
+        $percolate->execute();
 
         if (in_array($testNumber, [1, 4, 5, 6, 7, 8, 9, 11])) {
             $this->assertEquals($compiledQuery, $percolate->getLastQuery());
@@ -83,7 +90,7 @@ class PercolateQueriesTest extends \PHPUnit\Framework\TestCase
                 'pq',
                 null,
                 null,
-                "INSERT INTO pq (query) VALUES ('full text query terms')"
+                "INSERT INTO `pq` (query) VALUES ('full text query terms')"
             ],
 
             [
@@ -110,7 +117,7 @@ class PercolateQueriesTest extends \PHPUnit\Framework\TestCase
                 'pq',
                 null,
                 null,
-                'INSERT INTO pq (query) VALUES (\'@doc (text) \\\\\\\' ^ $ \\\\\\" | \\\\! \\\\~ \\\\/ = >\\\\< & \\\\- \\\\\\\\query terms\')'
+                'INSERT INTO `pq` (query) VALUES (\'@doc (text) \\\\\\\' ^ $ \\\\\\" | \\\\! \\\\~ \\\\/ = >\\\\< & \\\\- \\\\\\\\query terms\')'
             ],
 
             [
@@ -119,7 +126,7 @@ class PercolateQueriesTest extends \PHPUnit\Framework\TestCase
                 'pq',
                 'tag2,tag3',
                 'price>3',
-                "INSERT INTO pq (query, tags, filters) VALUES ('@subject match by field', 'tag2,tag3', 'price>3')"
+                "INSERT INTO `pq` (query, tags, filters) VALUES ('@subject match by field', 'tag2,tag3', 'price>3')"
             ],
 
             [
@@ -128,7 +135,7 @@ class PercolateQueriesTest extends \PHPUnit\Framework\TestCase
                 'pq',
                 ['tag2', 'tag3'],
                 null,
-                "INSERT INTO pq (query, tags) VALUES ('@subject orange', 'tag2,tag3')"
+                "INSERT INTO `pq` (query, tags) VALUES ('@subject orange', 'tag2,tag3')"
             ],
 
             [
@@ -137,7 +144,7 @@ class PercolateQueriesTest extends \PHPUnit\Framework\TestCase
                 'pq',
                 '@doc (text) \' ^ $ " | ! ~ / = >< & - \query terms',
                 null,
-                'INSERT INTO pq (query, tags) VALUES (\'@subject orange\', \'@doc (text) \\\\\\\' ^ $ \\\\\" | \\\\! \\\\~ \\\\/ = >\\\\< & \\\\- \\\\\\\\query terms\')'
+                'INSERT INTO `pq` (query, tags) VALUES (\'@subject orange\', \'@doc (text) \\\\\\\' ^ $ \\\\\" | \\\\! \\\\~ \\\\/ = >\\\\< & \\\\- \\\\\\\\query terms\')'
             ],
 
             [
@@ -146,7 +153,7 @@ class PercolateQueriesTest extends \PHPUnit\Framework\TestCase
                 'pq',
                 null,
                 'price>3',
-                'INSERT INTO pq (query, filters) VALUES (\'catch me\', \'price>3\')'
+                'INSERT INTO `pq` (query, filters) VALUES (\'catch me\', \'price>3\')'
             ],
 
             [
@@ -155,7 +162,7 @@ class PercolateQueriesTest extends \PHPUnit\Framework\TestCase
                 'pq',
                 null,
                 'p\@r\'ice>3',
-                'INSERT INTO pq (query, filters) VALUES (\'catch me if can\', \'price>3\')'
+                'INSERT INTO `pq` (query, filters) VALUES (\'catch me if can\', \'price>3\')'
             ],
 
             [
@@ -164,7 +171,7 @@ class PercolateQueriesTest extends \PHPUnit\Framework\TestCase
                 'pq',
                 ['tag2', 'tag3'],
                 'price>3',
-                "INSERT INTO pq (query, tags, filters) VALUES ('orange|apple|cherry', 'tag2,tag3', 'price>3')"
+                "INSERT INTO `pq` (query, tags, filters) VALUES ('orange|apple|cherry', 'tag2,tag3', 'price>3')"
             ],
         ];
     }

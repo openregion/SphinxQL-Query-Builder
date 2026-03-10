@@ -10,6 +10,8 @@
 /vendor/
 /composer.lock
 
+.phpstan/
+
 tests/searchd.log
 tests/searchd.pid
 tests/data/rt.*

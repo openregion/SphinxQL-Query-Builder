@@ -11,12 +11,12 @@ class ResultSetAdapter implements ResultSetAdapterInterface
     /**
      * @var PDOStatement
      */
-    protected $statement;
+    protected PDOStatement $statement;
 
     /**
      * @var bool
      */
-    protected $valid = true;
+    protected bool $valid = true;
 
     /**
      * @param PDOStatement $statement
@@ -29,7 +29,7 @@ class ResultSetAdapter implements ResultSetAdapterInterface
     /**
      * @inheritdoc
      */
-    public function getAffectedRows()
+    public function getAffectedRows(): int
     {
         return $this->statement->rowCount();
     }
@@ -37,7 +37,7 @@ class ResultSetAdapter implements ResultSetAdapterInterface
     /**
      * @inheritdoc
      */
-    public function getNumRows()
+    public function getNumRows(): int
     {
         return $this->statement->rowCount();
     }
@@ -45,7 +45,7 @@ class ResultSetAdapter implements ResultSetAdapterInterface
     /**
      * @inheritdoc
      */
-    public function getFields()
+    public function getFields(): array
     {
         $fields = array();
 
@@ -59,23 +59,23 @@ class ResultSetAdapter implements ResultSetAdapterInterface
     /**
      * @inheritdoc
      */
-    public function isDml()
+    public function isDml(): bool
     {
-        return $this->statement->columnCount() == 0;
+        return $this->statement->columnCount() === 0;
     }
 
     /**
      * @inheritdoc
      */
-    public function store()
+    public function store(): array
     {
-        return $this->statement->fetchAll(PDO::FETCH_NUM);
+        return $this->normalizeRows($this->statement->fetchAll(PDO::FETCH_NUM));
     }
 
     /**
      * @inheritdoc
      */
-    public function toRow($num)
+    public function toRow(int $num): void
     {
         throw new \BadMethodCallException('Not implemented');
     }
@@ -83,7 +83,7 @@ class ResultSetAdapter implements ResultSetAdapterInterface
     /**
      * @inheritdoc
      */
-    public function freeResult()
+    public function freeResult(): void
     {
         $this->statement->closeCursor();
     }
@@ -91,7 +91,7 @@ class ResultSetAdapter implements ResultSetAdapterInterface
     /**
      * @inheritdoc
      */
-    public function rewind()
+    public function rewind(): void
     {
 
     }
@@ -99,7 +99,7 @@ class ResultSetAdapter implements ResultSetAdapterInterface
     /**
      * @inheritdoc
      */
-    public function valid()
+    public function valid(): bool
     {
         return $this->valid;
     }
@@ -107,7 +107,7 @@ class ResultSetAdapter implements ResultSetAdapterInterface
     /**
      * @inheritdoc
      */
-    public function fetch($assoc = true)
+    public function fetch(bool $assoc = true): ?array
     {
         if ($assoc) {
             $row = $this->statement->fetch(PDO::FETCH_ASSOC);
@@ -118,6 +118,8 @@ class ResultSetAdapter implements ResultSetAdapterInterface
         if (!$row) {
             $this->valid = false;
             $row = null;
+        } else {
+            $row = $this->normalizeRow($row);
         }
 
         return $row;
@@ -126,7 +128,7 @@ class ResultSetAdapter implements ResultSetAdapterInterface
     /**
      * @inheritdoc
      */
-    public function fetchAll($assoc = true)
+    public function fetchAll(bool $assoc = true): array
     {
         if ($assoc) {
             $row = $this->statement->fetchAll(PDO::FETCH_ASSOC);
@@ -138,6 +140,39 @@ class ResultSetAdapter implements ResultSetAdapterInterface
             $this->valid = false;
         }
 
+        return $this->normalizeRows($row);
+    }
+
+    /**
+     * Cast scalar non-string values to string to keep PDO and MySQLi
+     * result typing aligned across PHP versions.
+     *
+     * @param array $row
+     * @return array
+     */
+    protected function normalizeRow(array $row): array
+    {
+        foreach ($row as $key => $value) {
+            if (is_bool($value)) {
+                $row[$key] = $value ? '1' : '0';
+            } elseif (is_scalar($value) && !is_string($value)) {
+                $row[$key] = (string) $value;
+            }
+        }
+
         return $row;
+    }
+
+    /**
+     * @param array $rows
+     * @return array
+     */
+    protected function normalizeRows(array $rows): array
+    {
+        foreach ($rows as $index => $row) {
+            $rows[$index] = $this->normalizeRow($row);
+        }
+
+        return $rows;
     }
 }
