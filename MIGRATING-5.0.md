@@ -1,6 +1,6 @@
-# Migrating to 4.0
+# Migrating to 5.0
 
-This guide covers migration from the 3.x line to the 4.0 line.
+This guide covers migration from the 4.x line to the 5.0 line.
 
 ## Baseline Requirements
 
@@ -9,8 +9,8 @@ This guide covers migration from the 3.x line to the 4.0 line.
 
 ## Major Behavioral Changes
 
-4.0 introduces strict runtime validation for query builder and helper input.
-Invalid query-shape arguments now fail fast with `Foolz\SphinxQL\Exception\SphinxQLException`.
+5.0 introduces strict runtime validation for query builder and helper input.
+Invalid query-shape arguments now fail fast with `OpenRegion\SphinxQL\Exception\SphinxQLException`.
 
 ### SphinxQL builder strict validation
 

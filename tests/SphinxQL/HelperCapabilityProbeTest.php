@@ -1,8 +1,8 @@
 <?php
 
-use Foolz\SphinxQL\Drivers\ConnectionInterface;
-use Foolz\SphinxQL\Expression;
-use Foolz\SphinxQL\Helper;
+use OpenRegion\OpenRegionSphinxQL\Drivers\ConnectionInterface;
+use OpenRegion\SphinxQL\Expression;
+use OpenRegion\SphinxQL\Helper;
 
 class HelperCapabilityProbeTest extends \PHPUnit\Framework\TestCase
 {
@@ -71,7 +71,7 @@ class HelperProbeConnection implements ConnectionInterface
         $this->responses = $responses;
     }
 
-    public function query(string $query): \Foolz\SphinxQL\Drivers\ResultSetInterface
+    public function query(string $query): \OpenRegion\SphinxQL\Drivers\ResultSetInterface
     {
         $this->queries[] = $query;
 
@@ -90,7 +90,7 @@ class HelperProbeConnection implements ConnectionInterface
         return new HelperProbeResultSet($response);
     }
 
-    public function multiQuery(array $queue): \Foolz\SphinxQL\Drivers\MultiResultSetInterface
+    public function multiQuery(array $queue): \OpenRegion\SphinxQL\Drivers\MultiResultSetInterface
     {
         throw new \BadMethodCallException('Not implemented in test double.');
     }
@@ -132,7 +132,7 @@ class HelperProbeConnection implements ConnectionInterface
     }
 }
 
-class HelperProbeResultSet implements \Foolz\SphinxQL\Drivers\ResultSetInterface
+class HelperProbeResultSet implements \OpenRegion\SphinxQL\Drivers\ResultSetInterface
 {
     /**
      * @var mixed

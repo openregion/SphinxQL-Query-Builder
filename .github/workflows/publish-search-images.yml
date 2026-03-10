@@ -57,7 +57,7 @@ jobs:
           file: ${{ matrix.dockerfile }}
           push: true
           tags: |
-            ghcr.io/foolcode/sphinxql-query-builder-search-${{ matrix.target }}:${{ matrix.target }}-${{ matrix.version }}
-            ghcr.io/foolcode/sphinxql-query-builder-search-${{ matrix.target }}:${{ matrix.target }}-latest
+            ghcr.io/openregion/sphinxql-query-builder-search-${{ matrix.target }}:${{ matrix.target }}-${{ matrix.version }}
+            ghcr.io/openregion/sphinxql-query-builder-search-${{ matrix.target }}:${{ matrix.target }}-latest
           cache-from: type=gha
           cache-to: type=gha,mode=max

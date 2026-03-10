@@ -12,8 +12,8 @@ Standalone Build
 
     <?php
 
-    use Foolz\SphinxQL\MatchBuilder;
-    use Foolz\SphinxQL\SphinxQL;
+    use OpenRegion\SphinxQL\MatchBuilder;
+    use OpenRegion\SphinxQL\SphinxQL;
 
     $sq = new SphinxQL($conn);
 
@@ -62,7 +62,7 @@ Raw expression bypass:
 
 .. code-block:: php
 
-    use Foolz\SphinxQL\SphinxQL;
+    use OpenRegion\SphinxQL\SphinxQL;
 
     $expr = (new MatchBuilder($sq))
         ->match(SphinxQL::expr('test|case'))

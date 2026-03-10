@@ -61,17 +61,17 @@ jobs:
           SEARCH_DOCKERFILE=""
           case "$SEARCH_BUILD" in
             SPHINX2)
-              SEARCH_IMAGE="ghcr.io/foolcode/sphinxql-query-builder-search-sphinx2:sphinx2-latest"
+              SEARCH_IMAGE="ghcr.io/openregion/sphinxql-query-builder-search-sphinx2:sphinx2-latest"
               SEARCH_DOCKERFILE="docker/search/sphinx2/Dockerfile"
               EXCLUDE_GROUP="--exclude-group=Manticore"
               ;;
             SPHINX3)
-              SEARCH_IMAGE="ghcr.io/foolcode/sphinxql-query-builder-search-sphinx3:sphinx3-latest"
+              SEARCH_IMAGE="ghcr.io/openregion/sphinxql-query-builder-search-sphinx3:sphinx3-latest"
               SEARCH_DOCKERFILE="docker/search/sphinx3/Dockerfile"
               EXCLUDE_GROUP="--exclude-group=Manticore"
               ;;
             MANTICORE)
-              SEARCH_IMAGE="ghcr.io/foolcode/sphinxql-query-builder-search-manticore:manticore-latest"
+              SEARCH_IMAGE="ghcr.io/openregion/sphinxql-query-builder-search-manticore:manticore-latest"
               SEARCH_DOCKERFILE="docker/search/manticore/Dockerfile"
               ;;
             *)

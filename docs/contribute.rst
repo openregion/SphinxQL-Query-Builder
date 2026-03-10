@@ -6,7 +6,7 @@ Thanks for improving SphinxQL Query Builder.
 Pull Requests
 -------------
 
-1. Fork `SphinxQL Query Builder <https://github.com/FoolCode/SphinxQL-Query-Builder>`_.
+1. Fork `SphinxQL Query Builder <https://github.com/openregion/SphinxQL-Query-Builder>`_.
 2. Create a branch for your change.
 3. Open a pull request against the default branch.
 
@@ -42,4 +42,4 @@ Issue Tracker
 -------------
 
 Use the GitHub issue tracker:
-`github.com/FoolCode/SphinxQL-Query-Builder/issues <https://github.com/FoolCode/SphinxQL-Query-Builder/issues>`_.
+`github.com/openregion/SphinxQL-Query-Builder/issues <https://github.com/openregion/SphinxQL-Query-Builder/issues>`_.

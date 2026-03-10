@@ -151,13 +151,13 @@ class FacetTest  extends \PHPUnit\Framework\TestCase
 
     public function testFacetRequiresColumns()
     {
-        $this->expectException(Foolz\SphinxQL\Exception\SphinxQLException::class);
+        $this->expectException(OpenRegion\SphinxQL\Exception\SphinxQLException::class);
         $this->createFacet()->facet();
     }
 
     public function testFacetRejectsInvalidDirection()
     {
-        $this->expectException(Foolz\SphinxQL\Exception\SphinxQLException::class);
+        $this->expectException(OpenRegion\SphinxQL\Exception\SphinxQLException::class);
         $this->createFacet()
             ->facet(array('gid'))
             ->orderBy('gid', 'sideways');
@@ -165,7 +165,7 @@ class FacetTest  extends \PHPUnit\Framework\TestCase
 
     public function testFacetRejectsInvalidOrderByFunctionDirection()
     {
-        $this->expectException(Foolz\SphinxQL\Exception\SphinxQLException::class);
+        $this->expectException(OpenRegion\SphinxQL\Exception\SphinxQLException::class);
         $this->createFacet()
             ->facet(array('gid'))
             ->orderByFunction('COUNT', '*', 'sideways');
@@ -173,7 +173,7 @@ class FacetTest  extends \PHPUnit\Framework\TestCase
 
     public function testFacetRejectsInvalidLimitAndOffset()
     {
-        $this->expectException(Foolz\SphinxQL\Exception\SphinxQLException::class);
+        $this->expectException(OpenRegion\SphinxQL\Exception\SphinxQLException::class);
         $this->createFacet()
             ->facet(array('gid'))
             ->limit(-1);
@@ -181,7 +181,7 @@ class FacetTest  extends \PHPUnit\Framework\TestCase
 
     public function testFacetRejectsInvalidOffset()
     {
-        $this->expectException(Foolz\SphinxQL\Exception\SphinxQLException::class);
+        $this->expectException(OpenRegion\SphinxQL\Exception\SphinxQLException::class);
         $this->createFacet()
             ->facet(array('gid'))
             ->offset(-1);
@@ -189,7 +189,7 @@ class FacetTest  extends \PHPUnit\Framework\TestCase
 
     public function testFacetFunctionRequiresParameters()
     {
-        $this->expectException(Foolz\SphinxQL\Exception\SphinxQLException::class);
+        $this->expectException(OpenRegion\SphinxQL\Exception\SphinxQLException::class);
         $this->createFacet()->facetFunction('COUNT');
     }
 }

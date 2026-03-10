@@ -1,57 +1,57 @@
 parameters:
 	ignoreErrors:
 		-
-			message: "#^Method Foolz\\\\SphinxQL\\\\Drivers\\\\ConnectionBase\\:\\:getParams\\(\\) return type has no value type specified in iterable type array\\.$#"
+			message: "#^Method OpenRegion\\\\SphinxQL\\\\Drivers\\\\ConnectionBase\\:\\:getParams\\(\\) return type has no value type specified in iterable type array\\.$#"
 			count: 1
 			path: src/Drivers/ConnectionBase.php
 
 		-
-			message: "#^Method Foolz\\\\SphinxQL\\\\Drivers\\\\ConnectionBase\\:\\:quote\\(\\) has parameter \\$value with no value type specified in iterable type array\\.$#"
+			message: "#^Method OpenRegion\\\\SphinxQL\\\\Drivers\\\\ConnectionBase\\:\\:quote\\(\\) has parameter \\$value with no value type specified in iterable type array\\.$#"
 			count: 1
 			path: src/Drivers/ConnectionBase.php
 
 		-
-			message: "#^Method Foolz\\\\SphinxQL\\\\Drivers\\\\ConnectionBase\\:\\:quoteArr\\(\\) has parameter \\$array with no value type specified in iterable type array\\.$#"
+			message: "#^Method OpenRegion\\\\SphinxQL\\\\Drivers\\\\ConnectionBase\\:\\:quoteArr\\(\\) has parameter \\$array with no value type specified in iterable type array\\.$#"
 			count: 1
 			path: src/Drivers/ConnectionBase.php
 
 		-
-			message: "#^Method Foolz\\\\SphinxQL\\\\Drivers\\\\ConnectionBase\\:\\:quoteArr\\(\\) return type has no value type specified in iterable type array\\.$#"
+			message: "#^Method OpenRegion\\\\SphinxQL\\\\Drivers\\\\ConnectionBase\\:\\:quoteArr\\(\\) return type has no value type specified in iterable type array\\.$#"
 			count: 1
 			path: src/Drivers/ConnectionBase.php
 
 		-
-			message: "#^Method Foolz\\\\SphinxQL\\\\Drivers\\\\ConnectionBase\\:\\:setParams\\(\\) has parameter \\$params with no value type specified in iterable type array\\.$#"
+			message: "#^Method OpenRegion\\\\SphinxQL\\\\Drivers\\\\ConnectionBase\\:\\:setParams\\(\\) has parameter \\$params with no value type specified in iterable type array\\.$#"
 			count: 1
 			path: src/Drivers/ConnectionBase.php
 
 		-
-			message: "#^Property Foolz\\\\SphinxQL\\\\Drivers\\\\ConnectionBase\\:\\:\\$connection_params type has no value type specified in iterable type array\\.$#"
+			message: "#^Property OpenRegion\\\\SphinxQL\\\\Drivers\\\\ConnectionBase\\:\\:\\$connection_params type has no value type specified in iterable type array\\.$#"
 			count: 1
 			path: src/Drivers/ConnectionBase.php
 
 		-
-			message: "#^Method Foolz\\\\SphinxQL\\\\Drivers\\\\ConnectionInterface\\:\\:multiQuery\\(\\) has parameter \\$queue with no value type specified in iterable type array\\.$#"
+			message: "#^Method OpenRegion\\\\SphinxQL\\\\Drivers\\\\ConnectionInterface\\:\\:multiQuery\\(\\) has parameter \\$queue with no value type specified in iterable type array\\.$#"
 			count: 1
 			path: src/Drivers/ConnectionInterface.php
 
 		-
-			message: "#^Method Foolz\\\\SphinxQL\\\\Drivers\\\\ConnectionInterface\\:\\:quote\\(\\) has parameter \\$value with no value type specified in iterable type array\\.$#"
+			message: "#^Method OpenRegion\\\\SphinxQL\\\\Drivers\\\\ConnectionInterface\\:\\:quote\\(\\) has parameter \\$value with no value type specified in iterable type array\\.$#"
 			count: 1
 			path: src/Drivers/ConnectionInterface.php
 
 		-
-			message: "#^Method Foolz\\\\SphinxQL\\\\Drivers\\\\ConnectionInterface\\:\\:quoteArr\\(\\) has parameter \\$array with no value type specified in iterable type array\\.$#"
+			message: "#^Method OpenRegion\\\\SphinxQL\\\\Drivers\\\\ConnectionInterface\\:\\:quoteArr\\(\\) has parameter \\$array with no value type specified in iterable type array\\.$#"
 			count: 1
 			path: src/Drivers/ConnectionInterface.php
 
 		-
-			message: "#^Method Foolz\\\\SphinxQL\\\\Drivers\\\\ConnectionInterface\\:\\:quoteArr\\(\\) return type has no value type specified in iterable type array\\.$#"
+			message: "#^Method OpenRegion\\\\SphinxQL\\\\Drivers\\\\ConnectionInterface\\:\\:quoteArr\\(\\) return type has no value type specified in iterable type array\\.$#"
 			count: 1
 			path: src/Drivers/ConnectionInterface.php
 
 		-
-			message: "#^PHPDoc tag @return with type Foolz\\\\SphinxQL\\\\Expression\\|int\\|string is not subtype of native type float\\|int\\|string\\.$#"
+			message: "#^PHPDoc tag @return with type OpenRegion\\\\SphinxQL\\\\Expression\\|int\\|string is not subtype of native type float\\|int\\|string\\.$#"
 			count: 1
 			path: src/Drivers/ConnectionInterface.php
 
@@ -66,17 +66,17 @@ parameters:
 			path: src/Drivers/MultiResultSet.php
 
 		-
-			message: "#^Property Foolz\\\\SphinxQL\\\\Drivers\\\\MultiResultSet\\:\\:\\$stored type has no value type specified in iterable type array\\.$#"
+			message: "#^Property OpenRegion\\\\SphinxQL\\\\Drivers\\\\MultiResultSet\\:\\:\\$stored type has no value type specified in iterable type array\\.$#"
 			count: 1
 			path: src/Drivers/MultiResultSet.php
 
 		-
-			message: "#^Interface Foolz\\\\SphinxQL\\\\Drivers\\\\MultiResultSetInterface extends generic interface ArrayAccess but does not specify its types\\: TKey, TValue$#"
+			message: "#^Interface OpenRegion\\\\SphinxQL\\\\Drivers\\\\MultiResultSetInterface extends generic interface ArrayAccess but does not specify its types\\: TKey, TValue$#"
 			count: 1
 			path: src/Drivers/MultiResultSetInterface.php
 
 		-
-			message: "#^Interface Foolz\\\\SphinxQL\\\\Drivers\\\\MultiResultSetInterface extends generic interface Iterator but does not specify its types\\: TKey, TValue$#"
+			message: "#^Interface OpenRegion\\\\SphinxQL\\\\Drivers\\\\MultiResultSetInterface extends generic interface Iterator but does not specify its types\\: TKey, TValue$#"
 			count: 1
 			path: src/Drivers/MultiResultSetInterface.php
 
@@ -136,7 +136,7 @@ parameters:
 			path: src/Drivers/Mysqli/Connection.php
 
 		-
-			message: "#^Method Foolz\\\\SphinxQL\\\\Drivers\\\\Mysqli\\\\Connection\\:\\:multiQuery\\(\\) has parameter \\$queue with no value type specified in iterable type array\\.$#"
+			message: "#^Method OpenRegion\\\\SphinxQL\\\\Drivers\\\\Mysqli\\\\Connection\\:\\:multiQuery\\(\\) has parameter \\$queue with no value type specified in iterable type array\\.$#"
 			count: 1
 			path: src/Drivers/Mysqli/Connection.php
 
@@ -146,12 +146,12 @@ parameters:
 			path: src/Drivers/Mysqli/Connection.php
 
 		-
-			message: "#^Parameter \\#2 \\$result of class Foolz\\\\SphinxQL\\\\Drivers\\\\Mysqli\\\\ResultSetAdapter constructor expects bool\\|mysqli_result, bool\\|mysqli_result\\|PDOStatement given\\.$#"
+			message: "#^Parameter \\#2 \\$result of class OpenRegion\\\\SphinxQL\\\\Drivers\\\\Mysqli\\\\ResultSetAdapter constructor expects bool\\|mysqli_result, bool\\|mysqli_result\\|PDOStatement given\\.$#"
 			count: 1
 			path: src/Drivers/Mysqli/Connection.php
 
 		-
-			message: "#^Property Foolz\\\\SphinxQL\\\\Drivers\\\\ConnectionBase\\:\\:\\$connection \\(mysqli\\|PDO\\|null\\) does not accept mysqli\\|false\\.$#"
+			message: "#^Property OpenRegion\\\\SphinxQL\\\\Drivers\\\\ConnectionBase\\:\\:\\$connection \\(mysqli\\|PDO\\|null\\) does not accept mysqli\\|false\\.$#"
 			count: 1
 			path: src/Drivers/Mysqli/Connection.php
 
@@ -221,32 +221,32 @@ parameters:
 			path: src/Drivers/Mysqli/ResultSetAdapter.php
 
 		-
-			message: "#^Method Foolz\\\\SphinxQL\\\\Drivers\\\\Mysqli\\\\ResultSetAdapter\\:\\:fetch\\(\\) return type has no value type specified in iterable type array\\.$#"
+			message: "#^Method OpenRegion\\\\SphinxQL\\\\Drivers\\\\Mysqli\\\\ResultSetAdapter\\:\\:fetch\\(\\) return type has no value type specified in iterable type array\\.$#"
 			count: 1
 			path: src/Drivers/Mysqli/ResultSetAdapter.php
 
 		-
-			message: "#^Method Foolz\\\\SphinxQL\\\\Drivers\\\\Mysqli\\\\ResultSetAdapter\\:\\:fetchAll\\(\\) return type has no value type specified in iterable type array\\.$#"
+			message: "#^Method OpenRegion\\\\SphinxQL\\\\Drivers\\\\Mysqli\\\\ResultSetAdapter\\:\\:fetchAll\\(\\) return type has no value type specified in iterable type array\\.$#"
 			count: 1
 			path: src/Drivers/Mysqli/ResultSetAdapter.php
 
 		-
-			message: "#^Method Foolz\\\\SphinxQL\\\\Drivers\\\\Mysqli\\\\ResultSetAdapter\\:\\:getAffectedRows\\(\\) should return int but returns int\\<\\-1, max\\>\\|string\\.$#"
+			message: "#^Method OpenRegion\\\\SphinxQL\\\\Drivers\\\\Mysqli\\\\ResultSetAdapter\\:\\:getAffectedRows\\(\\) should return int but returns int\\<\\-1, max\\>\\|string\\.$#"
 			count: 1
 			path: src/Drivers/Mysqli/ResultSetAdapter.php
 
 		-
-			message: "#^Method Foolz\\\\SphinxQL\\\\Drivers\\\\Mysqli\\\\ResultSetAdapter\\:\\:getFields\\(\\) return type has no value type specified in iterable type array\\.$#"
+			message: "#^Method OpenRegion\\\\SphinxQL\\\\Drivers\\\\Mysqli\\\\ResultSetAdapter\\:\\:getFields\\(\\) return type has no value type specified in iterable type array\\.$#"
 			count: 1
 			path: src/Drivers/Mysqli/ResultSetAdapter.php
 
 		-
-			message: "#^Method Foolz\\\\SphinxQL\\\\Drivers\\\\Mysqli\\\\ResultSetAdapter\\:\\:getNumRows\\(\\) should return int but returns int\\<0, max\\>\\|string\\.$#"
+			message: "#^Method OpenRegion\\\\SphinxQL\\\\Drivers\\\\Mysqli\\\\ResultSetAdapter\\:\\:getNumRows\\(\\) should return int but returns int\\<0, max\\>\\|string\\.$#"
 			count: 1
 			path: src/Drivers/Mysqli/ResultSetAdapter.php
 
 		-
-			message: "#^Method Foolz\\\\SphinxQL\\\\Drivers\\\\Mysqli\\\\ResultSetAdapter\\:\\:store\\(\\) return type has no value type specified in iterable type array\\.$#"
+			message: "#^Method OpenRegion\\\\SphinxQL\\\\Drivers\\\\Mysqli\\\\ResultSetAdapter\\:\\:store\\(\\) return type has no value type specified in iterable type array\\.$#"
 			count: 1
 			path: src/Drivers/Mysqli/ResultSetAdapter.php
 
@@ -276,117 +276,117 @@ parameters:
 			path: src/Drivers/Pdo/Connection.php
 
 		-
-			message: "#^Method Foolz\\\\SphinxQL\\\\Drivers\\\\Pdo\\\\Connection\\:\\:multiQuery\\(\\) has parameter \\$queue with no value type specified in iterable type array\\.$#"
+			message: "#^Method OpenRegion\\\\SphinxQL\\\\Drivers\\\\Pdo\\\\Connection\\:\\:multiQuery\\(\\) has parameter \\$queue with no value type specified in iterable type array\\.$#"
 			count: 1
 			path: src/Drivers/Pdo/Connection.php
 
 		-
-			message: "#^Parameter \\#1 \\$statement of class Foolz\\\\SphinxQL\\\\Drivers\\\\Pdo\\\\MultiResultSetAdapter constructor expects PDOStatement, bool\\|mysqli_result\\|PDOStatement given\\.$#"
+			message: "#^Parameter \\#1 \\$statement of class OpenRegion\\\\SphinxQL\\\\Drivers\\\\Pdo\\\\MultiResultSetAdapter constructor expects PDOStatement, bool\\|mysqli_result\\|PDOStatement given\\.$#"
 			count: 1
 			path: src/Drivers/Pdo/Connection.php
 
 		-
-			message: "#^Parameter \\#1 \\$statement of class Foolz\\\\SphinxQL\\\\Drivers\\\\Pdo\\\\ResultSetAdapter constructor expects PDOStatement, mysqli_stmt\\|PDOStatement\\|false given\\.$#"
+			message: "#^Parameter \\#1 \\$statement of class OpenRegion\\\\SphinxQL\\\\Drivers\\\\Pdo\\\\ResultSetAdapter constructor expects PDOStatement, mysqli_stmt\\|PDOStatement\\|false given\\.$#"
 			count: 1
 			path: src/Drivers/Pdo/Connection.php
 
 		-
-			message: "#^Method Foolz\\\\SphinxQL\\\\Drivers\\\\Pdo\\\\ResultSetAdapter\\:\\:fetch\\(\\) return type has no value type specified in iterable type array\\.$#"
+			message: "#^Method OpenRegion\\\\SphinxQL\\\\Drivers\\\\Pdo\\\\ResultSetAdapter\\:\\:fetch\\(\\) return type has no value type specified in iterable type array\\.$#"
 			count: 1
 			path: src/Drivers/Pdo/ResultSetAdapter.php
 
 		-
-			message: "#^Method Foolz\\\\SphinxQL\\\\Drivers\\\\Pdo\\\\ResultSetAdapter\\:\\:fetchAll\\(\\) return type has no value type specified in iterable type array\\.$#"
+			message: "#^Method OpenRegion\\\\SphinxQL\\\\Drivers\\\\Pdo\\\\ResultSetAdapter\\:\\:fetchAll\\(\\) return type has no value type specified in iterable type array\\.$#"
 			count: 1
 			path: src/Drivers/Pdo/ResultSetAdapter.php
 
 		-
-			message: "#^Method Foolz\\\\SphinxQL\\\\Drivers\\\\Pdo\\\\ResultSetAdapter\\:\\:getFields\\(\\) return type has no value type specified in iterable type array\\.$#"
+			message: "#^Method OpenRegion\\\\SphinxQL\\\\Drivers\\\\Pdo\\\\ResultSetAdapter\\:\\:getFields\\(\\) return type has no value type specified in iterable type array\\.$#"
 			count: 1
 			path: src/Drivers/Pdo/ResultSetAdapter.php
 
 		-
-			message: "#^Method Foolz\\\\SphinxQL\\\\Drivers\\\\Pdo\\\\ResultSetAdapter\\:\\:normalizeRow\\(\\) has parameter \\$row with no value type specified in iterable type array\\.$#"
+			message: "#^Method OpenRegion\\\\SphinxQL\\\\Drivers\\\\Pdo\\\\ResultSetAdapter\\:\\:normalizeRow\\(\\) has parameter \\$row with no value type specified in iterable type array\\.$#"
 			count: 1
 			path: src/Drivers/Pdo/ResultSetAdapter.php
 
 		-
-			message: "#^Method Foolz\\\\SphinxQL\\\\Drivers\\\\Pdo\\\\ResultSetAdapter\\:\\:normalizeRow\\(\\) return type has no value type specified in iterable type array\\.$#"
+			message: "#^Method OpenRegion\\\\SphinxQL\\\\Drivers\\\\Pdo\\\\ResultSetAdapter\\:\\:normalizeRow\\(\\) return type has no value type specified in iterable type array\\.$#"
 			count: 1
 			path: src/Drivers/Pdo/ResultSetAdapter.php
 
 		-
-			message: "#^Method Foolz\\\\SphinxQL\\\\Drivers\\\\Pdo\\\\ResultSetAdapter\\:\\:normalizeRows\\(\\) has parameter \\$rows with no value type specified in iterable type array\\.$#"
+			message: "#^Method OpenRegion\\\\SphinxQL\\\\Drivers\\\\Pdo\\\\ResultSetAdapter\\:\\:normalizeRows\\(\\) has parameter \\$rows with no value type specified in iterable type array\\.$#"
 			count: 1
 			path: src/Drivers/Pdo/ResultSetAdapter.php
 
 		-
-			message: "#^Method Foolz\\\\SphinxQL\\\\Drivers\\\\Pdo\\\\ResultSetAdapter\\:\\:normalizeRows\\(\\) return type has no value type specified in iterable type array\\.$#"
+			message: "#^Method OpenRegion\\\\SphinxQL\\\\Drivers\\\\Pdo\\\\ResultSetAdapter\\:\\:normalizeRows\\(\\) return type has no value type specified in iterable type array\\.$#"
 			count: 1
 			path: src/Drivers/Pdo/ResultSetAdapter.php
 
 		-
-			message: "#^Method Foolz\\\\SphinxQL\\\\Drivers\\\\Pdo\\\\ResultSetAdapter\\:\\:store\\(\\) return type has no value type specified in iterable type array\\.$#"
+			message: "#^Method OpenRegion\\\\SphinxQL\\\\Drivers\\\\Pdo\\\\ResultSetAdapter\\:\\:store\\(\\) return type has no value type specified in iterable type array\\.$#"
 			count: 1
 			path: src/Drivers/Pdo/ResultSetAdapter.php
 
 		-
-			message: "#^Parameter \\#1 \\$row of method Foolz\\\\SphinxQL\\\\Drivers\\\\Pdo\\\\ResultSetAdapter\\:\\:normalizeRow\\(\\) expects array, mixed given\\.$#"
+			message: "#^Parameter \\#1 \\$row of method OpenRegion\\\\SphinxQL\\\\Drivers\\\\Pdo\\\\ResultSetAdapter\\:\\:normalizeRow\\(\\) expects array, mixed given\\.$#"
 			count: 1
 			path: src/Drivers/Pdo/ResultSetAdapter.php
 
 		-
-			message: "#^Method Foolz\\\\SphinxQL\\\\Drivers\\\\ResultSet\\:\\:fetch\\(\\) return type has no value type specified in iterable type array\\.$#"
+			message: "#^Method OpenRegion\\\\SphinxQL\\\\Drivers\\\\ResultSet\\:\\:fetch\\(\\) return type has no value type specified in iterable type array\\.$#"
 			count: 1
 			path: src/Drivers/ResultSet.php
 
 		-
-			message: "#^Method Foolz\\\\SphinxQL\\\\Drivers\\\\ResultSet\\:\\:fetchAll\\(\\) return type has no value type specified in iterable type array\\.$#"
+			message: "#^Method OpenRegion\\\\SphinxQL\\\\Drivers\\\\ResultSet\\:\\:fetchAll\\(\\) return type has no value type specified in iterable type array\\.$#"
 			count: 1
 			path: src/Drivers/ResultSet.php
 
 		-
-			message: "#^Method Foolz\\\\SphinxQL\\\\Drivers\\\\ResultSet\\:\\:fetchAllAssoc\\(\\) return type has no value type specified in iterable type array\\.$#"
+			message: "#^Method OpenRegion\\\\SphinxQL\\\\Drivers\\\\ResultSet\\:\\:fetchAllAssoc\\(\\) return type has no value type specified in iterable type array\\.$#"
 			count: 1
 			path: src/Drivers/ResultSet.php
 
 		-
-			message: "#^Method Foolz\\\\SphinxQL\\\\Drivers\\\\ResultSet\\:\\:fetchAllFromStore\\(\\) return type has no value type specified in iterable type array\\.$#"
+			message: "#^Method OpenRegion\\\\SphinxQL\\\\Drivers\\\\ResultSet\\:\\:fetchAllFromStore\\(\\) return type has no value type specified in iterable type array\\.$#"
 			count: 1
 			path: src/Drivers/ResultSet.php
 
 		-
-			message: "#^Method Foolz\\\\SphinxQL\\\\Drivers\\\\ResultSet\\:\\:fetchAllNum\\(\\) return type has no value type specified in iterable type array\\.$#"
+			message: "#^Method OpenRegion\\\\SphinxQL\\\\Drivers\\\\ResultSet\\:\\:fetchAllNum\\(\\) return type has no value type specified in iterable type array\\.$#"
 			count: 1
 			path: src/Drivers/ResultSet.php
 
 		-
-			message: "#^Method Foolz\\\\SphinxQL\\\\Drivers\\\\ResultSet\\:\\:fetchAssoc\\(\\) return type has no value type specified in iterable type array\\.$#"
+			message: "#^Method OpenRegion\\\\SphinxQL\\\\Drivers\\\\ResultSet\\:\\:fetchAssoc\\(\\) return type has no value type specified in iterable type array\\.$#"
 			count: 1
 			path: src/Drivers/ResultSet.php
 
 		-
-			message: "#^Method Foolz\\\\SphinxQL\\\\Drivers\\\\ResultSet\\:\\:fetchFromStore\\(\\) return type has no value type specified in iterable type array\\.$#"
+			message: "#^Method OpenRegion\\\\SphinxQL\\\\Drivers\\\\ResultSet\\:\\:fetchFromStore\\(\\) return type has no value type specified in iterable type array\\.$#"
 			count: 1
 			path: src/Drivers/ResultSet.php
 
 		-
-			message: "#^Method Foolz\\\\SphinxQL\\\\Drivers\\\\ResultSet\\:\\:fetchNum\\(\\) return type has no value type specified in iterable type array\\.$#"
+			message: "#^Method OpenRegion\\\\SphinxQL\\\\Drivers\\\\ResultSet\\:\\:fetchNum\\(\\) return type has no value type specified in iterable type array\\.$#"
 			count: 1
 			path: src/Drivers/ResultSet.php
 
 		-
-			message: "#^Method Foolz\\\\SphinxQL\\\\Drivers\\\\ResultSet\\:\\:getStored\\(\\) return type has no value type specified in iterable type array\\.$#"
+			message: "#^Method OpenRegion\\\\SphinxQL\\\\Drivers\\\\ResultSet\\:\\:getStored\\(\\) return type has no value type specified in iterable type array\\.$#"
 			count: 1
 			path: src/Drivers/ResultSet.php
 
 		-
-			message: "#^Method Foolz\\\\SphinxQL\\\\Drivers\\\\ResultSet\\:\\:makeAssoc\\(\\) has parameter \\$numeric_array with no value type specified in iterable type array\\.$#"
+			message: "#^Method OpenRegion\\\\SphinxQL\\\\Drivers\\\\ResultSet\\:\\:makeAssoc\\(\\) has parameter \\$numeric_array with no value type specified in iterable type array\\.$#"
 			count: 1
 			path: src/Drivers/ResultSet.php
 
 		-
-			message: "#^Method Foolz\\\\SphinxQL\\\\Drivers\\\\ResultSet\\:\\:makeAssoc\\(\\) return type has no value type specified in iterable type array\\.$#"
+			message: "#^Method OpenRegion\\\\SphinxQL\\\\Drivers\\\\ResultSet\\:\\:makeAssoc\\(\\) return type has no value type specified in iterable type array\\.$#"
 			count: 1
 			path: src/Drivers/ResultSet.php
 
@@ -401,212 +401,212 @@ parameters:
 			path: src/Drivers/ResultSet.php
 
 		-
-			message: "#^Property Foolz\\\\SphinxQL\\\\Drivers\\\\ResultSet\\:\\:\\$fetched type has no value type specified in iterable type array\\.$#"
+			message: "#^Property OpenRegion\\\\SphinxQL\\\\Drivers\\\\ResultSet\\:\\:\\$fetched type has no value type specified in iterable type array\\.$#"
 			count: 1
 			path: src/Drivers/ResultSet.php
 
 		-
-			message: "#^Property Foolz\\\\SphinxQL\\\\Drivers\\\\ResultSet\\:\\:\\$fields type has no value type specified in iterable type array\\.$#"
+			message: "#^Property OpenRegion\\\\SphinxQL\\\\Drivers\\\\ResultSet\\:\\:\\$fields type has no value type specified in iterable type array\\.$#"
 			count: 1
 			path: src/Drivers/ResultSet.php
 
 		-
-			message: "#^Property Foolz\\\\SphinxQL\\\\Drivers\\\\ResultSet\\:\\:\\$stored type has no value type specified in iterable type array\\.$#"
+			message: "#^Property OpenRegion\\\\SphinxQL\\\\Drivers\\\\ResultSet\\:\\:\\$stored type has no value type specified in iterable type array\\.$#"
 			count: 1
 			path: src/Drivers/ResultSet.php
 
 		-
-			message: "#^Method Foolz\\\\SphinxQL\\\\Drivers\\\\ResultSetAdapterInterface\\:\\:fetch\\(\\) return type has no value type specified in iterable type array\\.$#"
+			message: "#^Method OpenRegion\\\\SphinxQL\\\\Drivers\\\\ResultSetAdapterInterface\\:\\:fetch\\(\\) return type has no value type specified in iterable type array\\.$#"
 			count: 1
 			path: src/Drivers/ResultSetAdapterInterface.php
 
 		-
-			message: "#^Method Foolz\\\\SphinxQL\\\\Drivers\\\\ResultSetAdapterInterface\\:\\:fetchAll\\(\\) return type has no value type specified in iterable type array\\.$#"
+			message: "#^Method OpenRegion\\\\SphinxQL\\\\Drivers\\\\ResultSetAdapterInterface\\:\\:fetchAll\\(\\) return type has no value type specified in iterable type array\\.$#"
 			count: 1
 			path: src/Drivers/ResultSetAdapterInterface.php
 
 		-
-			message: "#^Method Foolz\\\\SphinxQL\\\\Drivers\\\\ResultSetAdapterInterface\\:\\:getFields\\(\\) return type has no value type specified in iterable type array\\.$#"
+			message: "#^Method OpenRegion\\\\SphinxQL\\\\Drivers\\\\ResultSetAdapterInterface\\:\\:getFields\\(\\) return type has no value type specified in iterable type array\\.$#"
 			count: 1
 			path: src/Drivers/ResultSetAdapterInterface.php
 
 		-
-			message: "#^Method Foolz\\\\SphinxQL\\\\Drivers\\\\ResultSetAdapterInterface\\:\\:store\\(\\) return type has no value type specified in iterable type array\\.$#"
+			message: "#^Method OpenRegion\\\\SphinxQL\\\\Drivers\\\\ResultSetAdapterInterface\\:\\:store\\(\\) return type has no value type specified in iterable type array\\.$#"
 			count: 1
 			path: src/Drivers/ResultSetAdapterInterface.php
 
 		-
-			message: "#^Interface Foolz\\\\SphinxQL\\\\Drivers\\\\ResultSetInterface extends generic interface ArrayAccess but does not specify its types\\: TKey, TValue$#"
+			message: "#^Interface OpenRegion\\\\SphinxQL\\\\Drivers\\\\ResultSetInterface extends generic interface ArrayAccess but does not specify its types\\: TKey, TValue$#"
 			count: 1
 			path: src/Drivers/ResultSetInterface.php
 
 		-
-			message: "#^Interface Foolz\\\\SphinxQL\\\\Drivers\\\\ResultSetInterface extends generic interface Iterator but does not specify its types\\: TKey, TValue$#"
+			message: "#^Interface OpenRegion\\\\SphinxQL\\\\Drivers\\\\ResultSetInterface extends generic interface Iterator but does not specify its types\\: TKey, TValue$#"
 			count: 1
 			path: src/Drivers/ResultSetInterface.php
 
 		-
-			message: "#^Method Foolz\\\\SphinxQL\\\\Drivers\\\\ResultSetInterface\\:\\:fetchAllAssoc\\(\\) return type has no value type specified in iterable type array\\.$#"
+			message: "#^Method OpenRegion\\\\SphinxQL\\\\Drivers\\\\ResultSetInterface\\:\\:fetchAllAssoc\\(\\) return type has no value type specified in iterable type array\\.$#"
 			count: 1
 			path: src/Drivers/ResultSetInterface.php
 
 		-
-			message: "#^Method Foolz\\\\SphinxQL\\\\Drivers\\\\ResultSetInterface\\:\\:fetchAllNum\\(\\) return type has no value type specified in iterable type array\\.$#"
+			message: "#^Method OpenRegion\\\\SphinxQL\\\\Drivers\\\\ResultSetInterface\\:\\:fetchAllNum\\(\\) return type has no value type specified in iterable type array\\.$#"
 			count: 1
 			path: src/Drivers/ResultSetInterface.php
 
 		-
-			message: "#^Method Foolz\\\\SphinxQL\\\\Drivers\\\\ResultSetInterface\\:\\:fetchAssoc\\(\\) return type has no value type specified in iterable type array\\.$#"
+			message: "#^Method OpenRegion\\\\SphinxQL\\\\Drivers\\\\ResultSetInterface\\:\\:fetchAssoc\\(\\) return type has no value type specified in iterable type array\\.$#"
 			count: 1
 			path: src/Drivers/ResultSetInterface.php
 
 		-
-			message: "#^Method Foolz\\\\SphinxQL\\\\Drivers\\\\ResultSetInterface\\:\\:fetchNum\\(\\) return type has no value type specified in iterable type array\\.$#"
+			message: "#^Method OpenRegion\\\\SphinxQL\\\\Drivers\\\\ResultSetInterface\\:\\:fetchNum\\(\\) return type has no value type specified in iterable type array\\.$#"
 			count: 1
 			path: src/Drivers/ResultSetInterface.php
 
 		-
-			message: "#^Method Foolz\\\\SphinxQL\\\\Drivers\\\\ResultSetInterface\\:\\:getStored\\(\\) return type has no value type specified in iterable type array\\.$#"
+			message: "#^Method OpenRegion\\\\SphinxQL\\\\Drivers\\\\ResultSetInterface\\:\\:getStored\\(\\) return type has no value type specified in iterable type array\\.$#"
 			count: 1
 			path: src/Drivers/ResultSetInterface.php
 
 		-
-			message: "#^Method Foolz\\\\SphinxQL\\\\Facet\\:\\:facet\\(\\) has parameter \\$columns with no value type specified in iterable type array\\.$#"
+			message: "#^Method OpenRegion\\\\SphinxQL\\\\Facet\\:\\:facet\\(\\) has parameter \\$columns with no value type specified in iterable type array\\.$#"
 			count: 1
 			path: src/Facet.php
 
 		-
-			message: "#^Method Foolz\\\\SphinxQL\\\\Facet\\:\\:facetFunction\\(\\) has parameter \\$params with no value type specified in iterable type array\\.$#"
+			message: "#^Method OpenRegion\\\\SphinxQL\\\\Facet\\:\\:facetFunction\\(\\) has parameter \\$params with no value type specified in iterable type array\\.$#"
 			count: 1
 			path: src/Facet.php
 
 		-
-			message: "#^Method Foolz\\\\SphinxQL\\\\Facet\\:\\:orderByFunction\\(\\) has parameter \\$params with no value type specified in iterable type array\\.$#"
+			message: "#^Method OpenRegion\\\\SphinxQL\\\\Facet\\:\\:orderByFunction\\(\\) has parameter \\$params with no value type specified in iterable type array\\.$#"
 			count: 1
 			path: src/Facet.php
 
 		-
-			message: "#^PHPDoc tag @var for property Foolz\\\\SphinxQL\\\\Facet\\:\\:\\$by with type array is incompatible with native type string\\.$#"
+			message: "#^PHPDoc tag @var for property OpenRegion\\\\SphinxQL\\\\Facet\\:\\:\\$by with type array is incompatible with native type string\\.$#"
 			count: 1
 			path: src/Facet.php
 
 		-
-			message: "#^Property Foolz\\\\SphinxQL\\\\Facet\\:\\:\\$facet type has no value type specified in iterable type array\\.$#"
+			message: "#^Property OpenRegion\\\\SphinxQL\\\\Facet\\:\\:\\$facet type has no value type specified in iterable type array\\.$#"
 			count: 1
 			path: src/Facet.php
 
 		-
-			message: "#^Property Foolz\\\\SphinxQL\\\\Facet\\:\\:\\$order_by type has no value type specified in iterable type array\\.$#"
+			message: "#^Property OpenRegion\\\\SphinxQL\\\\Facet\\:\\:\\$order_by type has no value type specified in iterable type array\\.$#"
 			count: 1
 			path: src/Facet.php
 
 		-
-			message: "#^Cannot call method getEngine\\(\\) on Foolz\\\\SphinxQL\\\\Capabilities\\|null\\.$#"
+			message: "#^Cannot call method getEngine\\(\\) on OpenRegion\\\\SphinxQL\\\\Capabilities\\|null\\.$#"
 			count: 1
 			path: src/Helper.php
 
 		-
-			message: "#^Cannot call method getVersion\\(\\) on Foolz\\\\SphinxQL\\\\Capabilities\\|null\\.$#"
+			message: "#^Cannot call method getVersion\\(\\) on OpenRegion\\\\SphinxQL\\\\Capabilities\\|null\\.$#"
 			count: 1
 			path: src/Helper.php
 
 		-
-			message: "#^Method Foolz\\\\SphinxQL\\\\Helper\\:\\:buildCallWithOptions\\(\\) has parameter \\$options with no value type specified in iterable type array\\.$#"
+			message: "#^Method OpenRegion\\\\SphinxQL\\\\Helper\\:\\:buildCallWithOptions\\(\\) has parameter \\$options with no value type specified in iterable type array\\.$#"
 			count: 1
 			path: src/Helper.php
 
 		-
-			message: "#^Method Foolz\\\\SphinxQL\\\\Helper\\:\\:buildCallWithOptions\\(\\) has parameter \\$requiredArgs with no value type specified in iterable type array\\.$#"
+			message: "#^Method OpenRegion\\\\SphinxQL\\\\Helper\\:\\:buildCallWithOptions\\(\\) has parameter \\$requiredArgs with no value type specified in iterable type array\\.$#"
 			count: 1
 			path: src/Helper.php
 
 		-
-			message: "#^Method Foolz\\\\SphinxQL\\\\Helper\\:\\:callAutocomplete\\(\\) has parameter \\$options with no value type specified in iterable type array\\.$#"
+			message: "#^Method OpenRegion\\\\SphinxQL\\\\Helper\\:\\:callAutocomplete\\(\\) has parameter \\$options with no value type specified in iterable type array\\.$#"
 			count: 1
 			path: src/Helper.php
 
 		-
-			message: "#^Method Foolz\\\\SphinxQL\\\\Helper\\:\\:callQSuggest\\(\\) has parameter \\$options with no value type specified in iterable type array\\.$#"
+			message: "#^Method OpenRegion\\\\SphinxQL\\\\Helper\\:\\:callQSuggest\\(\\) has parameter \\$options with no value type specified in iterable type array\\.$#"
 			count: 1
 			path: src/Helper.php
 
 		-
-			message: "#^Method Foolz\\\\SphinxQL\\\\Helper\\:\\:callSnippets\\(\\) has parameter \\$data with no value type specified in iterable type array\\.$#"
+			message: "#^Method OpenRegion\\\\SphinxQL\\\\Helper\\:\\:callSnippets\\(\\) has parameter \\$data with no value type specified in iterable type array\\.$#"
 			count: 1
 			path: src/Helper.php
 
 		-
-			message: "#^Method Foolz\\\\SphinxQL\\\\Helper\\:\\:callSnippets\\(\\) has parameter \\$options with no value type specified in iterable type array\\.$#"
+			message: "#^Method OpenRegion\\\\SphinxQL\\\\Helper\\:\\:callSnippets\\(\\) has parameter \\$options with no value type specified in iterable type array\\.$#"
 			count: 1
 			path: src/Helper.php
 
 		-
-			message: "#^Method Foolz\\\\SphinxQL\\\\Helper\\:\\:callSuggest\\(\\) has parameter \\$options with no value type specified in iterable type array\\.$#"
+			message: "#^Method OpenRegion\\\\SphinxQL\\\\Helper\\:\\:callSuggest\\(\\) has parameter \\$options with no value type specified in iterable type array\\.$#"
 			count: 1
 			path: src/Helper.php
 
 		-
-			message: "#^Method Foolz\\\\SphinxQL\\\\Helper\\:\\:flushRamchunk\\(\\) has parameter \\$index with no type specified\\.$#"
+			message: "#^Method OpenRegion\\\\SphinxQL\\\\Helper\\:\\:flushRamchunk\\(\\) has parameter \\$index with no type specified\\.$#"
 			count: 1
 			path: src/Helper.php
 
 		-
-			message: "#^Method Foolz\\\\SphinxQL\\\\Helper\\:\\:normalizeCallOptions\\(\\) has parameter \\$options with no value type specified in iterable type array\\.$#"
+			message: "#^Method OpenRegion\\\\SphinxQL\\\\Helper\\:\\:normalizeCallOptions\\(\\) has parameter \\$options with no value type specified in iterable type array\\.$#"
 			count: 1
 			path: src/Helper.php
 
 		-
-			message: "#^Method Foolz\\\\SphinxQL\\\\Helper\\:\\:normalizeCallOptions\\(\\) return type has no value type specified in iterable type array\\.$#"
+			message: "#^Method OpenRegion\\\\SphinxQL\\\\Helper\\:\\:normalizeCallOptions\\(\\) return type has no value type specified in iterable type array\\.$#"
 			count: 1
 			path: src/Helper.php
 
 		-
-			message: "#^Method Foolz\\\\SphinxQL\\\\Helper\\:\\:normalizeEnumStringOption\\(\\) has parameter \\$allowed with no value type specified in iterable type array\\.$#"
+			message: "#^Method OpenRegion\\\\SphinxQL\\\\Helper\\:\\:normalizeEnumStringOption\\(\\) has parameter \\$allowed with no value type specified in iterable type array\\.$#"
 			count: 1
 			path: src/Helper.php
 
 		-
-			message: "#^Method Foolz\\\\SphinxQL\\\\Helper\\:\\:pairsToAssoc\\(\\) has parameter \\$result with no value type specified in iterable type array\\.$#"
+			message: "#^Method OpenRegion\\\\SphinxQL\\\\Helper\\:\\:pairsToAssoc\\(\\) has parameter \\$result with no value type specified in iterable type array\\.$#"
 			count: 1
 			path: src/Helper.php
 
 		-
-			message: "#^Method Foolz\\\\SphinxQL\\\\Helper\\:\\:pairsToAssoc\\(\\) return type has no value type specified in iterable type array\\.$#"
+			message: "#^Method OpenRegion\\\\SphinxQL\\\\Helper\\:\\:pairsToAssoc\\(\\) return type has no value type specified in iterable type array\\.$#"
 			count: 1
 			path: src/Helper.php
 
 		-
-			message: "#^Method Foolz\\\\SphinxQL\\\\Helper\\:\\:showIndexStatus\\(\\) has parameter \\$index with no type specified\\.$#"
+			message: "#^Method OpenRegion\\\\SphinxQL\\\\Helper\\:\\:showIndexStatus\\(\\) has parameter \\$index with no type specified\\.$#"
 			count: 1
 			path: src/Helper.php
 
 		-
-			message: "#^Method Foolz\\\\SphinxQL\\\\Helper\\:\\:showTables\\(\\) has parameter \\$index with no type specified\\.$#"
+			message: "#^Method OpenRegion\\\\SphinxQL\\\\Helper\\:\\:showTables\\(\\) has parameter \\$index with no type specified\\.$#"
 			count: 1
 			path: src/Helper.php
 
 		-
-			message: "#^Parameter \\#1 \\$value of method Foolz\\\\SphinxQL\\\\Drivers\\\\ConnectionInterface\\:\\:quote\\(\\) expects array\\|bool\\|float\\|Foolz\\\\SphinxQL\\\\Expression\\|int\\|string\\|null, mixed given\\.$#"
+			message: "#^Parameter \\#1 \\$value of method OpenRegion\\\\SphinxQL\\\\Drivers\\\\ConnectionInterface\\:\\:quote\\(\\) expects array\\|bool\\|float\\|OpenRegion\\\\SphinxQL\\\\Expression\\|int\\|string\\|null, mixed given\\.$#"
 			count: 2
 			path: src/Helper.php
 
 		-
-			message: "#^Parameter \\#4 \\$allowEmpty of method Foolz\\\\SphinxQL\\\\Helper\\:\\:normalizeStringOption\\(\\) expects bool, mixed given\\.$#"
+			message: "#^Parameter \\#4 \\$allowEmpty of method OpenRegion\\\\SphinxQL\\\\Helper\\:\\:normalizeStringOption\\(\\) expects bool, mixed given\\.$#"
 			count: 1
 			path: src/Helper.php
 
 		-
-			message: "#^Parameter \\#4 \\$allowed of method Foolz\\\\SphinxQL\\\\Helper\\:\\:normalizeEnumStringOption\\(\\) expects array, mixed given\\.$#"
+			message: "#^Parameter \\#4 \\$allowed of method OpenRegion\\\\SphinxQL\\\\Helper\\:\\:normalizeEnumStringOption\\(\\) expects array, mixed given\\.$#"
 			count: 1
 			path: src/Helper.php
 
 		-
-			message: "#^Parameter \\#4 \\$min of method Foolz\\\\SphinxQL\\\\Helper\\:\\:normalizeIntegerOption\\(\\) expects int\\|null, mixed given\\.$#"
+			message: "#^Parameter \\#4 \\$min of method OpenRegion\\\\SphinxQL\\\\Helper\\:\\:normalizeIntegerOption\\(\\) expects int\\|null, mixed given\\.$#"
 			count: 1
 			path: src/Helper.php
 
 		-
-			message: "#^Parameter \\#5 \\$max of method Foolz\\\\SphinxQL\\\\Helper\\:\\:normalizeIntegerOption\\(\\) expects int\\|null, mixed given\\.$#"
+			message: "#^Parameter \\#5 \\$max of method OpenRegion\\\\SphinxQL\\\\Helper\\:\\:normalizeIntegerOption\\(\\) expects int\\|null, mixed given\\.$#"
 			count: 1
 			path: src/Helper.php
 
@@ -616,72 +616,72 @@ parameters:
 			path: src/Helper.php
 
 		-
-			message: "#^Method Foolz\\\\SphinxQL\\\\MatchBuilder\\:\\:field\\(\\) has parameter \\$fields with no value type specified in iterable type array\\.$#"
+			message: "#^Method OpenRegion\\\\SphinxQL\\\\MatchBuilder\\:\\:field\\(\\) has parameter \\$fields with no value type specified in iterable type array\\.$#"
 			count: 1
 			path: src/MatchBuilder.php
 
 		-
-			message: "#^Method Foolz\\\\SphinxQL\\\\MatchBuilder\\:\\:ignoreField\\(\\) has parameter \\$fields with no value type specified in iterable type array\\.$#"
+			message: "#^Method OpenRegion\\\\SphinxQL\\\\MatchBuilder\\:\\:ignoreField\\(\\) has parameter \\$fields with no value type specified in iterable type array\\.$#"
 			count: 1
 			path: src/MatchBuilder.php
 
 		-
-			message: "#^Method Foolz\\\\SphinxQL\\\\MatchBuilder\\:\\:zone\\(\\) has parameter \\$zones with no value type specified in iterable type array\\.$#"
+			message: "#^Method OpenRegion\\\\SphinxQL\\\\MatchBuilder\\:\\:zone\\(\\) has parameter \\$zones with no value type specified in iterable type array\\.$#"
 			count: 1
 			path: src/MatchBuilder.php
 
 		-
-			message: "#^PHPDoc tag @param for parameter \\$keywords with type Closure\\|Foolz\\\\SphinxQL\\\\Match\\|string is not subtype of native type Closure\\|Foolz\\\\SphinxQL\\\\Expression\\|Foolz\\\\SphinxQL\\\\MatchBuilder\\|int\\|string\\.$#"
+			message: "#^PHPDoc tag @param for parameter \\$keywords with type Closure\\|OpenRegion\\\\SphinxQL\\\\Match\\|string is not subtype of native type Closure\\|OpenRegion\\\\SphinxQL\\\\Expression\\|OpenRegion\\\\SphinxQL\\\\MatchBuilder\\|int\\|string\\.$#"
 			count: 1
 			path: src/MatchBuilder.php
 
 		-
-			message: "#^PHPDoc tag @param for parameter \\$keywords with type Closure\\|Foolz\\\\SphinxQL\\\\Match\\|string is not subtype of native type Closure\\|Foolz\\\\SphinxQL\\\\Expression\\|Foolz\\\\SphinxQL\\\\MatchBuilder\\|string\\|null\\.$#"
+			message: "#^PHPDoc tag @param for parameter \\$keywords with type Closure\\|OpenRegion\\\\SphinxQL\\\\Match\\|string is not subtype of native type Closure\\|OpenRegion\\\\SphinxQL\\\\Expression\\|OpenRegion\\\\SphinxQL\\\\MatchBuilder\\|string\\|null\\.$#"
 			count: 5
 			path: src/MatchBuilder.php
 
 		-
-			message: "#^Parameter \\#1 \\$keywords of method Foolz\\\\SphinxQL\\\\MatchBuilder\\:\\:match\\(\\) expects Closure\\|Foolz\\\\SphinxQL\\\\Expression\\|Foolz\\\\SphinxQL\\\\MatchBuilder\\|string\\|null, Closure\\|Foolz\\\\SphinxQL\\\\Expression\\|Foolz\\\\SphinxQL\\\\MatchBuilder\\|int\\|string given\\.$#"
+			message: "#^Parameter \\#1 \\$keywords of method OpenRegion\\\\SphinxQL\\\\MatchBuilder\\:\\:match\\(\\) expects Closure\\|OpenRegion\\\\SphinxQL\\\\Expression\\|OpenRegion\\\\SphinxQL\\\\MatchBuilder\\|string\\|null, Closure\\|OpenRegion\\\\SphinxQL\\\\Expression\\|OpenRegion\\\\SphinxQL\\\\MatchBuilder\\|int\\|string given\\.$#"
 			count: 1
 			path: src/MatchBuilder.php
 
 		-
-			message: "#^Parameter \\#1 \\$keywords of method Foolz\\\\SphinxQL\\\\MatchBuilder\\:\\:match\\(\\) expects Closure\\|Foolz\\\\SphinxQL\\\\Expression\\|Foolz\\\\SphinxQL\\\\MatchBuilder\\|string\\|null, float\\|int\\|string given\\.$#"
+			message: "#^Parameter \\#1 \\$keywords of method OpenRegion\\\\SphinxQL\\\\MatchBuilder\\:\\:match\\(\\) expects Closure\\|OpenRegion\\\\SphinxQL\\\\Expression\\|OpenRegion\\\\SphinxQL\\\\MatchBuilder\\|string\\|null, float\\|int\\|string given\\.$#"
 			count: 1
 			path: src/MatchBuilder.php
 
 		-
-			message: "#^Parameter \\$keywords of method Foolz\\\\SphinxQL\\\\MatchBuilder\\:\\:before\\(\\) has invalid type Foolz\\\\SphinxQL\\\\Match\\.$#"
+			message: "#^Parameter \\$keywords of method OpenRegion\\\\SphinxQL\\\\MatchBuilder\\:\\:before\\(\\) has invalid type OpenRegion\\\\SphinxQL\\\\Match\\.$#"
 			count: 1
 			path: src/MatchBuilder.php
 
 		-
-			message: "#^Parameter \\$keywords of method Foolz\\\\SphinxQL\\\\MatchBuilder\\:\\:near\\(\\) has invalid type Foolz\\\\SphinxQL\\\\Match\\.$#"
+			message: "#^Parameter \\$keywords of method OpenRegion\\\\SphinxQL\\\\MatchBuilder\\:\\:near\\(\\) has invalid type OpenRegion\\\\SphinxQL\\\\Match\\.$#"
 			count: 1
 			path: src/MatchBuilder.php
 
 		-
-			message: "#^Parameter \\$keywords of method Foolz\\\\SphinxQL\\\\MatchBuilder\\:\\:paragraph\\(\\) has invalid type Foolz\\\\SphinxQL\\\\Match\\.$#"
+			message: "#^Parameter \\$keywords of method OpenRegion\\\\SphinxQL\\\\MatchBuilder\\:\\:paragraph\\(\\) has invalid type OpenRegion\\\\SphinxQL\\\\Match\\.$#"
 			count: 1
 			path: src/MatchBuilder.php
 
 		-
-			message: "#^Parameter \\$keywords of method Foolz\\\\SphinxQL\\\\MatchBuilder\\:\\:sentence\\(\\) has invalid type Foolz\\\\SphinxQL\\\\Match\\.$#"
+			message: "#^Parameter \\$keywords of method OpenRegion\\\\SphinxQL\\\\MatchBuilder\\:\\:sentence\\(\\) has invalid type OpenRegion\\\\SphinxQL\\\\Match\\.$#"
 			count: 1
 			path: src/MatchBuilder.php
 
 		-
-			message: "#^Parameter \\$keywords of method Foolz\\\\SphinxQL\\\\MatchBuilder\\:\\:zone\\(\\) has invalid type Foolz\\\\SphinxQL\\\\Match\\.$#"
+			message: "#^Parameter \\$keywords of method OpenRegion\\\\SphinxQL\\\\MatchBuilder\\:\\:zone\\(\\) has invalid type OpenRegion\\\\SphinxQL\\\\Match\\.$#"
 			count: 1
 			path: src/MatchBuilder.php
 
 		-
-			message: "#^Parameter \\$keywords of method Foolz\\\\SphinxQL\\\\MatchBuilder\\:\\:zonespan\\(\\) has invalid type Foolz\\\\SphinxQL\\\\Match\\.$#"
+			message: "#^Parameter \\$keywords of method OpenRegion\\\\SphinxQL\\\\MatchBuilder\\:\\:zonespan\\(\\) has invalid type OpenRegion\\\\SphinxQL\\\\Match\\.$#"
 			count: 1
 			path: src/MatchBuilder.php
 
 		-
-			message: "#^Property Foolz\\\\SphinxQL\\\\MatchBuilder\\:\\:\\$tokens type has no value type specified in iterable type array\\.$#"
+			message: "#^Property OpenRegion\\\\SphinxQL\\\\MatchBuilder\\:\\:\\$tokens type has no value type specified in iterable type array\\.$#"
 			count: 1
 			path: src/MatchBuilder.php
 
@@ -701,37 +701,37 @@ parameters:
 			path: src/Percolate.php
 
 		-
-			message: "#^Method Foolz\\\\SphinxQL\\\\Percolate\\:\\:convertArrayForQuery\\(\\) has parameter \\$array with no value type specified in iterable type array\\.$#"
+			message: "#^Method OpenRegion\\\\SphinxQL\\\\Percolate\\:\\:convertArrayForQuery\\(\\) has parameter \\$array with no value type specified in iterable type array\\.$#"
 			count: 1
 			path: src/Percolate.php
 
 		-
-			message: "#^Method Foolz\\\\SphinxQL\\\\Percolate\\:\\:documents\\(\\) has parameter \\$documents with no value type specified in iterable type array\\.$#"
+			message: "#^Method OpenRegion\\\\SphinxQL\\\\Percolate\\:\\:documents\\(\\) has parameter \\$documents with no value type specified in iterable type array\\.$#"
 			count: 1
 			path: src/Percolate.php
 
 		-
-			message: "#^Method Foolz\\\\SphinxQL\\\\Percolate\\:\\:generateInsert\\(\\) return type has no value type specified in iterable type array\\.$#"
+			message: "#^Method OpenRegion\\\\SphinxQL\\\\Percolate\\:\\:generateInsert\\(\\) return type has no value type specified in iterable type array\\.$#"
 			count: 1
 			path: src/Percolate.php
 
 		-
-			message: "#^Method Foolz\\\\SphinxQL\\\\Percolate\\:\\:isAssocArray\\(\\) has parameter \\$arr with no value type specified in iterable type array\\.$#"
+			message: "#^Method OpenRegion\\\\SphinxQL\\\\Percolate\\:\\:isAssocArray\\(\\) has parameter \\$arr with no value type specified in iterable type array\\.$#"
 			count: 1
 			path: src/Percolate.php
 
 		-
-			message: "#^Method Foolz\\\\SphinxQL\\\\Percolate\\:\\:options\\(\\) has parameter \\$options with no value type specified in iterable type array\\.$#"
+			message: "#^Method OpenRegion\\\\SphinxQL\\\\Percolate\\:\\:options\\(\\) has parameter \\$options with no value type specified in iterable type array\\.$#"
 			count: 1
 			path: src/Percolate.php
 
 		-
-			message: "#^Method Foolz\\\\SphinxQL\\\\Percolate\\:\\:prepareFromJson\\(\\) has parameter \\$data with no value type specified in iterable type array\\.$#"
+			message: "#^Method OpenRegion\\\\SphinxQL\\\\Percolate\\:\\:prepareFromJson\\(\\) has parameter \\$data with no value type specified in iterable type array\\.$#"
 			count: 1
 			path: src/Percolate.php
 
 		-
-			message: "#^Method Foolz\\\\SphinxQL\\\\Percolate\\:\\:tags\\(\\) has parameter \\$tags with no value type specified in iterable type array\\.$#"
+			message: "#^Method OpenRegion\\\\SphinxQL\\\\Percolate\\:\\:tags\\(\\) has parameter \\$tags with no value type specified in iterable type array\\.$#"
 			count: 1
 			path: src/Percolate.php
 
@@ -746,32 +746,32 @@ parameters:
 			path: src/Percolate.php
 
 		-
-			message: "#^Parameter \\#1 \\$array of method Foolz\\\\SphinxQL\\\\Percolate\\:\\:convertArrayForQuery\\(\\) expects array, mixed given\\.$#"
+			message: "#^Parameter \\#1 \\$array of method OpenRegion\\\\SphinxQL\\\\Percolate\\:\\:convertArrayForQuery\\(\\) expects array, mixed given\\.$#"
 			count: 1
 			path: src/Percolate.php
 
 		-
-			message: "#^Parameter \\#1 \\$index of method Foolz\\\\SphinxQL\\\\SphinxQL\\:\\:into\\(\\) expects string, string\\|null given\\.$#"
+			message: "#^Parameter \\#1 \\$index of method OpenRegion\\\\SphinxQL\\\\SphinxQL\\:\\:into\\(\\) expects string, string\\|null given\\.$#"
 			count: 1
 			path: src/Percolate.php
 
 		-
-			message: "#^Parameter \\#1 \\$string of method Foolz\\\\SphinxQL\\\\Percolate\\:\\:quoteString\\(\\) expects string, string\\|false given\\.$#"
+			message: "#^Parameter \\#1 \\$string of method OpenRegion\\\\SphinxQL\\\\Percolate\\:\\:quoteString\\(\\) expects string, string\\|false given\\.$#"
 			count: 2
 			path: src/Percolate.php
 
 		-
-			message: "#^Property Foolz\\\\SphinxQL\\\\Percolate\\:\\:\\$documents type has no value type specified in iterable type array\\.$#"
+			message: "#^Property OpenRegion\\\\SphinxQL\\\\Percolate\\:\\:\\$documents type has no value type specified in iterable type array\\.$#"
 			count: 1
 			path: src/Percolate.php
 
 		-
-			message: "#^Property Foolz\\\\SphinxQL\\\\Percolate\\:\\:\\$escapeChars type has no value type specified in iterable type array\\.$#"
+			message: "#^Property OpenRegion\\\\SphinxQL\\\\Percolate\\:\\:\\$escapeChars type has no value type specified in iterable type array\\.$#"
 			count: 1
 			path: src/Percolate.php
 
 		-
-			message: "#^Property Foolz\\\\SphinxQL\\\\Percolate\\:\\:\\$options type has no value type specified in iterable type array\\.$#"
+			message: "#^Property OpenRegion\\\\SphinxQL\\\\Percolate\\:\\:\\$options type has no value type specified in iterable type array\\.$#"
 			count: 1
 			path: src/Percolate.php
 
@@ -796,32 +796,32 @@ parameters:
 			path: src/SphinxQL.php
 
 		-
-			message: "#^Cannot access offset 0 on non\\-empty\\-array\\|Closure\\|Foolz\\\\SphinxQL\\\\SphinxQL\\.$#"
+			message: "#^Cannot access offset 0 on non\\-empty\\-array\\|Closure\\|OpenRegion\\\\SphinxQL\\\\SphinxQL\\.$#"
 			count: 1
 			path: src/SphinxQL.php
 
 		-
-			message: "#^Cannot call method escape\\(\\) on Foolz\\\\SphinxQL\\\\Drivers\\\\ConnectionInterface\\|null\\.$#"
+			message: "#^Cannot call method escape\\(\\) on OpenRegion\\\\SphinxQL\\\\Drivers\\\\ConnectionInterface\\|null\\.$#"
 			count: 1
 			path: src/SphinxQL.php
 
 		-
-			message: "#^Cannot call method multiQuery\\(\\) on Foolz\\\\SphinxQL\\\\Drivers\\\\ConnectionInterface\\|null\\.$#"
+			message: "#^Cannot call method multiQuery\\(\\) on OpenRegion\\\\SphinxQL\\\\Drivers\\\\ConnectionInterface\\|null\\.$#"
 			count: 1
 			path: src/SphinxQL.php
 
 		-
-			message: "#^Cannot call method query\\(\\) on Foolz\\\\SphinxQL\\\\Drivers\\\\ConnectionInterface\\|null\\.$#"
+			message: "#^Cannot call method query\\(\\) on OpenRegion\\\\SphinxQL\\\\Drivers\\\\ConnectionInterface\\|null\\.$#"
 			count: 4
 			path: src/SphinxQL.php
 
 		-
-			message: "#^Cannot call method quote\\(\\) on Foolz\\\\SphinxQL\\\\Drivers\\\\ConnectionInterface\\|null\\.$#"
+			message: "#^Cannot call method quote\\(\\) on OpenRegion\\\\SphinxQL\\\\Drivers\\\\ConnectionInterface\\|null\\.$#"
 			count: 5
 			path: src/SphinxQL.php
 
 		-
-			message: "#^Cannot call method quoteArr\\(\\) on Foolz\\\\SphinxQL\\\\Drivers\\\\ConnectionInterface\\|null\\.$#"
+			message: "#^Cannot call method quoteArr\\(\\) on OpenRegion\\\\SphinxQL\\\\Drivers\\\\ConnectionInterface\\|null\\.$#"
 			count: 3
 			path: src/SphinxQL.php
 
@@ -831,132 +831,132 @@ parameters:
 			path: src/SphinxQL.php
 
 		-
-			message: "#^Instanceof between string and Foolz\\\\SphinxQL\\\\Expression will always evaluate to false\\.$#"
+			message: "#^Instanceof between string and OpenRegion\\\\SphinxQL\\\\Expression will always evaluate to false\\.$#"
 			count: 2
 			path: src/SphinxQL.php
 
 		-
-			message: "#^Method Foolz\\\\SphinxQL\\\\SphinxQL\\:\\:columns\\(\\) has parameter \\$array with no value type specified in iterable type array\\.$#"
+			message: "#^Method OpenRegion\\\\SphinxQL\\\\SphinxQL\\:\\:columns\\(\\) has parameter \\$array with no value type specified in iterable type array\\.$#"
 			count: 1
 			path: src/SphinxQL.php
 
 		-
-			message: "#^Method Foolz\\\\SphinxQL\\\\SphinxQL\\:\\:compileBooleanClause\\(\\) has parameter \\$tokens with no value type specified in iterable type array\\.$#"
+			message: "#^Method OpenRegion\\\\SphinxQL\\\\SphinxQL\\:\\:compileBooleanClause\\(\\) has parameter \\$tokens with no value type specified in iterable type array\\.$#"
 			count: 1
 			path: src/SphinxQL.php
 
 		-
-			message: "#^Method Foolz\\\\SphinxQL\\\\SphinxQL\\:\\:compileEscapeChars\\(\\) has parameter \\$array with no value type specified in iterable type array\\.$#"
+			message: "#^Method OpenRegion\\\\SphinxQL\\\\SphinxQL\\:\\:compileEscapeChars\\(\\) has parameter \\$array with no value type specified in iterable type array\\.$#"
 			count: 1
 			path: src/SphinxQL.php
 
 		-
-			message: "#^Method Foolz\\\\SphinxQL\\\\SphinxQL\\:\\:compileEscapeChars\\(\\) return type has no value type specified in iterable type array\\.$#"
+			message: "#^Method OpenRegion\\\\SphinxQL\\\\SphinxQL\\:\\:compileEscapeChars\\(\\) return type has no value type specified in iterable type array\\.$#"
 			count: 1
 			path: src/SphinxQL.php
 
 		-
-			message: "#^Method Foolz\\\\SphinxQL\\\\SphinxQL\\:\\:compileFilterCondition\\(\\) has parameter \\$filter with no value type specified in iterable type array\\.$#"
+			message: "#^Method OpenRegion\\\\SphinxQL\\\\SphinxQL\\:\\:compileFilterCondition\\(\\) has parameter \\$filter with no value type specified in iterable type array\\.$#"
 			count: 1
 			path: src/SphinxQL.php
 
 		-
-			message: "#^Method Foolz\\\\SphinxQL\\\\SphinxQL\\:\\:createFilterCondition\\(\\) has parameter \\$operator with no value type specified in iterable type array\\.$#"
+			message: "#^Method OpenRegion\\\\SphinxQL\\\\SphinxQL\\:\\:createFilterCondition\\(\\) has parameter \\$operator with no value type specified in iterable type array\\.$#"
 			count: 1
 			path: src/SphinxQL.php
 
 		-
-			message: "#^Method Foolz\\\\SphinxQL\\\\SphinxQL\\:\\:createFilterCondition\\(\\) has parameter \\$value with no value type specified in iterable type array\\.$#"
+			message: "#^Method OpenRegion\\\\SphinxQL\\\\SphinxQL\\:\\:createFilterCondition\\(\\) has parameter \\$value with no value type specified in iterable type array\\.$#"
 			count: 1
 			path: src/SphinxQL.php
 
 		-
-			message: "#^Method Foolz\\\\SphinxQL\\\\SphinxQL\\:\\:createFilterCondition\\(\\) return type has no value type specified in iterable type array\\.$#"
+			message: "#^Method OpenRegion\\\\SphinxQL\\\\SphinxQL\\:\\:createFilterCondition\\(\\) return type has no value type specified in iterable type array\\.$#"
 			count: 1
 			path: src/SphinxQL.php
 
 		-
-			message: "#^Method Foolz\\\\SphinxQL\\\\SphinxQL\\:\\:from\\(\\) has parameter \\$array with no value type specified in iterable type array\\.$#"
+			message: "#^Method OpenRegion\\\\SphinxQL\\\\SphinxQL\\:\\:from\\(\\) has parameter \\$array with no value type specified in iterable type array\\.$#"
 			count: 1
 			path: src/SphinxQL.php
 
 		-
-			message: "#^Method Foolz\\\\SphinxQL\\\\SphinxQL\\:\\:getResult\\(\\) return type has no value type specified in iterable type array\\.$#"
+			message: "#^Method OpenRegion\\\\SphinxQL\\\\SphinxQL\\:\\:getResult\\(\\) return type has no value type specified in iterable type array\\.$#"
 			count: 1
 			path: src/SphinxQL.php
 
 		-
-			message: "#^Method Foolz\\\\SphinxQL\\\\SphinxQL\\:\\:getSelect\\(\\) return type has no value type specified in iterable type array\\.$#"
+			message: "#^Method OpenRegion\\\\SphinxQL\\\\SphinxQL\\:\\:getSelect\\(\\) return type has no value type specified in iterable type array\\.$#"
 			count: 1
 			path: src/SphinxQL.php
 
 		-
-			message: "#^Method Foolz\\\\SphinxQL\\\\SphinxQL\\:\\:option\\(\\) has parameter \\$value with no value type specified in iterable type array\\.$#"
+			message: "#^Method OpenRegion\\\\SphinxQL\\\\SphinxQL\\:\\:option\\(\\) has parameter \\$value with no value type specified in iterable type array\\.$#"
 			count: 1
 			path: src/SphinxQL.php
 
 		-
-			message: "#^Method Foolz\\\\SphinxQL\\\\SphinxQL\\:\\:orHaving\\(\\) has parameter \\$operator with no value type specified in iterable type array\\.$#"
+			message: "#^Method OpenRegion\\\\SphinxQL\\\\SphinxQL\\:\\:orHaving\\(\\) has parameter \\$operator with no value type specified in iterable type array\\.$#"
 			count: 1
 			path: src/SphinxQL.php
 
 		-
-			message: "#^Method Foolz\\\\SphinxQL\\\\SphinxQL\\:\\:orHaving\\(\\) has parameter \\$value with no value type specified in iterable type array\\.$#"
+			message: "#^Method OpenRegion\\\\SphinxQL\\\\SphinxQL\\:\\:orHaving\\(\\) has parameter \\$value with no value type specified in iterable type array\\.$#"
 			count: 1
 			path: src/SphinxQL.php
 
 		-
-			message: "#^Method Foolz\\\\SphinxQL\\\\SphinxQL\\:\\:orWhere\\(\\) has parameter \\$operator with no value type specified in iterable type array\\.$#"
+			message: "#^Method OpenRegion\\\\SphinxQL\\\\SphinxQL\\:\\:orWhere\\(\\) has parameter \\$operator with no value type specified in iterable type array\\.$#"
 			count: 1
 			path: src/SphinxQL.php
 
 		-
-			message: "#^Method Foolz\\\\SphinxQL\\\\SphinxQL\\:\\:orWhere\\(\\) has parameter \\$value with no value type specified in iterable type array\\.$#"
+			message: "#^Method OpenRegion\\\\SphinxQL\\\\SphinxQL\\:\\:orWhere\\(\\) has parameter \\$value with no value type specified in iterable type array\\.$#"
 			count: 1
 			path: src/SphinxQL.php
 
 		-
-			message: "#^Method Foolz\\\\SphinxQL\\\\SphinxQL\\:\\:orderByKnn\\(\\) has parameter \\$vector with no value type specified in iterable type array\\.$#"
+			message: "#^Method OpenRegion\\\\SphinxQL\\\\SphinxQL\\:\\:orderByKnn\\(\\) has parameter \\$vector with no value type specified in iterable type array\\.$#"
 			count: 1
 			path: src/SphinxQL.php
 
 		-
-			message: "#^Method Foolz\\\\SphinxQL\\\\SphinxQL\\:\\:select\\(\\) has parameter \\$columns with no value type specified in iterable type array\\.$#"
+			message: "#^Method OpenRegion\\\\SphinxQL\\\\SphinxQL\\:\\:select\\(\\) has parameter \\$columns with no value type specified in iterable type array\\.$#"
 			count: 1
 			path: src/SphinxQL.php
 
 		-
-			message: "#^Method Foolz\\\\SphinxQL\\\\SphinxQL\\:\\:set\\(\\) has parameter \\$array with no value type specified in iterable type array\\.$#"
+			message: "#^Method OpenRegion\\\\SphinxQL\\\\SphinxQL\\:\\:set\\(\\) has parameter \\$array with no value type specified in iterable type array\\.$#"
 			count: 1
 			path: src/SphinxQL.php
 
 		-
-			message: "#^Method Foolz\\\\SphinxQL\\\\SphinxQL\\:\\:setFullEscapeChars\\(\\) has parameter \\$array with no value type specified in iterable type array\\.$#"
+			message: "#^Method OpenRegion\\\\SphinxQL\\\\SphinxQL\\:\\:setFullEscapeChars\\(\\) has parameter \\$array with no value type specified in iterable type array\\.$#"
 			count: 1
 			path: src/SphinxQL.php
 
 		-
-			message: "#^Method Foolz\\\\SphinxQL\\\\SphinxQL\\:\\:setHalfEscapeChars\\(\\) has parameter \\$array with no value type specified in iterable type array\\.$#"
+			message: "#^Method OpenRegion\\\\SphinxQL\\\\SphinxQL\\:\\:setHalfEscapeChars\\(\\) has parameter \\$array with no value type specified in iterable type array\\.$#"
 			count: 1
 			path: src/SphinxQL.php
 
 		-
-			message: "#^Method Foolz\\\\SphinxQL\\\\SphinxQL\\:\\:setSelect\\(\\) has parameter \\$columns with no value type specified in iterable type array\\.$#"
+			message: "#^Method OpenRegion\\\\SphinxQL\\\\SphinxQL\\:\\:setSelect\\(\\) has parameter \\$columns with no value type specified in iterable type array\\.$#"
 			count: 1
 			path: src/SphinxQL.php
 
 		-
-			message: "#^Method Foolz\\\\SphinxQL\\\\SphinxQL\\:\\:values\\(\\) has parameter \\$array with no value type specified in iterable type array\\.$#"
+			message: "#^Method OpenRegion\\\\SphinxQL\\\\SphinxQL\\:\\:values\\(\\) has parameter \\$array with no value type specified in iterable type array\\.$#"
 			count: 1
 			path: src/SphinxQL.php
 
 		-
-			message: "#^Method Foolz\\\\SphinxQL\\\\SphinxQL\\:\\:where\\(\\) has parameter \\$operator with no value type specified in iterable type array\\.$#"
+			message: "#^Method OpenRegion\\\\SphinxQL\\\\SphinxQL\\:\\:where\\(\\) has parameter \\$operator with no value type specified in iterable type array\\.$#"
 			count: 1
 			path: src/SphinxQL.php
 
 		-
-			message: "#^Method Foolz\\\\SphinxQL\\\\SphinxQL\\:\\:where\\(\\) has parameter \\$value with no value type specified in iterable type array\\.$#"
+			message: "#^Method OpenRegion\\\\SphinxQL\\\\SphinxQL\\:\\:where\\(\\) has parameter \\$value with no value type specified in iterable type array\\.$#"
 			count: 1
 			path: src/SphinxQL.php
 
@@ -971,82 +971,82 @@ parameters:
 			path: src/SphinxQL.php
 
 		-
-			message: "#^Property Foolz\\\\SphinxQL\\\\SphinxQL\\:\\:\\$columns type has no value type specified in iterable type array\\.$#"
+			message: "#^Property OpenRegion\\\\SphinxQL\\\\SphinxQL\\:\\:\\$columns type has no value type specified in iterable type array\\.$#"
 			count: 1
 			path: src/SphinxQL.php
 
 		-
-			message: "#^Property Foolz\\\\SphinxQL\\\\SphinxQL\\:\\:\\$escape_full_chars type has no value type specified in iterable type array\\.$#"
+			message: "#^Property OpenRegion\\\\SphinxQL\\\\SphinxQL\\:\\:\\$escape_full_chars type has no value type specified in iterable type array\\.$#"
 			count: 1
 			path: src/SphinxQL.php
 
 		-
-			message: "#^Property Foolz\\\\SphinxQL\\\\SphinxQL\\:\\:\\$escape_half_chars type has no value type specified in iterable type array\\.$#"
+			message: "#^Property OpenRegion\\\\SphinxQL\\\\SphinxQL\\:\\:\\$escape_half_chars type has no value type specified in iterable type array\\.$#"
 			count: 1
 			path: src/SphinxQL.php
 
 		-
-			message: "#^Property Foolz\\\\SphinxQL\\\\SphinxQL\\:\\:\\$from type has no value type specified in iterable type array\\.$#"
+			message: "#^Property OpenRegion\\\\SphinxQL\\\\SphinxQL\\:\\:\\$from type has no value type specified in iterable type array\\.$#"
 			count: 1
 			path: src/SphinxQL.php
 
 		-
-			message: "#^Property Foolz\\\\SphinxQL\\\\SphinxQL\\:\\:\\$group_by type has no value type specified in iterable type array\\.$#"
+			message: "#^Property OpenRegion\\\\SphinxQL\\\\SphinxQL\\:\\:\\$group_by type has no value type specified in iterable type array\\.$#"
 			count: 1
 			path: src/SphinxQL.php
 
 		-
-			message: "#^Property Foolz\\\\SphinxQL\\\\SphinxQL\\:\\:\\$having type has no value type specified in iterable type array\\.$#"
+			message: "#^Property OpenRegion\\\\SphinxQL\\\\SphinxQL\\:\\:\\$having type has no value type specified in iterable type array\\.$#"
 			count: 1
 			path: src/SphinxQL.php
 
 		-
-			message: "#^Property Foolz\\\\SphinxQL\\\\SphinxQL\\:\\:\\$joins type has no value type specified in iterable type array\\.$#"
+			message: "#^Property OpenRegion\\\\SphinxQL\\\\SphinxQL\\:\\:\\$joins type has no value type specified in iterable type array\\.$#"
 			count: 1
 			path: src/SphinxQL.php
 
 		-
-			message: "#^Property Foolz\\\\SphinxQL\\\\SphinxQL\\:\\:\\$last_result type has no value type specified in iterable type array\\.$#"
+			message: "#^Property OpenRegion\\\\SphinxQL\\\\SphinxQL\\:\\:\\$last_result type has no value type specified in iterable type array\\.$#"
 			count: 1
 			path: src/SphinxQL.php
 
 		-
-			message: "#^Property Foolz\\\\SphinxQL\\\\SphinxQL\\:\\:\\$match type has no value type specified in iterable type array\\.$#"
+			message: "#^Property OpenRegion\\\\SphinxQL\\\\SphinxQL\\:\\:\\$match type has no value type specified in iterable type array\\.$#"
 			count: 1
 			path: src/SphinxQL.php
 
 		-
-			message: "#^Property Foolz\\\\SphinxQL\\\\SphinxQL\\:\\:\\$options type has no value type specified in iterable type array\\.$#"
+			message: "#^Property OpenRegion\\\\SphinxQL\\\\SphinxQL\\:\\:\\$options type has no value type specified in iterable type array\\.$#"
 			count: 1
 			path: src/SphinxQL.php
 
 		-
-			message: "#^Property Foolz\\\\SphinxQL\\\\SphinxQL\\:\\:\\$order_by type has no value type specified in iterable type array\\.$#"
+			message: "#^Property OpenRegion\\\\SphinxQL\\\\SphinxQL\\:\\:\\$order_by type has no value type specified in iterable type array\\.$#"
 			count: 1
 			path: src/SphinxQL.php
 
 		-
-			message: "#^Property Foolz\\\\SphinxQL\\\\SphinxQL\\:\\:\\$select type has no value type specified in iterable type array\\.$#"
+			message: "#^Property OpenRegion\\\\SphinxQL\\\\SphinxQL\\:\\:\\$select type has no value type specified in iterable type array\\.$#"
 			count: 1
 			path: src/SphinxQL.php
 
 		-
-			message: "#^Property Foolz\\\\SphinxQL\\\\SphinxQL\\:\\:\\$set type has no value type specified in iterable type array\\.$#"
+			message: "#^Property OpenRegion\\\\SphinxQL\\\\SphinxQL\\:\\:\\$set type has no value type specified in iterable type array\\.$#"
 			count: 1
 			path: src/SphinxQL.php
 
 		-
-			message: "#^Property Foolz\\\\SphinxQL\\\\SphinxQL\\:\\:\\$values type has no value type specified in iterable type array\\.$#"
+			message: "#^Property OpenRegion\\\\SphinxQL\\\\SphinxQL\\:\\:\\$values type has no value type specified in iterable type array\\.$#"
 			count: 1
 			path: src/SphinxQL.php
 
 		-
-			message: "#^Property Foolz\\\\SphinxQL\\\\SphinxQL\\:\\:\\$where type has no value type specified in iterable type array\\.$#"
+			message: "#^Property OpenRegion\\\\SphinxQL\\\\SphinxQL\\:\\:\\$where type has no value type specified in iterable type array\\.$#"
 			count: 1
 			path: src/SphinxQL.php
 
 		-
-			message: "#^Property Foolz\\\\SphinxQL\\\\SphinxQL\\:\\:\\$within_group_order_by type has no value type specified in iterable type array\\.$#"
+			message: "#^Property OpenRegion\\\\SphinxQL\\\\SphinxQL\\:\\:\\$within_group_order_by type has no value type specified in iterable type array\\.$#"
 			count: 1
 			path: src/SphinxQL.php
 
@@ -1066,42 +1066,42 @@ parameters:
 			path: src/SphinxQL.php
 
 		-
-			message: "#^Call to an undefined method Foolz\\\\SphinxQL\\\\Drivers\\\\ConnectionInterface\\:\\:close\\(\\)\\.$#"
+			message: "#^Call to an undefined method OpenRegion\\\\SphinxQL\\\\Drivers\\\\ConnectionInterface\\:\\:close\\(\\)\\.$#"
 			count: 1
 			path: tests/SphinxQL/ConnectionTest.php
 
 		-
-			message: "#^Call to an undefined method Foolz\\\\SphinxQL\\\\Drivers\\\\ConnectionInterface\\:\\:connect\\(\\)\\.$#"
+			message: "#^Call to an undefined method OpenRegion\\\\SphinxQL\\\\Drivers\\\\ConnectionInterface\\:\\:connect\\(\\)\\.$#"
 			count: 13
 			path: tests/SphinxQL/ConnectionTest.php
 
 		-
-			message: "#^Call to an undefined method Foolz\\\\SphinxQL\\\\Drivers\\\\ConnectionInterface\\:\\:getConnection\\(\\)\\.$#"
+			message: "#^Call to an undefined method OpenRegion\\\\SphinxQL\\\\Drivers\\\\ConnectionInterface\\:\\:getConnection\\(\\)\\.$#"
 			count: 6
 			path: tests/SphinxQL/ConnectionTest.php
 
 		-
-			message: "#^Call to an undefined method Foolz\\\\SphinxQL\\\\Drivers\\\\ConnectionInterface\\:\\:getParams\\(\\)\\.$#"
+			message: "#^Call to an undefined method OpenRegion\\\\SphinxQL\\\\Drivers\\\\ConnectionInterface\\:\\:getParams\\(\\)\\.$#"
 			count: 8
 			path: tests/SphinxQL/ConnectionTest.php
 
 		-
-			message: "#^Call to an undefined method Foolz\\\\SphinxQL\\\\Drivers\\\\ConnectionInterface\\:\\:ping\\(\\)\\.$#"
+			message: "#^Call to an undefined method OpenRegion\\\\SphinxQL\\\\Drivers\\\\ConnectionInterface\\:\\:ping\\(\\)\\.$#"
 			count: 1
 			path: tests/SphinxQL/ConnectionTest.php
 
 		-
-			message: "#^Call to an undefined method Foolz\\\\SphinxQL\\\\Drivers\\\\ConnectionInterface\\:\\:setParam\\(\\)\\.$#"
+			message: "#^Call to an undefined method OpenRegion\\\\SphinxQL\\\\Drivers\\\\ConnectionInterface\\:\\:setParam\\(\\)\\.$#"
 			count: 13
 			path: tests/SphinxQL/ConnectionTest.php
 
 		-
-			message: "#^Call to an undefined method Foolz\\\\SphinxQL\\\\Drivers\\\\ConnectionInterface\\:\\:setParams\\(\\)\\.$#"
+			message: "#^Call to an undefined method OpenRegion\\\\SphinxQL\\\\Drivers\\\\ConnectionInterface\\:\\:setParams\\(\\)\\.$#"
 			count: 2
 			path: tests/SphinxQL/ConnectionTest.php
 
 		-
-			message: "#^Cannot call method fetchAllAssoc\\(\\) on Foolz\\\\SphinxQL\\\\Drivers\\\\ResultSetInterface\\|false\\.$#"
+			message: "#^Cannot call method fetchAllAssoc\\(\\) on OpenRegion\\\\SphinxQL\\\\Drivers\\\\ResultSetInterface\\|false\\.$#"
 			count: 1
 			path: tests/SphinxQL/ConnectionTest.php
 
@@ -1211,7 +1211,7 @@ parameters:
 			path: tests/SphinxQL/ConnectionTest.php
 
 		-
-			message: "#^Property ConnectionTest\\:\\:\\$connection \\(Foolz\\\\SphinxQL\\\\Drivers\\\\ConnectionInterface\\) does not accept null\\.$#"
+			message: "#^Property ConnectionTest\\:\\:\\$connection \\(OpenRegion\\\\SphinxQL\\\\Drivers\\\\ConnectionInterface\\) does not accept null\\.$#"
 			count: 1
 			path: tests/SphinxQL/ConnectionTest.php
 
@@ -1366,7 +1366,7 @@ parameters:
 			path: tests/SphinxQL/HelperTest.php
 
 		-
-			message: "#^Call to an undefined method Foolz\\\\SphinxQL\\\\Drivers\\\\ConnectionInterface\\:\\:close\\(\\)\\.$#"
+			message: "#^Call to an undefined method OpenRegion\\\\SphinxQL\\\\Drivers\\\\ConnectionInterface\\:\\:close\\(\\)\\.$#"
 			count: 1
 			path: tests/SphinxQL/HelperTest.php
 
@@ -1576,17 +1576,17 @@ parameters:
 			path: tests/SphinxQL/HelperTest.php
 
 		-
-			message: "#^Parameter \\#1 \\$array of method Foolz\\\\SphinxQL\\\\SphinxQL\\:\\:from\\(\\) expects array\\|null, string given\\.$#"
+			message: "#^Parameter \\#1 \\$array of method OpenRegion\\\\SphinxQL\\\\SphinxQL\\:\\:from\\(\\) expects array\\|null, string given\\.$#"
 			count: 2
 			path: tests/SphinxQL/HelperTest.php
 
 		-
-			message: "#^Parameter \\#1 \\$result of static method Foolz\\\\SphinxQL\\\\Helper\\:\\:pairsToAssoc\\(\\) expects array, array\\|int given\\.$#"
+			message: "#^Parameter \\#1 \\$result of static method OpenRegion\\\\SphinxQL\\\\Helper\\:\\:pairsToAssoc\\(\\) expects array, array\\|int given\\.$#"
 			count: 2
 			path: tests/SphinxQL/HelperTest.php
 
 		-
-			message: "#^Parameter \\#1 \\$rows of static method Foolz\\\\SphinxQL\\\\Tests\\\\TestUtil\\:\\:pickColumns\\(\\) expects array, array\\|int given\\.$#"
+			message: "#^Parameter \\#1 \\$rows of static method OpenRegion\\\\SphinxQL\\\\Tests\\\\TestUtil\\:\\:pickColumns\\(\\) expects array, array\\|int given\\.$#"
 			count: 2
 			path: tests/SphinxQL/HelperTest.php
 
@@ -1596,7 +1596,7 @@ parameters:
 			path: tests/SphinxQL/HelperTest.php
 
 		-
-			message: "#^Parameter \\#3 \\$hits of method Foolz\\\\SphinxQL\\\\Helper\\:\\:callKeywords\\(\\) expects string\\|null, int given\\.$#"
+			message: "#^Parameter \\#3 \\$hits of method OpenRegion\\\\SphinxQL\\\\Helper\\:\\:callKeywords\\(\\) expects string\\|null, int given\\.$#"
 			count: 2
 			path: tests/SphinxQL/HelperTest.php
 
@@ -1701,7 +1701,7 @@ parameters:
 			path: tests/SphinxQL/MatchBuilderTest.php
 
 		-
-			message: "#^Parameter \\#2 \\$limit of method Foolz\\\\SphinxQL\\\\MatchBuilder\\:\\:field\\(\\) expects int\\|null, string given\\.$#"
+			message: "#^Parameter \\#2 \\$limit of method OpenRegion\\\\SphinxQL\\\\MatchBuilder\\:\\:field\\(\\) expects int\\|null, string given\\.$#"
 			count: 1
 			path: tests/SphinxQL/MatchBuilderTest.php
 
@@ -1721,12 +1721,12 @@ parameters:
 			path: tests/SphinxQL/MultiResultSetTest.php
 
 		-
-			message: "#^Cannot call method query\\(\\) on Foolz\\\\SphinxQL\\\\Drivers\\\\ConnectionInterface\\|null\\.$#"
+			message: "#^Cannot call method query\\(\\) on OpenRegion\\\\SphinxQL\\\\Drivers\\\\ConnectionInterface\\|null\\.$#"
 			count: 2
 			path: tests/SphinxQL/MultiResultSetTest.php
 
 		-
-			message: "#^Interface Foolz\\\\SphinxQL\\\\Drivers\\\\ResultSetInterface referenced with incorrect case\\: Foolz\\\\Sphinxql\\\\Drivers\\\\ResultSetInterface\\.$#"
+			message: "#^Interface OpenRegion\\\\SphinxQL\\\\Drivers\\\\ResultSetInterface referenced with incorrect case\\: OpenRegion\\\\Sphinxql\\\\Drivers\\\\ResultSetInterface\\.$#"
 			count: 6
 			path: tests/SphinxQL/MultiResultSetTest.php
 
@@ -1776,17 +1776,17 @@ parameters:
 			path: tests/SphinxQL/MultiResultSetTest.php
 
 		-
-			message: "#^Offset 0 does not exist on array\\<Foolz\\\\SphinxQL\\\\Drivers\\\\ResultSetInterface\\>\\|null\\.$#"
+			message: "#^Offset 0 does not exist on array\\<OpenRegion\\\\SphinxQL\\\\Drivers\\\\ResultSetInterface\\>\\|null\\.$#"
 			count: 1
 			path: tests/SphinxQL/MultiResultSetTest.php
 
 		-
-			message: "#^Parameter \\#1 \\$array of method Foolz\\\\SphinxQL\\\\SphinxQL\\:\\:columns\\(\\) expects array, string given\\.$#"
+			message: "#^Parameter \\#1 \\$array of method OpenRegion\\\\SphinxQL\\\\SphinxQL\\:\\:columns\\(\\) expects array, string given\\.$#"
 			count: 1
 			path: tests/SphinxQL/MultiResultSetTest.php
 
 		-
-			message: "#^Parameter \\#2 \\$haystack of method PHPUnit\\\\Framework\\\\Assert\\:\\:assertCount\\(\\) expects Countable\\|iterable, array\\<Foolz\\\\SphinxQL\\\\Drivers\\\\ResultSetInterface\\>\\|null given\\.$#"
+			message: "#^Parameter \\#2 \\$haystack of method PHPUnit\\\\Framework\\\\Assert\\:\\:assertCount\\(\\) expects Countable\\|iterable, array\\<OpenRegion\\\\SphinxQL\\\\Drivers\\\\ResultSetInterface\\>\\|null given\\.$#"
 			count: 1
 			path: tests/SphinxQL/MultiResultSetTest.php
 
@@ -1801,7 +1801,7 @@ parameters:
 			path: tests/SphinxQL/PdoResultSetAdapterTest.php
 
 		-
-			message: "#^Cannot call method fetchAllAssoc\\(\\) on array\\|Foolz\\\\SphinxQL\\\\Drivers\\\\ResultSetInterface\\.$#"
+			message: "#^Cannot call method fetchAllAssoc\\(\\) on array\\|OpenRegion\\\\SphinxQL\\\\Drivers\\\\ResultSetInterface\\.$#"
 			count: 1
 			path: tests/SphinxQL/PercolateQueriesTest.php
 
@@ -1886,12 +1886,12 @@ parameters:
 			path: tests/SphinxQL/PercolateQueriesTest.php
 
 		-
-			message: "#^Cannot call method query\\(\\) on Foolz\\\\SphinxQL\\\\Drivers\\\\ConnectionInterface\\|null\\.$#"
+			message: "#^Cannot call method query\\(\\) on OpenRegion\\\\SphinxQL\\\\Drivers\\\\ConnectionInterface\\|null\\.$#"
 			count: 2
 			path: tests/SphinxQL/ResultSetTest.php
 
 		-
-			message: "#^Interface Foolz\\\\SphinxQL\\\\Drivers\\\\ResultSetInterface referenced with incorrect case\\: Foolz\\\\Sphinxql\\\\Drivers\\\\ResultSetInterface\\.$#"
+			message: "#^Interface OpenRegion\\\\SphinxQL\\\\Drivers\\\\ResultSetInterface referenced with incorrect case\\: OpenRegion\\\\Sphinxql\\\\Drivers\\\\ResultSetInterface\\.$#"
 			count: 2
 			path: tests/SphinxQL/ResultSetTest.php
 
@@ -1991,7 +1991,7 @@ parameters:
 			path: tests/SphinxQL/ResultSetTest.php
 
 		-
-			message: "#^Parameter \\#1 \\$array of method Foolz\\\\SphinxQL\\\\SphinxQL\\:\\:columns\\(\\) expects array, string given\\.$#"
+			message: "#^Parameter \\#1 \\$array of method OpenRegion\\\\SphinxQL\\\\SphinxQL\\:\\:columns\\(\\) expects array, string given\\.$#"
 			count: 1
 			path: tests/SphinxQL/ResultSetTest.php
 
@@ -2001,7 +2001,7 @@ parameters:
 			path: tests/SphinxQL/ResultSetTest.php
 
 		-
-			message: "#^Static property ResultSetTest\\:\\:\\$conn \\(Foolz\\\\SphinxQL\\\\Drivers\\\\Mysqli\\\\Connection\\) does not accept Foolz\\\\SphinxQL\\\\Drivers\\\\Mysqli\\\\Connection\\|Foolz\\\\SphinxQL\\\\Drivers\\\\Pdo\\\\Connection\\.$#"
+			message: "#^Static property ResultSetTest\\:\\:\\$conn \\(OpenRegion\\\\SphinxQL\\\\Drivers\\\\Mysqli\\\\Connection\\) does not accept OpenRegion\\\\SphinxQL\\\\Drivers\\\\Mysqli\\\\Connection\\|OpenRegion\\\\SphinxQL\\\\Drivers\\\\Pdo\\\\Connection\\.$#"
 			count: 1
 			path: tests/SphinxQL/ResultSetTest.php
 
@@ -2046,12 +2046,12 @@ parameters:
 			path: tests/SphinxQL/SphinxQLTest.php
 
 		-
-			message: "#^Cannot call method getStored\\(\\) on array\\|Foolz\\\\SphinxQL\\\\Drivers\\\\MultiResultSetInterface\\|Foolz\\\\SphinxQL\\\\Drivers\\\\ResultSetInterface\\|int\\|null\\.$#"
+			message: "#^Cannot call method getStored\\(\\) on array\\|OpenRegion\\\\SphinxQL\\\\Drivers\\\\MultiResultSetInterface\\|OpenRegion\\\\SphinxQL\\\\Drivers\\\\ResultSetInterface\\|int\\|null\\.$#"
 			count: 1
 			path: tests/SphinxQL/SphinxQLTest.php
 
 		-
-			message: "#^Cannot call method query\\(\\) on Foolz\\\\SphinxQL\\\\Drivers\\\\ConnectionInterface\\|null\\.$#"
+			message: "#^Cannot call method query\\(\\) on OpenRegion\\\\SphinxQL\\\\Drivers\\\\ConnectionInterface\\|null\\.$#"
 			count: 2
 			path: tests/SphinxQL/SphinxQLTest.php
 
@@ -2331,17 +2331,17 @@ parameters:
 			path: tests/SphinxQL/SphinxQLTest.php
 
 		-
-			message: "#^Offset 0 does not exist on array\\<Foolz\\\\SphinxQL\\\\Drivers\\\\ResultSetInterface\\>\\|null\\.$#"
+			message: "#^Offset 0 does not exist on array\\<OpenRegion\\\\SphinxQL\\\\Drivers\\\\ResultSetInterface\\>\\|null\\.$#"
 			count: 3
 			path: tests/SphinxQL/SphinxQLTest.php
 
 		-
-			message: "#^Offset 1 does not exist on array\\<Foolz\\\\SphinxQL\\\\Drivers\\\\ResultSetInterface\\>\\|null\\.$#"
+			message: "#^Offset 1 does not exist on array\\<OpenRegion\\\\SphinxQL\\\\Drivers\\\\ResultSetInterface\\>\\|null\\.$#"
 			count: 12
 			path: tests/SphinxQL/SphinxQLTest.php
 
 		-
-			message: "#^Offset 2 does not exist on array\\<Foolz\\\\SphinxQL\\\\Drivers\\\\ResultSetInterface\\>\\|null\\.$#"
+			message: "#^Offset 2 does not exist on array\\<OpenRegion\\\\SphinxQL\\\\Drivers\\\\ResultSetInterface\\>\\|null\\.$#"
 			count: 1
 			path: tests/SphinxQL/SphinxQLTest.php
 
@@ -2356,42 +2356,42 @@ parameters:
 			path: tests/SphinxQL/SphinxQLTest.php
 
 		-
-			message: "#^Parameter \\#1 \\$array of method Foolz\\\\SphinxQL\\\\SphinxQL\\:\\:columns\\(\\) expects array, string given\\.$#"
+			message: "#^Parameter \\#1 \\$array of method OpenRegion\\\\SphinxQL\\\\SphinxQL\\:\\:columns\\(\\) expects array, string given\\.$#"
 			count: 4
 			path: tests/SphinxQL/SphinxQLTest.php
 
 		-
-			message: "#^Parameter \\#1 \\$array of method Foolz\\\\SphinxQL\\\\SphinxQL\\:\\:from\\(\\) expects array\\|null, Closure given\\.$#"
+			message: "#^Parameter \\#1 \\$array of method OpenRegion\\\\SphinxQL\\\\SphinxQL\\:\\:from\\(\\) expects array\\|null, Closure given\\.$#"
 			count: 1
 			path: tests/SphinxQL/SphinxQLTest.php
 
 		-
-			message: "#^Parameter \\#1 \\$array of method Foolz\\\\SphinxQL\\\\SphinxQL\\:\\:from\\(\\) expects array\\|null, Foolz\\\\SphinxQL\\\\SphinxQL given\\.$#"
+			message: "#^Parameter \\#1 \\$array of method OpenRegion\\\\SphinxQL\\\\SphinxQL\\:\\:from\\(\\) expects array\\|null, OpenRegion\\\\SphinxQL\\\\SphinxQL given\\.$#"
 			count: 1
 			path: tests/SphinxQL/SphinxQLTest.php
 
 		-
-			message: "#^Parameter \\#1 \\$array of method Foolz\\\\SphinxQL\\\\SphinxQL\\:\\:from\\(\\) expects array\\|null, string given\\.$#"
+			message: "#^Parameter \\#1 \\$array of method OpenRegion\\\\SphinxQL\\\\SphinxQL\\:\\:from\\(\\) expects array\\|null, string given\\.$#"
 			count: 78
 			path: tests/SphinxQL/SphinxQLTest.php
 
 		-
-			message: "#^Parameter \\#1 \\$array of method Foolz\\\\SphinxQL\\\\SphinxQL\\:\\:values\\(\\) expects array, int given\\.$#"
+			message: "#^Parameter \\#1 \\$array of method OpenRegion\\\\SphinxQL\\\\SphinxQL\\:\\:values\\(\\) expects array, int given\\.$#"
 			count: 7
 			path: tests/SphinxQL/SphinxQLTest.php
 
 		-
-			message: "#^Parameter \\#1 \\$facet of method Foolz\\\\SphinxQL\\\\SphinxQL\\:\\:facet\\(\\) expects Foolz\\\\SphinxQL\\\\Facet, string given\\.$#"
+			message: "#^Parameter \\#1 \\$facet of method OpenRegion\\\\SphinxQL\\\\SphinxQL\\:\\:facet\\(\\) expects OpenRegion\\\\SphinxQL\\\\Facet, string given\\.$#"
 			count: 1
 			path: tests/SphinxQL/SphinxQLTest.php
 
 		-
-			message: "#^Parameter \\#1 \\$query of method Foolz\\\\SphinxQL\\\\SphinxQL\\:\\:setQueuePrev\\(\\) expects Foolz\\\\SphinxQL\\\\SphinxQL, string given\\.$#"
+			message: "#^Parameter \\#1 \\$query of method OpenRegion\\\\SphinxQL\\\\SphinxQL\\:\\:setQueuePrev\\(\\) expects OpenRegion\\\\SphinxQL\\\\SphinxQL, string given\\.$#"
 			count: 1
 			path: tests/SphinxQL/SphinxQLTest.php
 
 		-
-			message: "#^Parameter \\#1 \\$result of static method Foolz\\\\SphinxQL\\\\Helper\\:\\:pairsToAssoc\\(\\) expects array, array\\|int given\\.$#"
+			message: "#^Parameter \\#1 \\$result of static method OpenRegion\\\\SphinxQL\\\\Helper\\:\\:pairsToAssoc\\(\\) expects array, array\\|int given\\.$#"
 			count: 1
 			path: tests/SphinxQL/SphinxQLTest.php
 
@@ -2406,27 +2406,27 @@ parameters:
 			path: tests/SphinxQL/SphinxQLTest.php
 
 		-
-			message: "#^Parameter \\#2 \\$operator of method Foolz\\\\SphinxQL\\\\SphinxQL\\:\\:having\\(\\) expects string, int given\\.$#"
+			message: "#^Parameter \\#2 \\$operator of method OpenRegion\\\\SphinxQL\\\\SphinxQL\\:\\:having\\(\\) expects string, int given\\.$#"
 			count: 1
 			path: tests/SphinxQL/SphinxQLTest.php
 
 		-
-			message: "#^Parameter \\#2 \\$value of method Foolz\\\\SphinxQL\\\\SphinxQL\\:\\:value\\(\\) expects string, array\\<int, int\\> given\\.$#"
+			message: "#^Parameter \\#2 \\$value of method OpenRegion\\\\SphinxQL\\\\SphinxQL\\:\\:value\\(\\) expects string, array\\<int, int\\> given\\.$#"
 			count: 1
 			path: tests/SphinxQL/SphinxQLTest.php
 
 		-
-			message: "#^Parameter \\#2 \\$value of method Foolz\\\\SphinxQL\\\\SphinxQL\\:\\:value\\(\\) expects string, int given\\.$#"
+			message: "#^Parameter \\#2 \\$value of method OpenRegion\\\\SphinxQL\\\\SphinxQL\\:\\:value\\(\\) expects string, int given\\.$#"
 			count: 6
 			path: tests/SphinxQL/SphinxQLTest.php
 
 		-
-			message: "#^Parameter \\#3 \\$value of method Foolz\\\\SphinxQL\\\\SphinxQL\\:\\:having\\(\\) expects string\\|null, array\\<int, int\\> given\\.$#"
+			message: "#^Parameter \\#3 \\$value of method OpenRegion\\\\SphinxQL\\\\SphinxQL\\:\\:having\\(\\) expects string\\|null, array\\<int, int\\> given\\.$#"
 			count: 1
 			path: tests/SphinxQL/SphinxQLTest.php
 
 		-
-			message: "#^Parameter \\#3 \\$value of method Foolz\\\\SphinxQL\\\\SphinxQL\\:\\:having\\(\\) expects string\\|null, int given\\.$#"
+			message: "#^Parameter \\#3 \\$value of method OpenRegion\\\\SphinxQL\\\\SphinxQL\\:\\:having\\(\\) expects string\\|null, int given\\.$#"
 			count: 4
 			path: tests/SphinxQL/SphinxQLTest.php
 
@@ -2441,21 +2441,91 @@ parameters:
 			path: tests/SphinxQL/SphinxQLTest.php
 
 		-
-			message: "#^Method Foolz\\\\SphinxQL\\\\Tests\\\\TestUtil\\:\\:getConnectionDriver\\(\\) should return Foolz\\\\SphinxQL\\\\Drivers\\\\Mysqli\\\\Connection\\|Foolz\\\\SphinxQL\\\\Drivers\\\\Pdo\\\\Connection but returns object\\.$#"
+			message: "#^Method OpenRegion\\\\SphinxQL\\\\Tests\\\\TestUtil\\:\\:getConnectionDriver\\(\\) should return OpenRegion\\\\SphinxQL\\\\Drivers\\\\Mysqli\\\\Connection\\|OpenRegion\\\\SphinxQL\\\\Drivers\\\\Pdo\\\\Connection but returns object\\.$#"
 			count: 1
 			path: tests/SphinxQL/TestUtil.php
 
 		-
-			message: "#^Method Foolz\\\\SphinxQL\\\\Tests\\\\TestUtil\\:\\:pickColumns\\(\\) has parameter \\$columns with no value type specified in iterable type array\\.$#"
+			message: "#^Method OpenRegion\\\\SphinxQL\\\\Tests\\\\TestUtil\\:\\:pickColumns\\(\\) has parameter \\$columns with no value type specified in iterable type array\\.$#"
 			count: 1
 			path: tests/SphinxQL/TestUtil.php
 
 		-
-			message: "#^Method Foolz\\\\SphinxQL\\\\Tests\\\\TestUtil\\:\\:pickColumns\\(\\) has parameter \\$rows with no value type specified in iterable type array\\.$#"
+			message: "#^Method OpenRegion\\\\SphinxQL\\\\Tests\\\\TestUtil\\:\\:pickColumns\\(\\) has parameter \\$rows with no value type specified in iterable type array\\.$#"
 			count: 1
 			path: tests/SphinxQL/TestUtil.php
 
 		-
-			message: "#^Method Foolz\\\\SphinxQL\\\\Tests\\\\TestUtil\\:\\:pickColumns\\(\\) return type has no value type specified in iterable type array\\.$#"
+			message: "#^Method OpenRegion\\\\SphinxQL\\\\Tests\\\\TestUtil\\:\\:pickColumns\\(\\) return type has no value type specified in iterable type array\\.$#"
 			count: 1
 			path: tests/SphinxQL/TestUtil.php
+
+		-
+			message: "#^Method OpenRegion\\\\SphinxQL\\\\Drivers\\\\ConnectionBase\\:\\:quoteIdentifierArray\\(\\) has parameter \\$array with no value type specified in iterable type array\\.$#"
+			count: 1
+			path: src/Drivers/ConnectionBase.php
+
+		-
+			message: "#^Method OpenRegion\\\\SphinxQL\\\\Drivers\\\\ConnectionBase\\:\\:quoteIdentifierArray\\(\\) return type has no value type specified in iterable type array\\.$#"
+			count: 1
+			path: src/Drivers/ConnectionBase.php
+
+		-
+			message: "#^Method OpenRegion\\\\SphinxQL\\\\Drivers\\\\ConnectionInterface\\:\\:quoteIdentifierArray\\(\\) has parameter \\$array with no value type specified in iterable type array\\.$#"
+			count: 1
+			path: src/Drivers/ConnectionInterface.php
+
+		-
+			message: "#^Method OpenRegion\\\\SphinxQL\\\\Drivers\\\\ConnectionInterface\\:\\:quoteIdentifierArray\\(\\) return type has no value type specified in iterable type array\\.$#"
+			count: 1
+			path: src/Drivers/ConnectionInterface.php
+
+		-
+			message: "#^PHPDoc tag @return with type int\\|OpenRegion\\\\SphinxQL\\\\Expression\\|string is not subtype of native type float\\|int\\|string\\.$#"
+			count: 1
+			path: src/Drivers/ConnectionInterface.php
+
+		-
+			message: "#^Parameter \\#1 \\$value of method OpenRegion\\\\SphinxQL\\\\Drivers\\\\ConnectionInterface\\:\\:quote\\(\\) expects array\\|bool\\|float\\|int\\|OpenRegion\\\\SphinxQL\\\\Expression\\|string\\|null, mixed given\\.$#"
+			count: 1
+			path: src/Helper.php
+
+		-
+			message: "#^Parameter \\#1 \\$value of method OpenRegion\\\\SphinxQL\\\\Drivers\\\\ConnectionInterface\\:\\:quote\\(\\) expects array\\|bool\\|float\\|int\\|OpenRegion\\\\SphinxQL\\\\Expression\\|string\\|null, mixed given\\.$#"
+			count: 1
+			path: src/Helper.php
+
+		-
+			message: "#^PHPDoc tag @param for parameter \\$keywords with type Closure\\|OpenRegion\\\\SphinxQL\\\\Match\\|string is not subtype of native type Closure\\|int\\|OpenRegion\\\\SphinxQL\\\\Expression\\|OpenRegion\\\\SphinxQL\\\\MatchBuilder\\|string\\.$#"
+			count: 1
+			path: src/MatchBuilder.php
+
+		-
+			message: "#^Parameter \\#1 \\$keywords of method OpenRegion\\\\SphinxQL\\\\MatchBuilder\\:\\:match\\(\\) expects Closure\\|OpenRegion\\\\SphinxQL\\\\Expression\\|OpenRegion\\\\SphinxQL\\\\MatchBuilder\\|string\\|null, Closure\\|int\\|OpenRegion\\\\SphinxQL\\\\Expression\\|OpenRegion\\\\SphinxQL\\\\MatchBuilder\\|string given\\.$#"
+			count: 1
+			path: src/MatchBuilder.php
+
+		-
+			message: "#^Cannot call method quoteIdentifierArray\\(\\) on OpenRegion\\\\SphinxQL\\\\Drivers\\\\ConnectionInterface\\|null\\.$#"
+			count: 1
+			path: src/SphinxQL.php
+
+		-
+			message: "#^Cannot call method quoteIdentifier\\(\\) on OpenRegion\\\\SphinxQL\\\\Drivers\\\\ConnectionInterface\\|null\\.$#"
+			count: 3
+			path: src/SphinxQL.php
+
+		-
+			message: "#^Method HelperProbeConnection\\:\\:quoteIdentifierArray\\(\\) has parameter \\$array with no value type specified in iterable type array\\.$#"
+			count: 1
+			path: tests/SphinxQL/HelperCapabilityProbeTest.php
+
+		-
+			message: "#^Method HelperProbeConnection\\:\\:quoteIdentifierArray\\(\\) return type has no value type specified in iterable type array\\.$#"
+			count: 1
+			path: tests/SphinxQL/HelperCapabilityProbeTest.php
+
+		-
+			message: "#^Cannot call method getStored\\(\\) on array\\|int\\|OpenRegion\\\\SphinxQL\\\\Drivers\\\\MultiResultSetInterface\\|OpenRegion\\\\SphinxQL\\\\Drivers\\\\ResultSetInterface\\|null\\.$#"
+			count: 1
+			path: tests/SphinxQL/SphinxQLTest.php

@@ -1,6 +1,6 @@
 <?php
 
-namespace Foolz\SphinxQL;
+namespace OpenRegion\SphinxQL;
 
 /**
  * Describes detected engine/runtime capabilities.

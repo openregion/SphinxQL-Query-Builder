@@ -1,7 +1,7 @@
-Migrating to 4.0
+Migrating to 5.0
 ================
 
-This page summarizes migration from the 3.x line to 4.0.
+This page summarizes migration from the 4.x line to 5.0.
 
 Baseline Requirements
 ---------------------
@@ -12,7 +12,7 @@ Baseline Requirements
 Key Behavioral Changes
 ----------------------
 
-4.0 introduces stricter runtime validation. Invalid query-shape input now throws
+5.0 introduces stricter runtime validation. Invalid query-shape input now throws
 ``Foolz\\SphinxQL\\Exception\\SphinxQLException`` instead of being coerced.
 
 Builder validation highlights:
@@ -66,4 +66,4 @@ Migration Checklist
 Repository Source
 -----------------
 
-The canonical migration checklist also exists in ``MIGRATING-4.0.md`` at repository root.
+The canonical migration checklist also exists in ``MIGRATING-5.0.md`` at repository root.
