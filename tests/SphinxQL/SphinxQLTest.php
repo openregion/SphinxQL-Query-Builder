@@ -451,7 +451,7 @@ class SphinxQLTest extends \PHPUnit\Framework\TestCase
             ->compile()
             ->getCompiled();
 
-        $this->assertSame('UPDATE rt SET gid = 777 WHERE id = 11', $query);
+        $this->assertSame('UPDATE `rt` SET gid = 777 WHERE id = 11', $query);
     }
 
     /**
@@ -1310,7 +1310,7 @@ class SphinxQLTest extends \PHPUnit\Framework\TestCase
             ->getCompiled();
 
         $this->assertSame(
-            'SELECT * FROM rt WHERE gid = 200 OR ( gid = 304 AND id > 12 )',
+            'SELECT * FROM `rt` WHERE gid = 200 OR ( gid = 304 AND id > 12 )',
             $compiled
         );
     }
@@ -1330,7 +1330,7 @@ class SphinxQLTest extends \PHPUnit\Framework\TestCase
             ->getCompiled();
 
         $this->assertSame(
-            'SELECT gid FROM rt GROUP BY gid HAVING gid > 100 OR ( gid < 10 AND gid > 9000 )',
+            'SELECT gid FROM `rt` GROUP BY gid HAVING gid > 100 OR ( gid < 10 AND gid > 9000 )',
             $compiled
         );
     }
@@ -1356,7 +1356,7 @@ class SphinxQLTest extends \PHPUnit\Framework\TestCase
             ->getCompiled();
 
         $this->assertSame(
-            'SELECT a.id FROM rt a LEFT JOIN rt b ON a.id = b.id WHERE a.id > 1',
+            'SELECT a.id FROM `rt a` LEFT JOIN rt b ON a.id = b.id WHERE a.id > 1',
             $compiled
         );
     }
@@ -1371,7 +1371,7 @@ class SphinxQLTest extends \PHPUnit\Framework\TestCase
             ->getCompiled();
 
         $this->assertSame(
-            'SELECT a.id FROM rt a CROSS JOIN rt b',
+            'SELECT a.id FROM `rt a` CROSS JOIN rt b',
             $compiled
         );
     }
@@ -1395,7 +1395,7 @@ class SphinxQLTest extends \PHPUnit\Framework\TestCase
             ->getCompiled();
 
         $this->assertSame(
-            'SELECT id FROM rt ORDER BY KNN(embeddings, 5, [0.1,0.2,0.3]) ASC',
+            'SELECT id FROM `rt` ORDER BY KNN(embeddings, 5, [0.1,0.2,0.3]) ASC',
             $compiled
         );
     }
@@ -1419,7 +1419,7 @@ class SphinxQLTest extends \PHPUnit\Framework\TestCase
             ->compile()
             ->getCompiled();
 
-        $this->assertSame('SELECT * FROM rt a', $compiled);
+        $this->assertSame('SELECT * FROM `rt a`', $compiled);
     }
 
     public function testSphinxQLCapabilitiesAccess()
