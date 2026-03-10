@@ -3,10 +3,11 @@
 Configuration
 =============
 
-Obtaining a Connection
-----------------------
+Driver Setup
+------------
 
 You can obtain a SphinxQL Connection with the `OpenRegion\\SphinxQL\\Drivers\\Mysqli\\Connection` class.
+MySQLi driver:
 
 .. code-block:: php
 
@@ -15,33 +16,74 @@ You can obtain a SphinxQL Connection with the `OpenRegion\\SphinxQL\\Drivers\\My
     use OpenRegion\SphinxQL\Drivers\Mysqli\Connection;
 
     $conn = new Connection();
-    $conn->setparams(array('host' => '127.0.0.1', 'port' => 9306));
+    $conn->setParams([
+        'host' => '127.0.0.1',
+        'port' => 9306,
+        'options' => [
+            MYSQLI_OPT_CONNECT_TIMEOUT => 2,
+        ],
+    ]);
 
-.. warning::
+PDO driver:
 
-    The existing PDO driver written is considered experimental as the behaviour changes between certain PHP releases.
+.. code-block:: php
+
+    <?php
+
+    use Foolz\SphinxQL\Drivers\Pdo\Connection;
+
+    $conn = new Connection();
+    $conn->setParams([
+        'host' => '127.0.0.1',
+        'port' => 9306,
+        'charset' => 'utf8',
+    ]);
 
 Connection Parameters
 ---------------------
 
-The connection parameters provide information about the instance you wish to establish a connection with. The parameters required is set with the `setParams($array)` or `setParam($key, $value)` methods.
+``setParams()`` and ``setParam()`` support:
 
-    .. describe:: host
+- ``host`` (string, default ``127.0.0.1``)
+- ``port`` (int, default ``9306``)
+- ``socket`` (string|null)
+- ``username`` (string|null)
+- ``password`` (string|null)
+- ``charset`` (PDO DSN option)
+- ``options`` (array, driver-specific options)
 
-        :Type: string
-        :Default: 127.0.0.1
+Notes:
 
-    .. describe:: port
+- Setting ``host`` to ``localhost`` is normalized to ``127.0.0.1``.
+- Socket notation like ``unix:/path/to/socket`` is converted to ``socket``.
 
-        :Type: int
-        :Default: 9306
+Escaping and Quoting
+--------------------
 
-    .. describe:: socket
+Value escaping and quoting are connection-driven.
 
-        :Type: string
-        :Default: null
+.. code-block:: php
 
-    .. describe:: options
+    <?php
 
-        :Type: array
-        :Default: null
+    $quotedText = $conn->quote('hello');      // 'hello'
+    $quotedInt = $conn->quote(42);            // 42
+    $quotedNull = $conn->quote(null);         // null
+    $quotedList = $conn->quote([1, 2, 3]);    // (1,2,3)
+
+For raw SQL fragments, use ``SphinxQL::expr()``.
+
+.. code-block:: php
+
+    <?php
+
+    use OpenRegion\SphinxQL\SphinxQL;
+
+    $sql = (new SphinxQL($conn))
+        ->select()
+        ->from('rt')
+        ->option('field_weights', SphinxQL::expr('(title=80, content=35)'))
+        ->compile()
+        ->getCompiled();
+
+    // SELECT * FROM rt OPTION field_weights = (title=80, content=35)

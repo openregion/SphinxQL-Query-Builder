@@ -43,12 +43,19 @@ class PercolateQueriesTest extends \PHPUnit\Framework\TestCase
         }
 
         $percolate = new Percolate(self::$conn);
-        $percolate
+        $percolate = $percolate
             ->insert($query)
-            ->into($index)
-            ->tags($tags)
-            ->filter($filter)
-            ->execute();
+            ->into($index);
+
+        if ($tags !== null) {
+            $percolate->tags($tags);
+        }
+
+        if ($filter !== null) {
+            $percolate->filter($filter);
+        }
+
+        $percolate->execute();
 
         if (in_array($testNumber, [1, 4, 5, 6, 7, 8, 9, 11])) {
             $this->assertEquals($compiledQuery, $percolate->getLastQuery());

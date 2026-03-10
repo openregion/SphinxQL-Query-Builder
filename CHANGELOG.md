@@ -1,3 +1,30 @@
+#### 5.0.0
+* Dropped support for PHP 8.1 and lower (minimum PHP is now 8.2)
+* Updated CI PHP matrix to 8.2 and 8.3
+* Normalized MySQLi driver exception handling for modern PHP `mysqli_sql_exception` behavior
+* Hardened runtime validation for `SphinxQL`, `Facet`, `Helper`, and `Percolate` input contracts (fail-fast exceptions for invalid query-shape input)
+* Standardized driver exception message prefixes for better diagnostics (`[mysqli][...]`, `[pdo][...]`)
+* Expanded helper runtime API coverage (`SHOW WARNINGS`, `SHOW STATUS`, `SHOW INDEX STATUS`, `FLUSH RAMCHUNK`, `FLUSH RTINDEX`, `OPTIMIZE INDEX`, UDF lifecycle checks)
+* Added fluent boolean grouping APIs (`orWhere`, `whereOpen/whereClose`, `orHaving`, `havingOpen/havingClose`) and JOIN builders (`join`, `innerJoin`, `leftJoin`, `rightJoin`, `crossJoin`)
+* Added `orderByKnn()` and broader helper wrappers for operational and Manticore-oriented commands (`SHOW PROFILE/PLAN/THREADS/VERSION/PLUGINS`, table status/settings/indexes, flush/reload/kill, suggest family)
+* Added capability discovery and feature-gating APIs (`Capabilities`, `getCapabilities()`, `supports()`, `requireSupport()`) with `UnsupportedFeatureException` for unsupported command families
+* Added `SphinxQL::requireSupport()` passthrough and convenience engine predicates on `Capabilities` (`isManticore`, `isSphinx2`, `isSphinx3`)
+* Added helper parity wrappers for `SHOW CHARACTER SET` and `SHOW COLLATION`
+* Added `docs/feature-matrix.yml` as a feature-level support map across Sphinx2/Sphinx3/Manticore
+* Added capability-aware runtime tests for optional engine features (`supportsCommand`, Buddy-gated checks)
+* Added and stabilized Sphinx 3 compatibility coverage while preserving Sphinx 2 and Manticore test behavior
+* Added support for optional connection credentials (`username`/`password`) in both PDO and MySQLi drivers (closes #208)
+* Added optional-index `update($index = null)` flow for fluent `->update()->into($index)` usage (closes #184)
+* Added explicit `update()->compile()/execute()` guard when no target index is set via `into($index)` (prevents invalid `UPDATE` SQL emission)
+* Restored `showTables($index = null)` compatibility (`SHOW TABLES` for null/empty, `SHOW TABLES LIKE ...` for non-empty) and removed hardcoded `rt` assumptions from runtime capability probes
+* Aligned Buddy capability flags so `callQSuggest()`/`callAutocomplete()` are gated by detected Buddy availability
+* Added MVA insert/update array example in README (closes #178)
+* Corrected escaping docs to reference connection-level helpers and clarified `quoteIdentifier()` availability (closes #203)
+* Added a root `LICENSE` file (closes #171)
+* Migrated CI to GitHub Actions-only validation with strict composer metadata checks
+* Hardened GitHub Actions reliability with SQL-readiness checks, full-history checkout for changed-line artifacts, and digest-pinned Buddy integration runtime image
+* Updated documentation and added a dedicated `MIGRATING-4.0.md` guide
+
 #### 4.0.0
 * Changed namespace from `Foolz\SphinxQL` to `OpenRegion\SphinxQL`
 * Added `quoteIdentifier` and `quoteIdentifierArray`

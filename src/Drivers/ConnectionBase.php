@@ -3,6 +3,7 @@
 namespace OpenRegion\SphinxQL\Drivers;
 
 use OpenRegion\SphinxQL\Exception\ConnectionException;
+use OpenRegion\SphinxQL\Exception\SphinxQLException;
 use OpenRegion\SphinxQL\Expression;
 use mysqli;
 use PDO;
@@ -14,20 +15,20 @@ abstract class ConnectionBase implements ConnectionInterface
      *
      * @var array
      */
-    protected $connection_params = array('host' => '127.0.0.1', 'port' => 9306, 'socket' => null);
+    protected array $connection_params = array('host' => '127.0.0.1', 'port' => 9306, 'socket' => null);
 
     /**
      * Internal connection object.
      * @var mysqli|PDO
      */
-    protected $connection;
+    protected mysqli|PDO|null $connection = null;
 
     /**
      * Sets one or more connection parameters.
      *
      * @param array $params Associative array of parameters and values.
      */
-    public function setParams(array $params)
+    public function setParams(array $params): void
     {
         foreach ($params as $param => $value) {
             $this->setParam($param, $value);
@@ -39,22 +40,28 @@ abstract class ConnectionBase implements ConnectionInterface
      *
      * * string host - The hostname, IP address, or unix socket
      * * int port - The port to the host
+     * * null|string username - Optional username for MySQL protocol auth
+     * * null|string password - Optional password for MySQL protocol auth
      * * array options - MySQLi options/values, as an associative array. Example: array(MYSQLI_OPT_CONNECT_TIMEOUT => 2)
      *
      * @param string $param Name of the parameter to modify.
      * @param mixed  $value Value to which the parameter will be set.
      */
-    public function setParam($param, $value)
+    public function setParam(string $param, mixed $value): void
     {
+        if (($param === 'username' || $param === 'password') && $value !== null && !is_string($value)) {
+            throw new SphinxQLException('setParam("'.$param.'") expects null or string.');
+        }
+
         if ($param === 'host') {
             if ($value === 'localhost') {
                 $value = '127.0.0.1';
-            } elseif (stripos($value, 'unix:') === 0) {
+            } elseif (is_string($value) && stripos($value, 'unix:') === 0) {
                 $param = 'socket';
             }
         }
         if ($param === 'socket') {
-            if (stripos($value, 'unix:') === 0) {
+            if (is_string($value) && stripos($value, 'unix:') === 0) {
                 $value = substr($value, 5);
             }
             $this->connection_params['host'] = null;
@@ -68,7 +75,7 @@ abstract class ConnectionBase implements ConnectionInterface
      *
      * @return array $params The current connection parameters
      */
-    public function getParams()
+    public function getParams(): array
     {
         return $this->connection_params;
     }
@@ -79,7 +86,7 @@ abstract class ConnectionBase implements ConnectionInterface
      * @return mysqli|PDO Internal connection object
      * @throws ConnectionException If no connection has been established or open
      */
-    public function getConnection()
+    public function getConnection(): mysqli|PDO
     {
         if (!is_null($this->connection)) {
             return $this->connection;
@@ -122,7 +129,7 @@ abstract class ConnectionBase implements ConnectionInterface
      * Based on FuelPHP's quoting function.
      * @inheritdoc
      */
-    public function quote($value)
+    public function quote(Expression|string|null|bool|array|int|float $value): string|int|float
     {
         if ($value === null) {
             return 'null';
@@ -149,7 +156,7 @@ abstract class ConnectionBase implements ConnectionInterface
     /**
      * @inheritdoc
      */
-    public function quoteArr(array $array = array())
+    public function quoteArr(array $array = array()): array
     {
         $result = array();
 
@@ -166,7 +173,7 @@ abstract class ConnectionBase implements ConnectionInterface
      * @return $this
      * @throws ConnectionException
      */
-    public function close()
+    public function close(): self
     {
         $this->connection = null;
 
@@ -177,7 +184,7 @@ abstract class ConnectionBase implements ConnectionInterface
      * Establishes a connection if needed
      * @throws ConnectionException
      */
-    protected function ensureConnection()
+    protected function ensureConnection(): void
     {
         try {
             $this->getConnection();
@@ -192,5 +199,6 @@ abstract class ConnectionBase implements ConnectionInterface
      * @return bool True if connected
      * @throws ConnectionException If a connection error was encountered
      */
-    abstract public function connect();
+    abstract public function connect(): bool;
+
 }

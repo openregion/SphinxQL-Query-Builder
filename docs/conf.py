@@ -1,36 +1,40 @@
-# -*- coding: utf-8 -*-
-import sys, os
-sys.path.insert(0, os.path.abspath('.'))
+from datetime import date
 
-#needs_sphinx = '1.0'
+project = "SphinxQL Query Builder"
+author = "FoolCode"
+copyright = f"2012-{date.today().year}, {author}"
 
-extensions = ['sphinx.ext.autodoc', 'sphinx.ext.viewcode']
-
-templates_path = ['_templates']
-
-source_suffix = '.rst'
-master_doc = 'index'
-
-# General information about the project.
-project = u'SphinxQL Query Builder'
-copyright = u'2012-2015, FoolCode'
-
-version = '1.0.0'
+# We track release notes in CHANGELOG.md and do not hardcode package versions here.
+version = "current"
 release = version
 
-exclude_patterns = ['_build', 'html', 'doctrees']
-add_function_parentheses = True
-add_module_names = True
-show_authors = False
-pygments_style = 'sphinx'
-modindex_common_prefix = ['foolfuuka']
-html_theme = 'default'
-html_static_path = ['_static']
-htmlhelp_basename = 'FoolFuukaDoc'
+extensions = [
+    "sphinx.ext.autodoc",
+    "sphinx.ext.viewcode",
+    "sphinx.ext.githubpages",
+    "sphinx_copybutton",
+]
 
-from sphinx.highlighting import lexers
-from pygments.lexers.web import JsonLexer
-from pygments.lexers.web import PhpLexer
+templates_path = ["_templates"]
+exclude_patterns = ["_build", "Thumbs.db", ".DS_Store"]
 
-lexers['json'] = JsonLexer(startinline=True)
-lexers['php'] = PhpLexer(startinline=True)
+source_suffix = {".rst": "restructuredtext"}
+root_doc = "index"
+language = "en"
+
+pygments_style = "sphinx"
+pygments_dark_style = "monokai"
+
+html_theme = "furo"
+html_title = "SphinxQL Query Builder Documentation"
+html_static_path = ["_static"]
+html_css_files = ["custom.css"]
+html_theme_options = {
+    "source_repository": "https://github.com/FoolCode/SphinxQL-Query-Builder/",
+    "source_branch": "master",
+    "source_directory": "docs/",
+    "navigation_with_keys": True,
+}
+
+copybutton_prompt_text = r">>> |\.\.\. |\$ "
+copybutton_prompt_is_regexp = True

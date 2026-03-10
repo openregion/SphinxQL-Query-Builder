@@ -11,7 +11,7 @@ interface ResultSetInterface extends \ArrayAccess, \Iterator, \Countable
      *
      * @return $this
      */
-    public function store();
+    public function store(): self;
 
     /**
      * Returns the array as in version 0.9.x
@@ -19,7 +19,7 @@ interface ResultSetInterface extends \ArrayAccess, \Iterator, \Countable
      * @return array|int
      * @deprecated Commodity method for simple transition to version 1.0.0
      */
-    public function getStored();
+    public function getStored(): array|int;
 
     /**
      * Checks if the specified row exists
@@ -28,7 +28,7 @@ interface ResultSetInterface extends \ArrayAccess, \Iterator, \Countable
      *
      * @return bool True if the row exists, false otherwise
      */
-    public function hasRow($row);
+    public function hasRow(int $row): bool;
 
     /**
      * Moves the cursor to the specified row
@@ -38,14 +38,14 @@ interface ResultSetInterface extends \ArrayAccess, \Iterator, \Countable
      * @return $this
      * @throws ResultSetException If the row does not exist
      */
-    public function toRow($row);
+    public function toRow(int $row): self;
 
     /**
      * Checks if the next row exists
      *
      * @return bool True if the row exists, false otherwise
      */
-    public function hasNextRow();
+    public function hasNextRow(): bool;
 
     /**
      * Moves the cursor to the next row
@@ -53,7 +53,7 @@ interface ResultSetInterface extends \ArrayAccess, \Iterator, \Countable
      * @return $this
      * @throws ResultSetException If the next row does not exist
      */
-    public function toNextRow();
+    public function toNextRow(): self;
 
     /**
      * Returns the number of affected rows
@@ -61,35 +61,35 @@ interface ResultSetInterface extends \ArrayAccess, \Iterator, \Countable
      *
      * @return int
      */
-    public function getAffectedRows();
+    public function getAffectedRows(): int;
 
     /**
      * Fetches all the rows as an array of associative arrays
      *
      * @return array An array of associative arrays
      */
-    public function fetchAllAssoc();
+    public function fetchAllAssoc(): array;
 
     /**
      * Fetches all the rows as an array of indexed arrays
      *
      * @return array An array of indexed arrays
      */
-    public function fetchAllNum();
+    public function fetchAllNum(): array;
 
     /**
      * Fetches all the rows the cursor points to as an associative array
      *
      * @return array|null An associative array representing the row
      */
-    public function fetchAssoc();
+    public function fetchAssoc(): ?array;
 
     /**
      * Fetches all the rows the cursor points to as an indexed array
      *
      * @return array|null An indexed array representing the row
      */
-    public function fetchNum();
+    public function fetchNum(): ?array;
 
     /**
      * Frees the database from the result
@@ -97,5 +97,5 @@ interface ResultSetInterface extends \ArrayAccess, \Iterator, \Countable
      *
      * @return $this
      */
-    public function freeResult();
+    public function freeResult(): self;
 }

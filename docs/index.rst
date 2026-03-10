@@ -1,13 +1,30 @@
-Welcome
-=======
+SphinxQL Query Builder
+======================
+
+Practical documentation for building and executing SphinxQL/ManticoreQL queries in PHP.
 
 .. toctree::
-  :maxdepth: 2
+   :caption: Getting Started
+   :maxdepth: 2
 
-  intro
-  changelog/index
-  config
-  query-builder
-  features/multi-query-builder
-  features/facet
-  contribute
+   intro
+   config
+
+.. toctree::
+   :caption: Guides
+   :maxdepth: 2
+
+   query-builder
+   helper
+   features/multi-query-builder
+   features/facet
+   features/match-builder
+   features/percolate
+
+.. toctree::
+   :caption: Project
+   :maxdepth: 2
+
+   migrating
+   changelog/index
+   contribute

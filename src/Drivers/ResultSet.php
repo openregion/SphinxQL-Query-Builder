@@ -10,42 +10,42 @@ class ResultSet implements ResultSetInterface
     /**
      * @var int
      */
-    protected $num_rows = 0;
+    protected int $num_rows = 0;
 
     /**
      * @var int
      */
-    protected $cursor = 0;
+    protected int $cursor = 0;
 
     /**
      * @var int
      */
-    protected $next_cursor = 0;
+    protected int $next_cursor = 0;
 
     /**
      * @var int
      */
-    protected $affected_rows = 0; // leave to 0 so SELECT etc. will be coherent
+    protected int $affected_rows = 0; // leave to 0 so SELECT etc. will be coherent
 
     /**
      * @var array
      */
-    protected $fields;
+    protected array $fields = array();
 
     /**
      * @var null|array
      */
-    protected $stored;
+    protected array|int|null $stored = null;
 
     /**
      * @var null|array
      */
-    protected $fetched;
+    protected ?array $fetched = null;
 
     /**
      * @var ResultSetAdapterInterface
      */
-    protected $adapter;
+    protected ResultSetAdapterInterface $adapter;
 
     /**
      * @param ResultSetAdapterInterface $adapter
@@ -63,7 +63,7 @@ class ResultSet implements ResultSetInterface
     /**
      * @inheritdoc
      */
-    public function hasRow($num)
+    public function hasRow(int $num): bool
     {
         return $num >= 0 && $num < $this->num_rows;
     }
@@ -71,7 +71,7 @@ class ResultSet implements ResultSetInterface
     /**
      * @inheritdoc
      */
-    public function hasNextRow()
+    public function hasNextRow(): bool
     {
         return $this->cursor + 1 < $this->num_rows;
     }
@@ -79,7 +79,7 @@ class ResultSet implements ResultSetInterface
     /**
      * @inheritdoc
      */
-    public function getAffectedRows()
+    public function getAffectedRows(): int
     {
         return $this->affected_rows;
     }
@@ -87,19 +87,21 @@ class ResultSet implements ResultSetInterface
     /**
      * @inheritdoc
      */
-    #[\ReturnTypeWillChange]
-    public function offsetExists($offset)
+    public function offsetExists(mixed $offset): bool
     {
-        return $this->hasRow($offset);
+        return is_int($offset) && $this->hasRow($offset);
     }
 
     /**
      * @inheritdoc
      * @throws ResultSetException
      */
-    #[\ReturnTypeWillChange]
-    public function offsetGet($offset)
+    public function offsetGet(mixed $offset): mixed
     {
+        if (!is_int($offset)) {
+            throw new ResultSetException('The row does not exist.');
+        }
+
         return $this->toRow($offset)->fetchAssoc();
     }
 
@@ -107,8 +109,7 @@ class ResultSet implements ResultSetInterface
      * @inheritdoc
      * @codeCoverageIgnore
      */
-    #[\ReturnTypeWillChange]
-    public function offsetSet($offset, $value)
+    public function offsetSet(mixed $offset, mixed $value): void
     {
         throw new \BadMethodCallException('Not implemented');
     }
@@ -117,8 +118,7 @@ class ResultSet implements ResultSetInterface
      * @inheritdoc
      * @codeCoverageIgnore
      */
-    #[\ReturnTypeWillChange]
-    public function offsetUnset($offset)
+    public function offsetUnset(mixed $offset): void
     {
         throw new \BadMethodCallException('Not implemented');
     }
@@ -126,8 +126,7 @@ class ResultSet implements ResultSetInterface
     /**
      * @inheritdoc
      */
-    #[\ReturnTypeWillChange]
-    public function current()
+    public function current(): mixed
     {
         $row = $this->fetched;
         unset($this->fetched);
@@ -138,8 +137,7 @@ class ResultSet implements ResultSetInterface
     /**
      * @inheritdoc
      */
-    #[\ReturnTypeWillChange]
-    public function next()
+    public function next(): void
     {
         $this->fetched = $this->fetch(true);
     }
@@ -147,8 +145,7 @@ class ResultSet implements ResultSetInterface
     /**
      * @inheritdoc
      */
-    #[\ReturnTypeWillChange]
-    public function key()
+    public function key(): int
     {
         return (int)$this->cursor;
     }
@@ -156,8 +153,7 @@ class ResultSet implements ResultSetInterface
     /**
      * @inheritdoc
      */
-    #[\ReturnTypeWillChange]
-    public function valid()
+    public function valid(): bool
     {
         if ($this->stored !== null) {
             return $this->hasRow($this->cursor);
@@ -169,8 +165,7 @@ class ResultSet implements ResultSetInterface
     /**
      * @inheritdoc
      */
-    #[\ReturnTypeWillChange]
-    public function rewind()
+    public function rewind(): void
     {
         if ($this->stored === null) {
             $this->adapter->rewind();
@@ -185,13 +180,12 @@ class ResultSet implements ResultSetInterface
      * Returns the number of rows in the result set
      * @inheritdoc
      */
-    #[\ReturnTypeWillChange]
-    public function count()
+    public function count(): int
     {
         return $this->num_rows;
     }
 
-    protected function init()
+    protected function init(): void
     {
         if ($this->adapter->isDml()) {
             $this->affected_rows = $this->adapter->getAffectedRows();
@@ -206,7 +200,7 @@ class ResultSet implements ResultSetInterface
      *
      * @return array
      */
-    protected function makeAssoc($numeric_array)
+    protected function makeAssoc(array $numeric_array): array
     {
         $assoc_array = array();
         foreach ($numeric_array as $col_key => $col_value) {
@@ -221,9 +215,9 @@ class ResultSet implements ResultSetInterface
      *
      * @return array|bool|null
      */
-    protected function fetchFromStore($assoc = true)
+    protected function fetchFromStore(bool $assoc = true): array|false|null
     {
-        if ($this->stored === null) {
+        if ($this->stored === null || !is_array($this->stored)) {
             return false;
         }
 
@@ -241,9 +235,9 @@ class ResultSet implements ResultSetInterface
      *
      * @return array|bool
      */
-    protected function fetchAllFromStore($assoc)
+    protected function fetchAllFromStore(bool $assoc): array|false
     {
-        if ($this->stored === null) {
+        if ($this->stored === null || !is_array($this->stored)) {
             return false;
         }
 
@@ -263,7 +257,7 @@ class ResultSet implements ResultSetInterface
      *
      * @return array
      */
-    protected function fetchAll($assoc = true)
+    protected function fetchAll(bool $assoc = true): array
     {
         $fetch_all_result = $this->fetchAllFromStore($assoc);
 
@@ -280,7 +274,7 @@ class ResultSet implements ResultSetInterface
     /**
      * @inheritdoc
      */
-    public function store()
+    public function store(): self
     {
         if ($this->stored !== null) {
             return $this;
@@ -298,7 +292,7 @@ class ResultSet implements ResultSetInterface
     /**
      * @inheritdoc
      */
-    public function getStored()
+    public function getStored(): array|int
     {
         $this->store();
         if ($this->adapter->isDml()) {
@@ -311,7 +305,7 @@ class ResultSet implements ResultSetInterface
     /**
      * @inheritdoc
      */
-    public function toRow($num)
+    public function toRow(int $num): self
     {
         if (!$this->hasRow($num)) {
             throw new ResultSetException('The row does not exist.');
@@ -330,7 +324,7 @@ class ResultSet implements ResultSetInterface
     /**
      * @inheritdoc
      */
-    public function toNextRow()
+    public function toNextRow(): self
     {
         $this->toRow(++$this->cursor);
 
@@ -340,7 +334,7 @@ class ResultSet implements ResultSetInterface
     /**
      * @inheritdoc
      */
-    public function fetchAllAssoc()
+    public function fetchAllAssoc(): array
     {
         return $this->fetchAll(true);
     }
@@ -348,7 +342,7 @@ class ResultSet implements ResultSetInterface
     /**
      * @inheritdoc
      */
-    public function fetchAllNum()
+    public function fetchAllNum(): array
     {
         return $this->fetchAll(false);
     }
@@ -356,7 +350,7 @@ class ResultSet implements ResultSetInterface
     /**
      * @inheritdoc
      */
-    public function fetchAssoc()
+    public function fetchAssoc(): ?array
     {
         return $this->fetch(true);
     }
@@ -364,7 +358,7 @@ class ResultSet implements ResultSetInterface
     /**
      * @inheritdoc
      */
-    public function fetchNum()
+    public function fetchNum(): ?array
     {
         return $this->fetch(false);
     }
@@ -374,7 +368,7 @@ class ResultSet implements ResultSetInterface
      *
      * @return array|null
      */
-    protected function fetch($assoc = true)
+    protected function fetch(bool $assoc = true): ?array
     {
         $this->cursor = $this->next_cursor;
 
@@ -392,7 +386,7 @@ class ResultSet implements ResultSetInterface
     /**
      * @inheritdoc
      */
-    public function freeResult()
+    public function freeResult(): self
     {
         $this->adapter->freeResult();
 
