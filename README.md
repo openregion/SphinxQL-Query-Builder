@@ -1,9 +1,9 @@
 # SphinxQL Query Builder
 
-[![CI](https://github.com/FoolCode/SphinxQL-Query-Builder/actions/workflows/ci.yml/badge.svg)](https://github.com/FoolCode/SphinxQL-Query-Builder/actions/workflows/ci.yml)
-[![Documentation](https://github.com/FoolCode/SphinxQL-Query-Builder/actions/workflows/docs.yml/badge.svg)](https://github.com/FoolCode/SphinxQL-Query-Builder/actions/workflows/docs.yml)
-[![Latest Stable Version](https://poser.pugx.org/foolz/sphinxql-query-builder/v/stable)](https://packagist.org/packages/foolz/sphinxql-query-builder)
-[![Total Downloads](https://poser.pugx.org/foolz/sphinxql-query-builder/downloads)](https://packagist.org/packages/foolz/sphinxql-query-builder)
+[![Latest Stable Version](https://poser.pugx.org/openregion/sphinxql-query-builder/v/stable)](https://packagist.org/packages/openregion/sphinxql-query-builder)
+[![Total Downloads](https://poser.pugx.org/openregion/sphinxql-query-builder/downloads)](https://packagist.org/packages/openregion/sphinxql-query-builder)
+
+This a fork of [FoolCode's SphinxQL Query Builder](https://github.com/FoolCode/SphinxQL-Query-Builder). It seems like original one is no longer maintained.
 
 A fluent PHP query builder for SphinxQL and ManticoreQL.
 
@@ -20,7 +20,7 @@ It supports:
 ## Installation
 
 ```bash
-composer require foolz/sphinxql-query-builder
+composer require openregion/sphinxql-query-builder
 ```
 
 Requirements:
@@ -34,8 +34,8 @@ Requirements:
 ```php
 <?php
 
-use Foolz\SphinxQL\Drivers\Mysqli\Connection;
-use Foolz\SphinxQL\SphinxQL;
+use OpenRegion\SphinxQL\Drivers\Mysqli\Connection;
+use OpenRegion\SphinxQL\SphinxQL;
 
 $conn = new Connection();
 $conn->setParams([
@@ -61,7 +61,7 @@ $rows = (new SphinxQL($conn))
 ```php
 <?php
 
-use Foolz\SphinxQL\Drivers\Mysqli\Connection;
+use OpenRegion\SphinxQL\Drivers\Mysqli\Connection;
 
 $conn = new Connection();
 $conn->setParams([
@@ -78,7 +78,7 @@ $conn->setParams([
 ```php
 <?php
 
-use Foolz\SphinxQL\Drivers\Pdo\Connection;
+use OpenRegion\SphinxQL\Drivers\Pdo\Connection;
 
 $conn = new Connection();
 $conn->setParams([
@@ -95,7 +95,7 @@ $conn->setParams([
 ```php
 <?php
 
-use Foolz\SphinxQL\SphinxQL;
+use OpenRegion\SphinxQL\SphinxQL;
 
 $sql = (new SphinxQL($conn))
     ->select('a.id')
@@ -241,7 +241,7 @@ $sql = (new SphinxQL($conn))
 ```php
 <?php
 
-use Foolz\SphinxQL\Helper;
+use OpenRegion\SphinxQL\Helper;
 
 $helper = new Helper($conn);
 
@@ -263,8 +263,8 @@ Compile examples from tests:
 ```php
 <?php
 
-use Foolz\SphinxQL\Facet;
-use Foolz\SphinxQL\SphinxQL;
+use OpenRegion\SphinxQL\Facet;
+use OpenRegion\SphinxQL\SphinxQL;
 
 $facet = (new Facet($conn))
     ->facet(['gid'])
@@ -286,8 +286,8 @@ $batchRows = (new SphinxQL($conn))
 ```php
 <?php
 
-use Foolz\SphinxQL\Helper;
-use Foolz\SphinxQL\SphinxQL;
+use OpenRegion\SphinxQL\Helper;
+use OpenRegion\SphinxQL\SphinxQL;
 
 $batch = (new SphinxQL($conn))
     ->select()
@@ -308,7 +308,7 @@ $all = $batch->getStored();
 ```php
 <?php
 
-use Foolz\SphinxQL\Percolate;
+use OpenRegion\SphinxQL\Percolate;
 
 (new Percolate($conn))
     ->insert('@subject orange')
@@ -334,7 +334,7 @@ $matches = (new Percolate($conn))
 ```php
 <?php
 
-use Foolz\SphinxQL\Helper;
+use OpenRegion\SphinxQL\Helper;
 
 $helper = new Helper($conn);
 $caps = $helper->getCapabilities();
