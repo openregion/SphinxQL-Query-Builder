@@ -1,9 +1,4 @@
 #### 5.0.0
-* Changed namespace from `Foolz\SphinxQL` to `OpenRegion\SphinxQL`
-* Added `quoteIdentifier` and `quoteIdentifierArray`
-* Fixed readme
-
-#### 4.0.0
 * Dropped support for PHP 8.1 and lower (minimum PHP is now 8.2)
 * Updated CI PHP matrix to 8.2 and 8.3
 * Normalized MySQLi driver exception handling for modern PHP `mysqli_sql_exception` behavior
@@ -29,6 +24,11 @@
 * Migrated CI to GitHub Actions-only validation with strict composer metadata checks
 * Hardened GitHub Actions reliability with SQL-readiness checks, full-history checkout for changed-line artifacts, and digest-pinned Buddy integration runtime image
 * Updated documentation and added a dedicated `MIGRATING-5.0.md` guide
+
+#### 4.0.0
+* Changed namespace from `Foolz\SphinxQL` to `OpenRegion\SphinxQL`
+* Added `quoteIdentifier` and `quoteIdentifierArray`
+* Fixed readme
 
 #### 3.0.2
 * Dropped support for PHP 7.3 and lower
